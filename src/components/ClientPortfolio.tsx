@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SiteContent, Project } from "@/lib/data";
 import Header from "./Header";
 import Hero from "./Hero";
@@ -18,7 +18,18 @@ interface ClientPortfolioProps {
 }
 
 export default function ClientPortfolio({ initialContent }: ClientPortfolioProps) {
-  const [content] = useState<SiteContent>(initialContent);
+  const [content, setContent] = useState<SiteContent>(initialContent);
+
+  useEffect(() => {
+    fetch("/api/content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.projects) {
+          setContent(data);
+        }
+      })
+      .catch((err) => console.log("Using cached content:", err));
+  }, []);
   const [activeVideo, setActiveVideo] = useState<{
     isOpen: boolean;
     title: string;

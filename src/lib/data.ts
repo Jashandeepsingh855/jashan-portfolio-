@@ -1,7 +1,12 @@
 import fs from "fs";
 import path from "path";
+import defaultData from "../../data/content.default.json";
 
-const DATA_FILE = path.join(process.cwd(), "data", "content.json");
+// In Vercel serverless environments, root is read-only, so /tmp is used for runtime persistence
+const IS_VERCEL = process.env.VERCEL === "1";
+const DATA_FILE = IS_VERCEL
+  ? path.join("/tmp", "content.json")
+  : path.join(process.cwd(), "data", "content.json");
 const DEFAULT_DATA_FILE = path.join(process.cwd(), "data", "content.default.json");
 
 export interface Project {
@@ -135,41 +140,39 @@ export interface SiteContent {
 
 export function getContent(): SiteContent {
   try {
-    if (!fs.existsSync(DATA_FILE)) {
-      if (fs.existsSync(DEFAULT_DATA_FILE)) {
-        fs.copyFileSync(DEFAULT_DATA_FILE, DATA_FILE);
-      }
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, "utf-8");
+      return JSON.parse(raw);
     }
-    const raw = fs.readFileSync(DATA_FILE, "utf-8");
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error("Error reading content.json:", error);
     if (fs.existsSync(DEFAULT_DATA_FILE)) {
       const raw = fs.readFileSync(DEFAULT_DATA_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    throw error;
+  } catch (error) {
+    console.error("Error reading content file, using bundled default:", error);
   }
+  // Safe in-memory fallback always guaranteed
+  return defaultData as unknown as SiteContent;
 }
 
 export function saveContent(data: SiteContent): void {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    const dir = path.dirname(DATA_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const tempPath = `${DATA_FILE}.tmp`;
+    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), "utf-8");
+    fs.renameSync(tempPath, DATA_FILE);
+  } catch (error) {
+    console.error("Warning: Could not save content to disk:", error);
   }
-  const tempPath = `${DATA_FILE}.tmp`;
-  fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), "utf-8");
-  fs.renameSync(tempPath, DATA_FILE);
 }
 
 export function resetToDefault(): SiteContent {
-  if (fs.existsSync(DEFAULT_DATA_FILE)) {
-    const raw = fs.readFileSync(DEFAULT_DATA_FILE, "utf-8");
-    const parsed = JSON.parse(raw);
-    saveContent(parsed);
-    return parsed;
-  }
-  throw new Error("Default data file not found");
+  const content = defaultData as unknown as SiteContent;
+  saveContent(content);
+  return content;
 }
 
 export function getPublicContent(): Omit<SiteContent, "admin"> {
