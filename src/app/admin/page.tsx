@@ -151,7 +151,11 @@ export default function AdminDashboardPage() {
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({
+          action: "login",
+          email: email.trim(),
+          password,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -171,7 +175,11 @@ export default function AdminDashboardPage() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth", { method: "DELETE" });
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "logout" }),
+      });
     } finally {
       setAuthenticated(false);
       setContent(null);
@@ -310,9 +318,12 @@ export default function AdminDashboardPage() {
 
     try {
       const res = await fetch("/api/auth", {
-        method: "PATCH",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: newPassword.trim() }),
+        body: JSON.stringify({
+          action: "change_password",
+          newPassword: newPassword.trim(),
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
