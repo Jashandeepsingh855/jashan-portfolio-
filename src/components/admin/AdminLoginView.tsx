@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowUpRight, Eye, EyeOff, Lock } from "lucide-react";
+import { isAuthorizedAdmin } from "@/lib/admin-identity";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function AdminLoginView() {
@@ -36,10 +37,7 @@ export default function AdminLoginView() {
         return;
       }
 
-      const role = (
-        data.user.app_metadata as { role?: string } | undefined
-      )?.role;
-      if (role !== "admin") {
+      if (!isAuthorizedAdmin(data.user)) {
         await supabase.auth.signOut();
         setAuthError("This account does not have administrator privileges.");
         return;

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAuthorizedAdmin } from "@/lib/admin-identity";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 
 export async function middleware(request: NextRequest) {
@@ -35,9 +36,9 @@ export async function middleware(request: NextRequest) {
   // Validates JWT claims and refreshes expiring session cookies.
   const { data: claimsData } = await supabase.auth.getClaims();
   const claims = claimsData?.claims as
-    | { app_metadata?: { role?: string } }
+    | { email?: string; app_metadata?: { role?: string } }
     | undefined;
-  const isAdmin = claims?.app_metadata?.role === "admin";
+  const isAdmin = isAuthorizedAdmin(claims);
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin")) {

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { isAuthorizedAdmin } from "@/lib/admin-identity";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import AdminLoginView from "@/components/admin/AdminLoginView";
 
@@ -22,9 +23,8 @@ export default function AdminLoginPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      const role = (user?.app_metadata as { role?: string } | undefined)?.role;
 
-      if (active && user && role === "admin") {
+      if (active && isAuthorizedAdmin(user)) {
         router.replace("/admin");
         router.refresh();
       }

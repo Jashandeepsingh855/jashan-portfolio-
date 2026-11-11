@@ -1,3 +1,4 @@
+import { isAuthorizedAdmin } from "@/lib/admin-identity";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export interface AdminSession {
@@ -21,7 +22,7 @@ export async function getAdminSession(): Promise<AdminSession> {
       app_metadata?: { role?: string };
     };
 
-    const isAdmin = claims?.app_metadata?.role === "admin";
+    const isAdmin = isAuthorizedAdmin(claims);
     return {
       isAdmin,
       email: isAdmin ? claims.email || null : null,
@@ -59,8 +60,7 @@ export async function signInAdmin(email: string, password: string) {
     };
   }
 
-  const role = (data.user.app_metadata as { role?: string } | undefined)?.role;
-  if (role !== "admin") {
+  if (!isAuthorizedAdmin(data.user)) {
     await supabase.auth.signOut();
     return {
       ok: false as const,

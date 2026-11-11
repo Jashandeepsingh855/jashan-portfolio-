@@ -18,6 +18,7 @@ import {
   Sliders,
 } from "lucide-react";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { isAuthorizedAdmin } from "@/lib/admin-identity";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { Inquiry, Project, SiteContent } from "@/lib/data";
 import AdminLoginView from "@/components/admin/AdminLoginView";
@@ -124,12 +125,10 @@ export default function AdminDashboardPage() {
           data: { user },
           error,
         } = await supabase.auth.getUser();
-        const role = (user?.app_metadata as { role?: string } | undefined)
-          ?.role;
 
         if (!active) return;
 
-        if (error || !user || role !== "admin") {
+        if (error || !isAuthorizedAdmin(user)) {
           setAuthenticated(false);
           setSessionEmail("");
           router.replace("/admin/login");
@@ -137,7 +136,7 @@ export default function AdminDashboardPage() {
         }
 
         setAuthenticated(true);
-        setSessionEmail(user.email || "");
+        setSessionEmail(user?.email || "");
         await fetchContent();
       } catch {
         if (!active) return;
@@ -158,7 +157,11 @@ export default function AdminDashboardPage() {
     } = supabase.auth.onAuthStateChange(
       (event: AuthChangeEvent, session: Session | null) => {
         if (!active) return;
-        if (event === "SIGNED_OUT" || !session) {
+        if (
+          event === "SIGNED_OUT" ||
+          !session ||
+          !isAuthorizedAdmin(session.user)
+        ) {
           setAuthenticated(false);
           setContent(null);
           setSessionEmail("");
