@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Lock, Menu, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/data";
+import { AnimatedTabs } from "@/components/ui/animated-tabs";
 
 interface HeaderProps {
   siteSettings: SiteSettings;
@@ -20,19 +21,55 @@ export default function Header({
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const navItems = useMemo(
+    () => [
+      { href: "#work", id: "work", label: "Work", badge: `[${projectCount}]` },
+      {
+        href: "#services",
+        id: "services",
+        label: "Service",
+        badge: `[${serviceCount}]`,
+      },
+      {
+        href: "#experience",
+        id: "experience",
+        label: "Experience",
+        badge: "[7y+]",
+      },
+      { href: "#contact", id: "contact", label: "Contact", badge: null },
+    ],
+    [projectCount, serviceCount]
+  );
+
+  const [activeNavLabel, setActiveNavLabel] = useState(navItems[0].label);
+  const manualClickUntilRef = useRef(0);
+
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 24);
+
+      if (Date.now() < manualClickUntilRef.current) return;
+
+      const threshold = window.scrollY + 180;
+      let currentLabel = navItems[0].label;
+
+      for (const item of navItems) {
+        const el = document.getElementById(item.id);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY;
+          if (threshold >= top) {
+            currentLabel = item.label;
+          }
+        }
+      }
+
+      setActiveNavLabel(currentLabel);
+    };
+
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const navItems = [
-    { href: "#work", label: "Work", badge: `[${projectCount}]` },
-    { href: "#services", label: "Service", badge: `[${serviceCount}]` },
-    { href: "#experience", label: "Experience", badge: "[7y+]" },
-    { href: "#contact", label: "Contact", badge: null },
-  ];
+  }, [navItems]);
 
   return (
     <header
@@ -46,7 +83,7 @@ export default function Header({
         {/* Availability Status Pill */}
         <a
           href="#contact"
-          className="glass-pill rounded-full px-3.5 sm:px-4 py-2 flex items-center gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[205px] sm:max-w-none"
+          className="glass-pill rounded-full px-3.5 sm:px-4 py-2 flex items-center gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[205px] sm:max-w-none shrink-0"
         >
           <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accentGreen opacity-75" />
@@ -57,22 +94,16 @@ export default function Header({
           </span>
         </a>
 
-        {/* Center Clean Nav Links (Matching 1.webp & Jashandeep Stitch) */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="text-[13.5px] font-medium text-neutral-600 hover:text-black transition-colors flex items-center gap-1.5 group"
-            >
-              <span>{item.label}</span>
-              {item.badge && (
-                <span className="text-neutral-400 group-hover:text-neutral-600 text-[11px] font-mono font-normal">
-                  {item.badge}
-                </span>
-              )}
-            </a>
-          ))}
+        {/* Center Animated Clip-Path Pill Navigation */}
+        <nav aria-label="Primary Navigation" className="hidden lg:flex items-center">
+          <AnimatedTabs
+            tabs={navItems}
+            activeTab={activeNavLabel}
+            onTabChange={(tab) => {
+              manualClickUntilRef.current = Date.now() + 900;
+              setActiveNavLabel(tab.label);
+            }}
+          />
         </nav>
 
         {/* Right Actions */}
@@ -120,21 +151,36 @@ export default function Header({
             className="lg:hidden mt-3 bg-white rounded-2xl p-3 shadow-xl border border-neutral-200"
           >
             <div className="flex flex-col gap-1">
-              {navItems.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold text-neutral-800 hover:bg-neutral-100 transition-colors"
-                >
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="text-xs font-mono text-neutral-400">
-                      {item.badge}
-                    </span>
-                  )}
-                </a>
-              ))}
+              {navItems.map((item) => {
+                const isActive = activeNavLabel === item.label;
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => {
+                      manualClickUntilRef.current = Date.now() + 900;
+                      setActiveNavLabel(item.label);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                      isActive
+                        ? "bg-[#111111] text-white"
+                        : "text-neutral-800 hover:bg-neutral-100"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {item.badge && (
+                      <span
+                        className={`text-xs font-mono ${
+                          isActive ? "text-zinc-300" : "text-neutral-400"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </a>
+                );
+              })}
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}

@@ -17,6 +17,14 @@ module.exports = {
         accentGreen: "#22c55e",
         background: "#FFFFFF",
         foreground: "#0A0A0C",
+        primary: {
+          DEFAULT: "#111111",
+          foreground: "#FFFFFF",
+        },
+        secondary: {
+          DEFAULT: "#F4F4F5",
+          foreground: "#111111",
+        },
         border: "#E5E7EB",
         muted: {
           DEFAULT: "#F4F4F5",

@@ -133,7 +133,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
         </div>
 
         {/* Aligned Flanking Side Copy (Left) & Social Links Stack (Right) */}
-        <div className="relative z-20 mt-8 md:mt-6 lg:-mt-44 grid grid-cols-1 md:grid-cols-12 items-end gap-8 pointer-events-none min-w-0">
+        <div className="relative z-20 mt-8 md:mt-6 xl:-mt-44 grid grid-cols-1 md:grid-cols-12 items-end gap-8 pointer-events-none min-w-0">
           {/* Left Side Info & CTAs */}
           <motion.div
             custom={0.2}
