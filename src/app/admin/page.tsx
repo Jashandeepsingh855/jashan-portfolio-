@@ -182,8 +182,7 @@ export default function AdminDashboardPage() {
       setContent(null);
       setSessionEmail("");
       setHasUnsavedChanges(false);
-      router.replace("/admin/login");
-      router.refresh();
+      window.location.replace("/admin/login");
     }
   };
 
