@@ -19,7 +19,7 @@ export interface ServiceItem {
 export const DEFAULT_SERVICES: ServiceItem[] = [
   {
     id: "01",
-    title: "SHORT-FORM RETENTION EDITING",
+    title: "Short-Form Retention Editing",
     description:
       "High-pacing viral cuts designed for Reels, TikTok, and Shorts to maximize hook rate and viewer retention.",
     image:
@@ -27,24 +27,24 @@ export const DEFAULT_SERVICES: ServiceItem[] = [
   },
   {
     id: "02",
-    title: "YOUTUBE STORYTELLING & ESSAYS",
+    title: "YouTube Storytelling & Essays",
     description:
-      "Long-form storytelling with dynamic b-roll integration, custom animations, and seamless narrative flow.",
+      "Long-form storytelling with dynamic B-roll integration, custom motion graphics, and seamless narrative flow.",
     image: "/covers/silicon-frontier.jpg",
   },
   {
     id: "03",
-    title: "CINEMATIC COLOR GRADING & ACES",
+    title: "Cinematic Color Grading & ACES",
     description:
-      "Professional color transform, skin tone correction, and custom look creation in DaVinci Resolve Studio.",
+      "Professional ACES color transform, skin tone accuracy, and custom film look creation in DaVinci Resolve Studio.",
     image:
       "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=1000&auto=format&fit=crop",
   },
   {
     id: "04",
-    title: "SOUND DESIGN & PUNCHY MIXING",
+    title: "Sound Design & Punchy Mixing",
     description:
-      "Immersive audio layering, riser impacts, voiceover equalization, and master-level sound treatment.",
+      "Immersive multi-layer foley, riser impacts, crisp voiceover mastering, and -14 LUFS loudness precision.",
     image:
       "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1000&auto=format&fit=crop",
   },
@@ -120,16 +120,16 @@ export function VerticalTabs({
       className="w-full bg-background border-t border-neutral-100 py-14 sm:py-20 lg:py-24 px-4 sm:px-8 md:px-12"
     >
       <div className="w-full mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-          {/* Left Column: Services Tabs */}
-          <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 pt-2">
-            <div className="space-y-1.5 mb-8">
-              <span className="text-[10px] font-mono font-medium text-muted-foreground uppercase tracking-[0.3em] block">
-                WHAT I DELIVER
-              </span>
-              <h2 className="tracking-tighter text-balance text-3xl font-extrabold md:text-4xl lg:text-5xl text-foreground uppercase">
-                /SERVICES
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+          {/* Left Column: Content */}
+          <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 pt-4">
+            <div className="space-y-1.5 mb-10 sm:mb-12">
+              <h2 className="tracking-tighter text-balance text-3xl font-medium md:text-4xl lg:text-5xl text-foreground">
+                How I can help you
               </h2>
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.3em] block ml-0.5">
+                (SERVICES)
+              </span>
             </div>
 
             <div className="flex flex-col space-y-0">
@@ -141,7 +141,7 @@ export function VerticalTabs({
                     type="button"
                     onClick={() => handleTabClick(index)}
                     className={cn(
-                      "group relative w-full flex items-start gap-4 pl-5 sm:pl-6 py-5 sm:py-6 md:py-7 text-left transition-all duration-500 border-t border-border/70 first:border-t-0",
+                      "group relative w-full flex items-start gap-4 pl-5 sm:pl-6 py-6 md:py-7 text-left transition-all duration-500 border-t border-border/50 first:border-t-0",
                       isActive
                         ? "text-foreground"
                         : "text-muted-foreground/60 hover:text-foreground"
@@ -164,14 +164,14 @@ export function VerticalTabs({
                       )}
                     </div>
 
-                    <span className="text-[10px] font-mono font-medium mt-1.5 tabular-nums opacity-60 shrink-0">
+                    <span className="text-[9px] md:text-[10px] font-medium mt-1.5 tabular-nums opacity-50 shrink-0">
                       /{service.id}
                     </span>
 
                     <div className="flex flex-col gap-2 flex-1 min-w-0">
                       <span
                         className={cn(
-                          "text-lg sm:text-xl lg:text-[21px] xl:text-[22px] font-bold tracking-tight transition-colors duration-500 uppercase",
+                          "text-xl sm:text-2xl lg:text-[26px] xl:text-[28px] font-normal tracking-tight transition-colors duration-500",
                           isActive ? "text-foreground" : ""
                         )}
                       >
@@ -190,7 +190,7 @@ export function VerticalTabs({
                             }}
                             className="overflow-hidden"
                           >
-                            <p className="text-muted-foreground text-sm md:text-base font-normal leading-relaxed max-w-md pb-1">
+                            <p className="text-muted-foreground text-sm md:text-base font-normal leading-relaxed max-w-sm pb-2">
                               {service.description}
                             </p>
                           </motion.div>
@@ -204,13 +204,13 @@ export function VerticalTabs({
           </div>
 
           {/* Right Column: Visual Preview Gallery */}
-          <div className="lg:col-span-7 flex flex-col justify-center h-full order-1 lg:order-2">
+          <div className="lg:col-span-7 flex flex-col justify-end h-full order-1 lg:order-2">
             <div
               className="relative group/gallery"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              <div className="relative aspect-[4/3] lg:aspect-[16/11] rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-900 border border-border/60 shadow-2xl">
+              <div className="relative aspect-[4/5] md:aspect-[4/3] lg:aspect-[16/11] rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-muted/30 border border-border/40">
                 <AnimatePresence
                   custom={direction}
                   initial={false}
@@ -243,18 +243,18 @@ export function VerticalTabs({
                       className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 !m-0 !p-0 block"
                     />
 
-                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
                   </motion.div>
                 </AnimatePresence>
 
-                <div className="absolute bottom-5 right-5 md:bottom-8 md:right-8 flex gap-2 md:gap-3 z-20">
+                <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 flex gap-2 md:gap-3 z-20">
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePrev();
                     }}
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 backdrop-blur-md border border-border/60 flex items-center justify-center text-foreground hover:bg-background transition-all active:scale-90 shadow-md"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center justify-center text-foreground hover:bg-background transition-all active:scale-90"
                     aria-label="Previous service"
                   >
                     <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
@@ -265,7 +265,7 @@ export function VerticalTabs({
                       e.stopPropagation();
                       handleNext();
                     }}
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/85 backdrop-blur-md border border-border/60 flex items-center justify-center text-foreground hover:bg-background transition-all active:scale-90 shadow-md"
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center justify-center text-foreground hover:bg-background transition-all active:scale-90"
                     aria-label="Next service"
                   >
                     <HugeiconsIcon icon={ArrowRight01Icon} size={20} />

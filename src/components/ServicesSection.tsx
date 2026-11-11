@@ -14,6 +14,13 @@ const SERVICE_IMAGE_BY_ID: Record<string, string> = {
   "sound-design-mixing": DEFAULT_SERVICES[3].image,
 };
 
+const SERVICE_TITLE_BY_RAW: Record<string, string> = {
+  "SHORT-FORM RETENTION EDITING": "Short-Form Retention Editing",
+  "YOUTUBE STORYTELLING & ESSAYS": "YouTube Storytelling & Essays",
+  "CINEMATIC COLOR GRADING & ACES": "Cinematic Color Grading & ACES",
+  "SOUND DESIGN & PUNCHY MIXING": "Sound Design & Punchy Mixing",
+};
+
 interface ServicesSectionProps {
   services: Service[];
 }
@@ -23,7 +30,7 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
     services.length > 0
       ? services.map((service, index) => ({
           id: service.number || String(index + 1).padStart(2, "0"),
-          title: service.title,
+          title: SERVICE_TITLE_BY_RAW[service.title] || service.title,
           description: service.description,
           image:
             service.image ||
