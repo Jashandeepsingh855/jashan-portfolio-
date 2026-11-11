@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, Lock, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import type { SiteSettings } from "@/lib/data";
 import { AnimatedTabs } from "@/components/ui/animated-tabs";
 
@@ -122,15 +121,6 @@ export default function Header({
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center gap-2 sm:gap-2.5 shrink-0"
         >
-          <Link
-            href="/admin"
-            aria-label="Open Studio Admin Portal"
-            title="Studio Admin"
-            className="hidden lg:inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-500 hover:text-black hover:border-neutral-300 transition-colors shadow-2xs"
-          >
-            <Lock className="w-3.5 h-3.5" />
-          </Link>
-
           <a
             href="#contact"
             className="group bg-[#111111] hover:bg-neutral-800 text-white px-3.5 sm:px-4 lg:px-5 py-2.5 text-xs font-semibold rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 whitespace-nowrap"
@@ -206,17 +196,6 @@ export default function Header({
                   </a>
                 );
               })}
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-mono text-neutral-500 hover:bg-neutral-100 hover:text-black border-t border-neutral-100 mt-1 pt-3"
-              >
-                <span className="flex items-center gap-2">
-                  <Lock className="w-3.5 h-3.5" />
-                  STUDIO ADMIN PORTAL
-                </span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
             </div>
           </motion.div>
         )}

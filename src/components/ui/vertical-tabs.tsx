@@ -54,11 +54,15 @@ const AUTO_PLAY_DURATION = 5000;
 
 interface VerticalTabsProps {
   id?: string;
+  eyebrow?: string;
+  heading?: string;
   services?: ServiceItem[];
 }
 
 export function VerticalTabs({
   id,
+  eyebrow = "WHAT I DELIVER",
+  heading = "/SERVICES",
   services = DEFAULT_SERVICES,
 }: VerticalTabsProps) {
   const items = services.length > 0 ? services : DEFAULT_SERVICES;
@@ -125,10 +129,10 @@ export function VerticalTabs({
           <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 pt-4">
             <div className="space-y-1.5 mb-8">
               <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.3em] block">
-                WHAT I DELIVER
+                {eyebrow}
               </span>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tighter text-foreground">
-                /SERVICES
+                {heading}
               </h2>
             </div>
 
@@ -210,7 +214,7 @@ export function VerticalTabs({
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              <div className="relative aspect-[4/5] md:aspect-[4/3] lg:aspect-[16/11] rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-950 border border-border/60 shadow-xl">
+              <div className="relative aspect-video w-full rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-950 border border-border/60 shadow-xl">
                 <AnimatePresence
                   custom={direction}
                   initial={false}

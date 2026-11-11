@@ -11,10 +11,10 @@ interface InquiriesPanelProps {
 }
 
 const STATUS_BADGE: Record<InquiryStatus, string> = {
-  new: "bg-accentGreen/15 text-accentGreen border-accentGreen/30",
-  reviewing: "bg-sky-500/15 text-sky-300 border-sky-400/30",
-  replied: "bg-white/15 text-zinc-200 border-white/25",
-  archived: "bg-zinc-800/80 text-zinc-400 border-zinc-700",
+  new: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  reviewing: "bg-sky-50 text-sky-700 border-sky-200",
+  replied: "bg-neutral-100 text-neutral-800 border-neutral-300",
+  archived: "bg-neutral-100 text-neutral-500 border-neutral-200",
 };
 
 export default function InquiriesPanel({
@@ -75,10 +75,13 @@ export default function InquiriesPanel({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-white">
+          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-neutral-500 mb-1">
+            CLIENT LEADS INBOX
+          </p>
+          <h2 className="text-xl font-extrabold uppercase tracking-tight text-neutral-950">
             Client Inquiries ({inquiries.length})
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5">
+          <p className="text-xs text-neutral-500 mt-0.5">
             Leads submitted through your public portfolio contact form.
           </p>
         </div>
@@ -92,8 +95,8 @@ export default function InquiriesPanel({
                 onClick={() => setFilter(st)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-mono uppercase transition-colors ${
                   filter === st
-                    ? "bg-white text-black font-bold"
-                    : "bg-white/5 text-zinc-400 hover:text-white"
+                    ? "bg-[#111111] text-white font-semibold"
+                    : "bg-neutral-100 text-neutral-600 hover:text-black hover:bg-neutral-200/70"
                 }`}
               >
                 {st}
@@ -104,9 +107,9 @@ export default function InquiriesPanel({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-3xl bg-[#101014] border border-white/10 p-10 text-center space-y-2">
-          <MessageSquare className="w-8 h-8 text-zinc-600 mx-auto" />
-          <p className="text-sm font-semibold text-zinc-300">
+        <div className="rounded-3xl bg-[#FAFAFB] border border-neutral-200 p-10 text-center space-y-2">
+          <MessageSquare className="w-8 h-8 text-neutral-400 mx-auto" />
+          <p className="text-sm font-semibold text-neutral-700">
             No inquiries matching this filter.
           </p>
         </div>
@@ -115,12 +118,12 @@ export default function InquiriesPanel({
           {filtered.map((inq) => (
             <div
               key={inq.id}
-              className="rounded-2xl bg-[#101014] border border-white/10 p-5 space-y-4"
+              className="rounded-3xl bg-white border border-neutral-200 p-5 sm:p-6 space-y-4 shadow-2xs"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="text-base font-bold text-white">
+                    <h4 className="text-base font-bold text-neutral-950">
                       {inq.name}
                     </h4>
                     <span
@@ -130,14 +133,14 @@ export default function InquiriesPanel({
                     >
                       {inq.status}
                     </span>
-                    <span className="text-xs font-mono text-zinc-500">
+                    <span className="text-xs font-mono text-neutral-400">
                       {new Date(inq.date).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-zinc-400">
+                  <div className="flex flex-wrap items-center gap-3 text-xs font-mono text-neutral-500">
                     <a
                       href={`mailto:${inq.email}`}
-                      className="inline-flex items-center gap-1 hover:text-white"
+                      className="inline-flex items-center gap-1 hover:text-black"
                     >
                       <Mail className="w-3 h-3" />
                       {inq.email}
@@ -157,7 +160,7 @@ export default function InquiriesPanel({
                         e.target.value as InquiryStatus
                       )
                     }
-                    className="rounded-xl bg-black/60 border border-white/15 px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-white"
+                    className="rounded-xl bg-[#FAFAFB] border border-neutral-200 px-3 py-1.5 text-xs font-mono text-neutral-900 focus:outline-none focus:border-black"
                   >
                     <option value="new">new</option>
                     <option value="reviewing">reviewing</option>
@@ -169,14 +172,14 @@ export default function InquiriesPanel({
                     type="button"
                     onClick={() => handleDelete(inq.id)}
                     title="Delete Inquiry"
-                    className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white transition-colors"
+                    className="p-2 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200/70 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
 
-              <p className="text-sm text-zinc-300 leading-relaxed bg-black/40 border border-white/[0.06] rounded-xl p-3.5">
+              <p className="text-sm text-neutral-700 leading-relaxed bg-[#FAFAFB] border border-neutral-200/70 rounded-2xl p-4">
                 {inq.message}
               </p>
             </div>

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import type { SiteSettings } from "@/lib/data";
 
 interface FooterProps {
@@ -54,13 +52,6 @@ export default function Footer({ siteSettings }: FooterProps) {
           <span>
             &copy; {siteSettings.year || "2025"} {siteSettings.name}
           </span>
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-1 text-neutral-600 hover:text-black transition-colors font-semibold"
-          >
-            <span>Admin</span>
-            <ArrowUpRight className="w-3 h-3" />
-          </Link>
         </div>
       </div>
     </footer>

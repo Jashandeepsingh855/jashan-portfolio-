@@ -1,6 +1,6 @@
 "use client";
 
-import type { Service } from "@/lib/data";
+import type { Service, ServicesSectionContent } from "@/lib/data";
 import {
   DEFAULT_SERVICES,
   VerticalTabs,
@@ -24,11 +24,13 @@ const SERVICE_TITLE_BY_RAW: Record<string, string> = {
 interface ServicesSectionProps {
   id?: string;
   services: Service[];
+  sectionContent?: ServicesSectionContent;
 }
 
 export default function ServicesSection({
   id,
   services,
+  sectionContent,
 }: ServicesSectionProps) {
   const mappedServices: ServiceItem[] =
     services.length > 0
@@ -43,5 +45,12 @@ export default function ServicesSection({
         }))
       : DEFAULT_SERVICES;
 
-  return <VerticalTabs id={id} services={mappedServices} />;
+  return (
+    <VerticalTabs
+      id={id}
+      eyebrow={sectionContent?.eyebrow}
+      heading={sectionContent?.heading}
+      services={mappedServices}
+    />
+  );
 }

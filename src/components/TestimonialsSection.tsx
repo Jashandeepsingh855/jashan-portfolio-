@@ -2,16 +2,18 @@
 
 import { motion } from "framer-motion";
 import { Quote, Star } from "lucide-react";
-import type { Testimonial } from "@/lib/data";
+import type { Testimonial, TestimonialsSectionContent } from "@/lib/data";
 
 interface TestimonialsSectionProps {
   id?: string;
   testimonials: Testimonial[];
+  sectionContent?: TestimonialsSectionContent;
 }
 
 export default function TestimonialsSection({
   id,
   testimonials,
+  sectionContent,
 }: TestimonialsSectionProps) {
   if (!testimonials || testimonials.length === 0) return null;
 
@@ -29,10 +31,10 @@ export default function TestimonialsSection({
           className="text-center mb-10 sm:mb-14"
         >
           <p className="text-xs font-mono uppercase tracking-[0.2em] text-neutral-400 mb-2">
-            / CLIENT VALIDATION
+            {sectionContent?.eyebrow || "/ CLIENT VALIDATION"}
           </p>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-neutral-950 tracking-tight uppercase">
-            DIRECTOR &amp; CREATOR REVIEWS
+            {sectionContent?.heading || "DIRECTOR & CREATOR REVIEWS"}
           </h2>
         </motion.div>
 

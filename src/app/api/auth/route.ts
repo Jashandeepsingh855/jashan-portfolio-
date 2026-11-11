@@ -11,8 +11,7 @@ export async function GET() {
   const session = await getAdminSession();
   return NextResponse.json({
     authenticated: session.isAdmin,
-    email: session.email,
-    defaultEmail: DEFAULT_ADMIN_EMAIL,
+    email: session.isAdmin ? session.email : null,
   });
 }
 

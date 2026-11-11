@@ -311,5 +311,24 @@
       "rating": 5,
       "quote": "Working with Jashandeep boosted our average view duration from 32% to over 54% within two months. He elevates storytelling without cheap gimmicks."
     }
-  ]
+  ],
+  "workSection": {
+    "eyebrow": "FEATURED PRODUCTIONS",
+    "heading": "/SELECTED WORK",
+    "watermark": "PORTFOLIO",
+    "ctaLabel": "Request Private Cut"
+  },
+  "servicesSection": {
+    "eyebrow": "WHAT I DELIVER",
+    "heading": "/SERVICES"
+  },
+  "testimonialsSection": {
+    "eyebrow": "/ CLIENT VALIDATION",
+    "heading": "DIRECTOR & CREATOR REVIEWS"
+  },
+  "contactSection": {
+    "heading": "HAVE A PROJECT IN MIND?",
+    "subheading": "Together, we can transform raw recordings into high-retention cinematic masterworks. Share your footage scope and timeline below.",
+    "ctaLabel": "Dispatch Project Inquiry"
+  }
 }

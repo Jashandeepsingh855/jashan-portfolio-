@@ -35,6 +35,10 @@ export async function middleware(request: NextRequest) {
   // Validates JWT claims and triggers token refresh when cookies near expiry.
   await supabase.auth.getClaims();
 
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
   return response;
 }
 

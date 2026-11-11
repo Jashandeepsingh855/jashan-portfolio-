@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, CheckCircle2, Mail, Send } from "lucide-react";
-import type { SiteSettings } from "@/lib/data";
+import type { ContactSectionContent, SiteSettings } from "@/lib/data";
 
 interface ContactSectionProps {
   id?: string;
   siteSettings: SiteSettings;
+  sectionContent?: ContactSectionContent;
 }
 
 export default function ContactSection({
   id,
   siteSettings,
+  sectionContent,
 }: ContactSectionProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -84,12 +86,12 @@ export default function ContactSection({
           </div>
 
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-neutral-950 tracking-tight uppercase max-w-3xl mx-auto">
-            HAVE A PROJECT IN MIND?
+            {sectionContent?.heading || "HAVE A PROJECT IN MIND?"}
           </h2>
 
           <p className="text-neutral-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Together, we can transform raw recordings into high-retention
-            cinematic masterworks. Share your footage scope and timeline below.
+            {sectionContent?.subheading ||
+              "Together, we can transform raw recordings into high-retention cinematic masterworks. Share your footage scope and timeline below."}
           </p>
         </div>
 
@@ -270,7 +272,7 @@ export default function ContactSection({
                 <span>
                   {status === "submitting"
                     ? "Sending Brief..."
-                    : "Dispatch Project Inquiry"}
+                    : sectionContent?.ctaLabel || "Dispatch Project Inquiry"}
                 </span>
               </button>
             </div>

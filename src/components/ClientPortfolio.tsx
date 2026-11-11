@@ -33,6 +33,7 @@ export default function ClientPortfolio({
       duration: project.duration,
       format: project.format,
       videoUrl: project.videoUrl,
+      projectUrl: project.projectUrl,
       thumbnail: project.thumbnail,
       description: project.description,
       tags: project.tags,
@@ -79,12 +80,16 @@ export default function ClientPortfolio({
             <WorkSection
               projects={initialContent.projects}
               categories={initialContent.categories}
+              sectionContent={initialContent.workSection}
               onSelectProject={handleOpenProject}
             />
           </StackedSection>
 
           <StackedSection anchorId="services" className="z-30 justify-center">
-            <ServicesSection services={initialContent.services} />
+            <ServicesSection
+              services={initialContent.services}
+              sectionContent={initialContent.servicesSection}
+            />
           </StackedSection>
 
           <StackedSection anchorId="experience" className="z-40 justify-center">
@@ -102,6 +107,7 @@ export default function ClientPortfolio({
             >
               <TestimonialsSection
                 testimonials={initialContent.testimonials}
+                sectionContent={initialContent.testimonialsSection}
               />
             </StackedSection>
           )}
@@ -110,7 +116,10 @@ export default function ClientPortfolio({
             anchorId="contact"
             className="z-[60] justify-between"
           >
-            <ContactSection siteSettings={initialContent.siteSettings} />
+            <ContactSection
+              siteSettings={initialContent.siteSettings}
+              sectionContent={initialContent.contactSection}
+            />
             <Footer siteSettings={initialContent.siteSettings} />
           </StackedSection>
         </main>

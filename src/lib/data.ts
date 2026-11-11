@@ -19,6 +19,7 @@ export interface Project {
   description: string;
   thumbnail: string;
   videoUrl: string;
+  projectUrl: string;
   featured: boolean;
   tags: string[];
   views: string;
@@ -158,6 +159,29 @@ export interface ProcessContent {
   steps: ProcessStep[];
 }
 
+export interface WorkSectionContent {
+  eyebrow: string;
+  heading: string;
+  watermark: string;
+  ctaLabel: string;
+}
+
+export interface ServicesSectionContent {
+  eyebrow: string;
+  heading: string;
+}
+
+export interface TestimonialsSectionContent {
+  eyebrow: string;
+  heading: string;
+}
+
+export interface ContactSectionContent {
+  heading: string;
+  subheading: string;
+  ctaLabel: string;
+}
+
 export interface PortfolioSettingsPayload {
   siteSettings: SiteSettings;
   hero: HeroContent;
@@ -166,6 +190,10 @@ export interface PortfolioSettingsPayload {
   about: AboutContent;
   process: ProcessContent;
   testimonials: Testimonial[];
+  workSection: WorkSectionContent;
+  servicesSection: ServicesSectionContent;
+  testimonialsSection: TestimonialsSectionContent;
+  contactSection: ContactSectionContent;
 }
 
 export interface PublicSiteContent extends PortfolioSettingsPayload {
@@ -184,6 +212,7 @@ interface DbProjectRow {
   duration?: string | null;
   thumbnail?: string | null;
   video?: string | null;
+  project_link?: string | null;
   client?: string | null;
   description?: string | null;
   display_order?: number | null;
@@ -229,6 +258,10 @@ export function getDefaultSettingsPayload(): PortfolioSettingsPayload {
     about: raw.about,
     process: raw.process,
     testimonials: raw.testimonials,
+    workSection: raw.workSection,
+    servicesSection: raw.servicesSection,
+    testimonialsSection: raw.testimonialsSection,
+    contactSection: raw.contactSection,
   });
 }
 
@@ -236,6 +269,7 @@ export function getDefaultProjects(): Project[] {
   const raw = defaultData as unknown as PublicSiteContent;
   return structuredClone(raw.projects).map((proj, index) => ({
     ...proj,
+    projectUrl: proj.projectUrl || "",
     aspectRatio: normalizeAspectRatio(proj.aspectRatio),
     tags: Array.isArray(proj.tags) ? proj.tags : [],
     order: typeof proj.order === "number" ? proj.order : index + 1,
@@ -301,6 +335,7 @@ export function mapDbProjectToProject(row: DbProjectRow): Project {
     description: row.description || "",
     thumbnail: row.thumbnail || "/covers/commercial-pulse.jpg",
     videoUrl: row.video || "",
+    projectUrl: row.project_link || "",
     featured: Boolean(row.is_featured),
     tags: Array.isArray(row.tags) ? row.tags : [],
     views: row.views || "",
@@ -325,6 +360,7 @@ export function mapProjectToDbPayload(
     duration: (project.duration || "01:30").trim(),
     thumbnail: (project.thumbnail || "/covers/commercial-pulse.jpg").trim(),
     video: (project.videoUrl || "").trim(),
+    project_link: (project.projectUrl || "").trim(),
     client: (project.client || "Client Studio").trim(),
     description: (project.description || "").trim(),
     display_order:
@@ -417,6 +453,22 @@ function mergeSettingsWithDefaults(
       Array.isArray(rawData.testimonials) && rawData.testimonials.length > 0
         ? rawData.testimonials
         : defaults.testimonials,
+    workSection: {
+      ...defaults.workSection,
+      ...(rawData.workSection || {}),
+    },
+    servicesSection: {
+      ...defaults.servicesSection,
+      ...(rawData.servicesSection || {}),
+    },
+    testimonialsSection: {
+      ...defaults.testimonialsSection,
+      ...(rawData.testimonialsSection || {}),
+    },
+    contactSection: {
+      ...defaults.contactSection,
+      ...(rawData.contactSection || {}),
+    },
   };
 }
 
@@ -626,6 +678,7 @@ export async function updateProject(
       duration: dbPayload.duration,
       thumbnail: dbPayload.thumbnail,
       video: dbPayload.video,
+      project_link: dbPayload.project_link,
       client: dbPayload.client,
       description: dbPayload.description,
       display_order: dbPayload.display_order,

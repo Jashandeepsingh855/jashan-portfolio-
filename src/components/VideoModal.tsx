@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Film, X } from "lucide-react";
+import { ArrowUpRight, Film, X } from "lucide-react";
 
 export interface VideoModalItem {
   title: string;
@@ -11,6 +11,7 @@ export interface VideoModalItem {
   duration: string;
   format?: string;
   videoUrl: string;
+  projectUrl?: string;
   thumbnail?: string;
   description?: string;
   tags?: string[];
@@ -150,7 +151,9 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
             </div>
 
             {/* Footer Info */}
-            {(video.description || (video.tags && video.tags.length > 0)) && (
+            {(video.description ||
+              (video.tags && video.tags.length > 0) ||
+              video.projectUrl) && (
               <div className="px-5 sm:px-6 py-4 bg-[#0f0f13] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 {video.description && (
                   <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl leading-relaxed">
@@ -162,7 +165,7 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
                   {(video.tags || []).map((tag) => (
                     <span
                       key={tag}
-                      className="glass-pill text-[11px] font-mono text-zinc-300 px-2.5 py-1 rounded-full"
+                      className="bg-white/10 border border-white/15 text-[11px] font-mono text-zinc-200 px-2.5 py-1 rounded-full"
                     >
                       {tag}
                     </span>
@@ -171,6 +174,17 @@ export default function VideoModal({ video, onClose }: VideoModalProps) {
                     <span className="text-xs font-mono text-accentGreen font-semibold ml-1">
                       {video.views}
                     </span>
+                  )}
+                  {video.projectUrl && (
+                    <a
+                      href={video.projectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-black text-[11px] font-semibold hover:bg-zinc-200 transition-colors ml-1"
+                    >
+                      <span>Project Link</span>
+                      <ArrowUpRight className="w-3 h-3" />
+                    </a>
                   )}
                 </div>
               </div>

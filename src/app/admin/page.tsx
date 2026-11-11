@@ -1,136 +1,225 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
-  Award,
-  Briefcase,
+  ArrowUpRight,
   CheckCircle2,
+  Eye,
+  EyeOff,
   Film,
-  Image as ImageIcon,
   Layers,
   Lock,
   LogOut,
-  MessageSquare,
-  Plus,
+  Mail,
+  MessageSquareQuote,
   RotateCcw,
   Save,
   Settings,
-  Shield,
-  Trash2,
-  Upload,
+  ShieldCheck,
+  Sliders,
 } from "lucide-react";
-import type { SiteContent } from "@/lib/data";
+import type { Inquiry, Project, SiteContent } from "@/lib/data";
 import ProjectsPanel from "@/components/admin/ProjectsPanel";
 import InquiriesPanel from "@/components/admin/InquiriesPanel";
+import {
+  HeroCmsTab,
+  ServicesCmsTab,
+  SettingsCmsTab,
+  TestimonialsCmsTab,
+} from "@/components/admin/CmsTabEditors";
 
 type AdminTab =
   | "projects"
-  | "inquiries"
   | "hero"
   | "services"
   | "testimonials"
+  | "inquiries"
   | "settings";
 
-export default function AdminPortalPage() {
-  const [authChecked, setAuthChecked] = useState(false);
+export default function AdminDashboardPage() {
+  const [authChecking, setAuthChecking] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
-  const [email, setEmail] = useState("admin@jashandeepsingh.film");
+
+  // Login gate state — never prefill credentials before authentication
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
 
+  // CMS state
   const [content, setContent] = useState<SiteContent | null>(null);
   const [loadingContent, setLoadingContent] = useState(false);
   const [savingGlobal, setSavingGlobal] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [uploadingAsset, setUploadingAsset] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<AdminTab>("projects");
-  const [toast, setToast] = useState<{
+  const [notice, setNotice] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
 
+  // Security password update state
   const [newPassword, setNewPassword] = useState("");
-  const [uploadingAsset, setUploadingAsset] = useState<string | null>(null);
 
   const notify = useCallback((type: "success" | "error", text: string) => {
-    setToast({ type, text });
-    setTimeout(() => {
-      setToast((prev) => (prev?.text === text ? null : prev));
-    }, 4500);
+    setNotice({ type, text });
   }, []);
 
-  const loadContent = useCallback(async () => {
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
+
+  const fetchContent = useCallback(async () => {
     setLoadingContent(true);
     try {
-      const res = await fetch("/api/content", { cache: "no-store" });
-      if (!res.ok) throw new Error("Failed to load studio content.");
-      const data = (await res.json()) as SiteContent;
-      setContent(data);
+      const [contentRes, inquiriesRes] = await Promise.all([
+        fetch("/api/content", { cache: "no-store" }),
+        fetch("/api/contact", { cache: "no-store" }),
+      ]);
+
+      if (contentRes.status === 401) {
+        setAuthenticated(false);
+        return;
+      }
+
+      const contentData = await contentRes.json();
+      if (!contentRes.ok) {
+        throw new Error(contentData.error || "Failed to load CMS content");
+      }
+
+      let loadedInquiries: Inquiry[] = Array.isArray(contentData.inquiries)
+        ? contentData.inquiries
+        : [];
+      if (inquiriesRes.ok) {
+        const inqData = await inquiriesRes.json();
+        if (Array.isArray(inqData.inquiries)) {
+          loadedInquiries = inqData.inquiries;
+        }
+      }
+
+      setContent({
+        ...contentData,
+        inquiries: loadedInquiries,
+      });
+      setHasUnsavedChanges(false);
     } catch (err) {
       notify(
         "error",
-        err instanceof Error ? err.message : "Could not load content."
+        err instanceof Error ? err.message : "Could not load CMS data."
       );
     } finally {
       setLoadingContent(false);
     }
   }, [notify]);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/auth", { cache: "no-store" });
-        const data = await res.json();
-        if (data.defaultEmail) setEmail(data.defaultEmail);
-        if (data.authenticated) {
-          setAuthenticated(true);
-          loadContent();
+  const checkSession = useCallback(async () => {
+    setAuthChecking(true);
+    try {
+      const res = await fetch("/api/auth", { cache: "no-store" });
+      const data = await res.json();
+      if (res.ok && data.authenticated) {
+        setAuthenticated(true);
+        if (typeof data.email === "string" && data.email) {
+          setEmail(data.email);
         }
-      } catch {
+        await fetchContent();
+      } else {
         setAuthenticated(false);
-      } finally {
-        setAuthChecked(true);
+        setEmail("");
       }
-    };
-    checkAuth();
-  }, [loadContent]);
+    } catch {
+      setAuthenticated(false);
+      setEmail("");
+    } finally {
+      setAuthChecking(false);
+    }
+  }, [fetchContent]);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthError("");
     setLoggingIn(true);
-    setLoginError("");
-
     try {
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "login", email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setLoginError(data.error || "Invalid credentials");
+        setAuthError(data.error || "Authentication failed.");
         return;
       }
-
       setAuthenticated(true);
       setPassword("");
-      await loadContent();
+      await fetchContent();
+      notify("success", "Signed in to Studio CMS.");
     } catch {
-      setLoginError("Unable to reach authentication service.");
+      setAuthError("Network error while verifying credentials.");
     } finally {
       setLoggingIn(false);
     }
   };
 
   const handleLogout = async () => {
-    await fetch("/api/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "logout" }),
-    });
-    setAuthenticated(false);
-    setContent(null);
+    try {
+      await fetch("/api/auth", { method: "DELETE" });
+    } finally {
+      setAuthenticated(false);
+      setContent(null);
+      setEmail("");
+      setPassword("");
+      setHasUnsavedChanges(false);
+    }
+  };
+
+  const handleContentDraftChange = useCallback((next: SiteContent) => {
+    setContent(next);
+    setHasUnsavedChanges(true);
+  }, []);
+
+  const handleMediaUpload = async (
+    file: File,
+    folder: string,
+    onDone: (url: string) => void
+  ) => {
+    setUploadingAsset(folder);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", folder);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
+      onDone(data.url);
+      setHasUnsavedChanges(true);
+      notify(
+        "success",
+        "Media uploaded to Supabase Storage. Click Save Site Changes to publish."
+      );
+    } catch (err) {
+      notify(
+        "error",
+        err instanceof Error ? err.message : "Could not upload asset."
+      );
+    } finally {
+      setUploadingAsset(null);
+    }
   };
 
   const handleSaveGlobalSettings = async () => {
@@ -144,6 +233,10 @@ export default function AdminPortalPage() {
           siteSettings: content.siteSettings,
           hero: content.hero,
           categories: content.categories,
+          workSection: content.workSection,
+          servicesSection: content.servicesSection,
+          testimonialsSection: content.testimonialsSection,
+          contactSection: content.contactSection,
           services: content.services,
           about: content.about,
           process: content.process,
@@ -151,17 +244,29 @@ export default function AdminPortalPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Save failed");
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to save site settings");
+      }
 
-      setContent(data.content);
+      setContent((prev) =>
+        prev
+          ? {
+              ...prev,
+              ...data.content,
+              projects: prev.projects,
+              inquiries: prev.inquiries,
+            }
+          : null
+      );
+      setHasUnsavedChanges(false);
       notify(
         "success",
-        "All portfolio settings saved to Supabase & live site updated."
+        "All CMS sections synced live to Supabase Postgres."
       );
     } catch (err) {
       notify(
         "error",
-        err instanceof Error ? err.message : "Failed to save site settings."
+        err instanceof Error ? err.message : "Could not save changes."
       );
     } finally {
       setSavingGlobal(false);
@@ -171,7 +276,7 @@ export default function AdminPortalPage() {
   const handleResetDefaults = async () => {
     if (
       !window.confirm(
-        "Reset portfolio settings and projects back to the default template?"
+        "Restore global site copy, services, and testimonials back to default presets? Portfolio projects and inquiries remain untouched."
       )
     ) {
       return;
@@ -181,13 +286,15 @@ export default function AdminPortalPage() {
     try {
       const res = await fetch("/api/content/reset", { method: "POST" });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Reset failed");
-      setContent(data.content);
-      notify("success", "Portfolio reset to factory template defaults.");
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to reset content");
+      }
+      await fetchContent();
+      notify("success", "Global CMS settings restored to studio defaults.");
     } catch (err) {
       notify(
         "error",
-        err instanceof Error ? err.message : "Failed to reset content."
+        err instanceof Error ? err.message : "Reset failed."
       );
     } finally {
       setSavingGlobal(false);
@@ -196,181 +303,242 @@ export default function AdminPortalPage() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPassword.trim()) return;
+    if (newPassword.trim().length < 6) {
+      notify("error", "New password must be at least 6 characters.");
+      return;
+    }
 
     try {
       const res = await fetch("/api/auth", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "change_password", newPassword }),
+        body: JSON.stringify({ password: newPassword.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update password");
-
+      if (!res.ok) {
+        throw new Error(data.error || "Could not update password");
+      }
       setNewPassword("");
-      notify("success", "Supabase Auth administrator password updated.");
+      notify("success", "Admin password updated in Supabase Auth.");
     } catch (err) {
       notify(
         "error",
-        err instanceof Error ? err.message : "Password update failed."
+        err instanceof Error ? err.message : "Could not update password."
       );
     }
   };
 
-  const uploadMedia = async (
-    file: File,
-    folder: string,
-    onDone: (url: string) => void
-  ) => {
-    setUploadingAsset(folder);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("folder", folder);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
-
-      onDone(data.url);
-      notify("success", `Uploaded ${file.name} to Supabase Storage.`);
-    } catch (err) {
-      notify(
-        "error",
-        err instanceof Error ? err.message : "Failed to upload asset."
-      );
-    } finally {
-      setUploadingAsset(null);
-    }
-  };
-
-  if (!authChecked) {
+  // Loading state during initial auth verification
+  if (authChecking) {
     return (
-      <div className="min-h-screen bg-[#050505] text-zinc-400 flex items-center justify-center font-mono text-xs uppercase tracking-widest">
-        Verifying Studio Session...
-      </div>
-    );
-  }
-
-  if (!authenticated) {
-    return (
-      <div className="min-h-screen bg-[#050505] text-[#f4f4f5] flex items-center justify-center p-4">
-        <div className="w-full max-w-md rounded-3xl bg-[#0e0e12] border border-white/10 p-7 sm:p-9 shadow-2xl space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-white text-black flex items-center justify-center">
-                <Lock className="w-4 h-4" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-white">Studio CMS</h1>
-                <p className="text-[11px] font-mono text-zinc-400">
-                  SUPABASE AUTH PROTECTED
-                </p>
-              </div>
-            </div>
-
-            <Link
-              href="/"
-              className="text-xs font-mono text-zinc-400 hover:text-white inline-flex items-center gap-1"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Site</span>
-            </Link>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                Admin Email
-              </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl bg-black/60 border border-white/15 px-4 py-3 text-sm text-white focus:outline-none focus:border-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                Password
-              </label>
-              <input
-                type="password"
-                required
-                autoFocus
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter studio password"
-                className="w-full rounded-xl bg-black/60 border border-white/15 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white"
-              />
-            </div>
-
-            {loginError && (
-              <p className="text-xs font-mono text-red-400">{loginError}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loggingIn}
-              className="w-full bg-white text-black font-bold text-xs uppercase tracking-wider py-3.5 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-60"
-            >
-              {loggingIn ? "Authenticating..." : "Unlock Admin Studio"}
-            </button>
-          </form>
+      <div className="min-h-screen bg-white text-neutral-950 flex flex-col items-center justify-center px-6">
+        <div className="rounded-3xl bg-[#FAFAFB] border border-neutral-200 px-8 py-7 flex flex-col items-center gap-3 shadow-2xs">
+          <div className="w-8 h-8 rounded-full border-2 border-neutral-200 border-t-black animate-spin" />
+          <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-neutral-500">
+            Verifying Studio Session
+          </p>
         </div>
       </div>
     );
   }
 
-  const tabs: { id: AdminTab; label: string; icon: typeof Film; badge?: number }[] = [
+  // Protected Login Gate — zero CMS data rendered or leaked prior to login
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen bg-white text-neutral-950 flex flex-col justify-between px-4 sm:px-8 py-8">
+        <header className="w-full max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-mono uppercase tracking-[0.22em] text-neutral-600">
+              Private Studio Portal
+            </span>
+          </div>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-[#FAFAFB] hover:border-neutral-400 px-4 py-2 text-xs font-medium text-neutral-800 transition-colors"
+          >
+            Back to Portfolio
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </header>
+
+        <main className="w-full max-w-md mx-auto my-12">
+          <div className="rounded-[2rem] bg-[#FAFAFB] border border-neutral-200/90 p-7 sm:p-9 shadow-sm space-y-7">
+            <div className="space-y-2.5">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#1A1A1D] text-white px-3.5 py-1.5 text-[10px] font-mono uppercase tracking-[0.22em]">
+                <Lock className="w-3 h-3 text-emerald-400" />
+                Supabase Auth Required
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tighter text-neutral-950 leading-none pt-1">
+                /STUDIO CMS
+              </h1>
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                Authorized admin sign-in required to edit portfolio projects,
+                video embeds, section headlines, and client inquiries.
+              </p>
+            </div>
+
+            {authError && (
+              <div
+                role="alert"
+                className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-xs font-medium text-red-700"
+              >
+                {authError}
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="admin-email"
+                  className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
+                >
+                  Admin Email
+                </label>
+                <input
+                  id="admin-email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter admin email"
+                  className="w-full rounded-xl bg-white border border-neutral-200 px-4 py-3 text-sm text-neutral-950 placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="admin-password"
+                  className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="admin-password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full rounded-xl bg-white border border-neutral-200 pl-4 pr-11 py-3 text-sm text-neutral-950 placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-neutral-400 hover:text-neutral-900 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loggingIn}
+                className="w-full mt-2 rounded-full bg-[#111111] hover:bg-neutral-800 disabled:opacity-60 text-white py-3.5 px-6 text-sm font-semibold tracking-wide transition-colors cursor-pointer"
+              >
+                {loggingIn ? "Verifying Session..." : "Unlock Studio CMS"}
+              </button>
+            </form>
+          </div>
+        </main>
+
+        <footer className="w-full max-w-6xl mx-auto flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.2em] text-neutral-400">
+          <span>Encrypted JWT Cookie</span>
+          <span>RLS Protected Database</span>
+        </footer>
+      </div>
+    );
+  }
+
+  const newInquiriesCount =
+    content?.inquiries.filter((inq) => inq.status === "new").length ?? 0;
+
+  const tabs: {
+    id: AdminTab;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    badge?: string | number;
+  }[] = [
     {
       id: "projects",
-      label: "Projects",
+      label: "Videos & Projects",
       icon: Film,
       badge: content?.projects.length,
     },
+    { id: "hero", label: "Hero & Metrics", icon: Sliders },
+    {
+      id: "services",
+      label: "Services & Process",
+      icon: Layers,
+      badge: content?.services.length,
+    },
+    {
+      id: "testimonials",
+      label: "Testimonials",
+      icon: MessageSquareQuote,
+      badge: content?.testimonials.length,
+    },
     {
       id: "inquiries",
-      label: "Inquiries",
-      icon: MessageSquare,
-      badge: content?.inquiries.filter((i) => i.status === "new").length,
+      label: "Client Inquiries",
+      icon: Mail,
+      badge: newInquiriesCount > 0 ? `${newInquiriesCount} new` : undefined,
     },
-    { id: "hero", label: "Hero & Showreel", icon: Layers },
-    { id: "services", label: "Services & Track", icon: Briefcase },
-    { id: "testimonials", label: "Reviews", icon: Award },
-    { id: "settings", label: "Settings & Auth", icon: Settings },
+    { id: "settings", label: "Contact & Security", icon: Settings },
   ];
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#f4f4f5]">
-      {/* Top Studio Bar */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#09090b]/90 backdrop-blur-xl px-4 sm:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-xs font-mono text-zinc-300"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>View Site</span>
-            </Link>
+    <div className="min-h-screen bg-white text-neutral-950">
+      {/* Top Studio Header Bar */}
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-neutral-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-3.5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <div>
-              <h1 className="text-sm sm:text-base font-bold text-white">
-                Studio CMS Portal
-              </h1>
-              <p className="text-[11px] font-mono text-zinc-500 hidden sm:block">
-                Connected to Supabase PostgreSQL · {email}
+              <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-neutral-500 leading-none mb-1">
+                SUPABASE DYNAMIC CONTENT MANAGEMENT
               </p>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-tighter text-neutral-950">
+                  /STUDIO CMS
+                </h1>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-emerald-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Postgres Live
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {hasUnsavedChanges && (
+              <span className="hidden md:inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-3 py-1.5 text-[11px] font-mono uppercase tracking-wider text-amber-800">
+                Unsaved Section Edits
+              </span>
+            )}
+
+            <Link
+              href="/"
+              target="_blank"
+              className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-800 transition-colors"
+            >
+              View Live Site
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+
             <button
               type="button"
               onClick={handleResetDefaults}
-              disabled={savingGlobal || !content}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-white/15 text-xs font-medium text-zinc-300 hover:text-white hover:border-white/30 disabled:opacity-50"
+              disabled={savingGlobal || loadingContent}
+              className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-[#FAFAFB] hover:border-neutral-400 disabled:opacity-50 px-4 py-2 text-xs font-medium text-neutral-700 transition-colors cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Reset Defaults</span>
@@ -380,39 +548,111 @@ export default function AdminPortalPage() {
               type="button"
               onClick={handleSaveGlobalSettings}
               disabled={savingGlobal || !content}
-              className="inline-flex items-center gap-1.5 bg-white text-black px-4 sm:px-5 py-2 rounded-full text-xs font-bold hover:bg-zinc-200 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-[#111111] hover:bg-neutral-800 disabled:opacity-50 text-white px-5 py-2 text-xs font-semibold tracking-wide transition-colors cursor-pointer"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>{savingGlobal ? "Saving..." : "Save Site Changes"}</span>
+              {savingGlobal ? "Saving..." : "Save Site Changes"}
             </button>
 
             <button
               type="button"
               onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-white hover:bg-red-50 hover:text-red-700 hover:border-red-200 px-3.5 py-2 text-xs font-medium text-neutral-600 transition-colors cursor-pointer"
               title="Sign Out"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-zinc-300"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed bottom-5 right-5 z-50 max-w-sm rounded-2xl px-4 py-3 text-xs font-medium shadow-2xl border flex items-center gap-2.5 bg-[#121216] border-white/15 text-white">
-          <CheckCircle2
-            className={`w-4 h-4 shrink-0 ${
-              toast.type === "success" ? "text-accentGreen" : "text-red-400"
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-6">
+        {/* Toast feedback banner */}
+        {notice && (
+          <div
+            role="status"
+            className={`rounded-2xl px-4 py-3 text-sm font-medium flex items-center justify-between gap-4 border ${
+              notice.type === "success"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+                : "bg-red-50 border-red-200 text-red-700"
             }`}
-          />
-          <span>{toast.text}</span>
-        </div>
-      )}
+          >
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{notice.text}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setNotice(null)}
+              className="text-xs font-mono uppercase opacity-70 hover:opacity-100"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 space-y-8">
-        {/* Tab Strip */}
-        <nav className="flex flex-wrap gap-2 pb-4 border-b border-white/10">
+        {/* Obsidian Studio Contrast Summary Pod */}
+        <section className="rounded-3xl bg-[#1A1A1D] text-white p-5 sm:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-400">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Authenticated Session{email ? ` · ${email}` : ""}
+            </div>
+            <p className="text-base sm:text-lg font-medium text-white">
+              Edit headings, portfolio videos, services, client reviews, and
+              contact copy without redeploying code.
+            </p>
+            <p className="text-xs text-neutral-400">
+              Video cards & inquiries update immediately in Postgres; section
+              copy & global settings save via{" "}
+              <span className="text-white font-medium">Save Site Changes</span>.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 shrink-0">
+            <div className="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                Projects
+              </p>
+              <p className="text-xl font-bold text-white mt-0.5">
+                {content?.projects.length ?? "—"}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                Services
+              </p>
+              <p className="text-xl font-bold text-white mt-0.5">
+                {content?.services.length ?? "—"}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                Reviews
+              </p>
+              <p className="text-xl font-bold text-white mt-0.5">
+                {content?.testimonials.length ?? "—"}
+              </p>
+            </div>
+            <div className="rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+              <p className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                Inquiries
+              </p>
+              <p className="text-xl font-bold text-emerald-400 mt-0.5">
+                {content
+                  ? `${newInquiriesCount} / ${content.inquiries.length}`
+                  : "—"}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Pill Tab Navigation matching WorkSection filter UI */}
+        <nav
+          aria-label="CMS Sections"
+          className="flex items-center gap-2 overflow-x-auto pb-1"
+        >
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
@@ -421,20 +661,20 @@ export default function AdminPortalPage() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-medium whitespace-nowrap transition-all cursor-pointer border ${
                   active
-                    ? "bg-white text-black"
-                    : "bg-[#111115] text-zinc-400 border border-white/10 hover:text-white"
+                    ? "bg-[#111111] text-white border-[#111111]"
+                    : "bg-[#FAFAFB] text-neutral-700 border-neutral-200 hover:border-neutral-400"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span>{tab.label}</span>
-                {typeof tab.badge === "number" && tab.badge > 0 && (
+                {tab.badge !== undefined && (
                   <span
-                    className={`font-mono text-[10px] px-1.5 py-0.2 rounded-full ${
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-mono ${
                       active
-                        ? "bg-black/15 text-black"
-                        : "bg-white/10 text-zinc-300"
+                        ? "bg-white/15 text-white"
+                        : "bg-neutral-200/80 text-neutral-700"
                     }`}
                   >
                     {tab.badge}
@@ -445,766 +685,88 @@ export default function AdminPortalPage() {
           })}
         </nav>
 
+        {/* Active CMS Panel */}
         {loadingContent || !content ? (
-          <div className="py-20 text-center text-xs font-mono uppercase tracking-widest text-zinc-500">
-            Loading portfolio data from Supabase...
+          <div className="rounded-3xl bg-[#FAFAFB] border border-neutral-200 p-12 text-center">
+            <div className="w-7 h-7 mx-auto rounded-full border-2 border-neutral-300 border-t-black animate-spin mb-3" />
+            <p className="text-xs font-mono uppercase tracking-[0.2em] text-neutral-500">
+              Loading Studio Content from Supabase...
+            </p>
           </div>
         ) : (
-          <>
+          <div className="pb-12">
             {activeTab === "projects" && (
               <ProjectsPanel
                 projects={content.projects}
                 categories={content.categories}
-                onProjectsChange={(projects) =>
-                  setContent({ ...content, projects })
+                workSection={content.workSection}
+                onProjectsChange={(projects: Project[]) =>
+                  setContent((prev) => (prev ? { ...prev, projects } : null))
                 }
+                onWorkMetaChange={(nextWorkSection, nextCategories) => {
+                  setContent((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          workSection: nextWorkSection,
+                          categories: nextCategories,
+                        }
+                      : null
+                  );
+                  setHasUnsavedChanges(true);
+                }}
                 onNotify={notify}
+              />
+            )}
+
+            {activeTab === "hero" && (
+              <HeroCmsTab
+                content={content}
+                onChange={handleContentDraftChange}
+                uploadingAsset={uploadingAsset}
+                uploadMedia={handleMediaUpload}
+              />
+            )}
+
+            {activeTab === "services" && (
+              <ServicesCmsTab
+                content={content}
+                onChange={handleContentDraftChange}
+                uploadingAsset={uploadingAsset}
+                uploadMedia={handleMediaUpload}
+              />
+            )}
+
+            {activeTab === "testimonials" && (
+              <TestimonialsCmsTab
+                content={content}
+                onChange={handleContentDraftChange}
               />
             )}
 
             {activeTab === "inquiries" && (
               <InquiriesPanel
                 inquiries={content.inquiries}
-                onInquiriesChange={(inquiries) =>
-                  setContent({ ...content, inquiries })
+                onInquiriesChange={(inquiries: Inquiry[]) =>
+                  setContent((prev) => (prev ? { ...prev, inquiries } : null))
                 }
                 onNotify={notify}
               />
             )}
 
-            {activeTab === "hero" && (
-              <div className="space-y-6">
-                <div className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-5">
-                  <h2 className="text-lg font-bold text-white">
-                    Hero Wordmark, Copy &amp; Portrait Cutout
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Background Outlined Wordmark
-                      </label>
-                      <input
-                        type="text"
-                        value={content.siteSettings.wordmark}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              wordmark: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Role Heading
-                      </label>
-                      <input
-                        type="text"
-                        value={content.siteSettings.role}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              role: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Hero Badge
-                      </label>
-                      <input
-                        type="text"
-                        value={content.hero.badge}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            hero: { ...content.hero, badge: e.target.value },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Portrait Cutout Image
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={content.hero.portraitImage}
-                          onChange={(e) =>
-                            setContent({
-                              ...content,
-                              hero: {
-                                ...content.hero,
-                                portraitImage: e.target.value,
-                              },
-                            })
-                          }
-                          className="flex-1 rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                        />
-                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">
-                          <ImageIcon className="w-3.5 h-3.5" />
-                          <span>
-                            {uploadingAsset === "portrait" ? "..." : "Upload"}
-                          </span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file)
-                                uploadMedia(file, "portrait", (url) =>
-                                  setContent((prev) =>
-                                    prev
-                                      ? {
-                                          ...prev,
-                                          hero: {
-                                            ...prev.hero,
-                                            portraitImage: url,
-                                          },
-                                        }
-                                      : prev
-                                  )
-                                );
-                            }}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                      Hero Bio / Mission Copy
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={content.hero.description}
-                      onChange={(e) =>
-                        setContent({
-                          ...content,
-                          hero: { ...content.hero, description: e.target.value },
-                        })
-                      }
-                      className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-5">
-                  <h2 className="text-lg font-bold text-white">
-                    Showreel Master &amp; Metrics
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Showreel Title
-                      </label>
-                      <input
-                        type="text"
-                        value={content.hero.showreelTitle}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            hero: {
-                              ...content.hero,
-                              showreelTitle: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Showreel Video URL
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={content.hero.showreelVideoUrl}
-                          onChange={(e) =>
-                            setContent({
-                              ...content,
-                              hero: {
-                                ...content.hero,
-                                showreelVideoUrl: e.target.value,
-                              },
-                            })
-                          }
-                          className="flex-1 rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                        />
-                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white">
-                          <Upload className="w-3.5 h-3.5" />
-                          <span>
-                            {uploadingAsset === "showreel" ? "..." : "Upload"}
-                          </span>
-                          <input
-                            type="file"
-                            accept="video/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file)
-                                uploadMedia(file, "showreel", (url) =>
-                                  setContent((prev) =>
-                                    prev
-                                      ? {
-                                          ...prev,
-                                          hero: {
-                                            ...prev.hero,
-                                            showreelVideoUrl: url,
-                                          },
-                                        }
-                                      : prev
-                                  )
-                                );
-                            }}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Showreel Cover Image
-                      </label>
-                      <input
-                        type="text"
-                        value={content.hero.showreelCoverImage}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            hero: {
-                              ...content.hero,
-                              showreelCoverImage: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Production Stack Tools (comma-separated)
-                      </label>
-                      <input
-                        type="text"
-                        value={content.hero.hardwarePipeline.join(", ")}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            hero: {
-                              ...content.hero,
-                              hardwarePipeline: e.target.value
-                                .split(",")
-                                .map((s) => s.trim())
-                                .filter(Boolean),
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-zinc-400">
-                    Remember to click &ldquo;Save Site Changes&rdquo; above to
-                    persist Hero edits.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "services" && (
-              <div className="space-y-8">
-                {/* Services Editor */}
-                <div className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-5">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-white">
-                      Services Offerings
-                    </h2>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setContent({
-                          ...content,
-                          services: [
-                            ...content.services,
-                            {
-                              id: `service-${Date.now()}`,
-                              number: `0${content.services.length + 1}`,
-                              badge: `0${content.services.length + 1} / SERVICE`,
-                              title: "NEW POST-PRODUCTION SERVICE",
-                              description: "Describe deliverables and pacing.",
-                              deliverables: ["4K Delivery", "Color Pass"],
-                              turnaround: "Turnaround: 48h",
-                            },
-                          ],
-                        })
-                      }
-                      className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-semibold"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Service</span>
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {content.services.map((svc, idx) => (
-                      <div
-                        key={svc.id}
-                        className="rounded-2xl bg-black/40 border border-white/10 p-4 space-y-3"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                          <input
-                            type="text"
-                            value={svc.title}
-                            onChange={(e) => {
-                              const next = [...content.services];
-                              next[idx] = { ...svc, title: e.target.value };
-                              setContent({ ...content, services: next });
-                            }}
-                            placeholder="Service Title"
-                            className="md:col-span-2 rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                          />
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={svc.turnaround}
-                              onChange={(e) => {
-                                const next = [...content.services];
-                                next[idx] = {
-                                  ...svc,
-                                  turnaround: e.target.value,
-                                };
-                                setContent({ ...content, services: next });
-                              }}
-                              placeholder="Turnaround: 48h"
-                              className="flex-1 rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                            />
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setContent({
-                                  ...content,
-                                  services: content.services.filter(
-                                    (s) => s.id !== svc.id
-                                  ),
-                                })
-                              }
-                              className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        <textarea
-                          rows={2}
-                          value={svc.description}
-                          onChange={(e) => {
-                            const next = [...content.services];
-                            next[idx] = { ...svc, description: e.target.value };
-                            setContent({ ...content, services: next });
-                          }}
-                          className="w-full rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-xs text-zinc-200"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Track Record Experience Rows */}
-                <div className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-5">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-white">
-                      Experience Track Record
-                    </h2>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setContent({
-                          ...content,
-                          process: {
-                            ...content.process,
-                            experiences: [
-                              {
-                                company: "New Studio / Agency",
-                                role: "Senior Video Editor",
-                                period: "2025 — Present",
-                              },
-                              ...content.process.experiences,
-                            ],
-                          },
-                        })
-                      }
-                      className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-semibold"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Role</span>
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {content.process.experiences.map((exp, idx) => (
-                      <div
-                        key={idx}
-                        className="grid grid-cols-1 md:grid-cols-12 gap-3 rounded-2xl bg-black/40 border border-white/10 p-3.5 items-center"
-                      >
-                        <input
-                          type="text"
-                          value={exp.company}
-                          onChange={(e) => {
-                            const next = [...content.process.experiences];
-                            next[idx] = { ...exp, company: e.target.value };
-                            setContent({
-                              ...content,
-                              process: { ...content.process, experiences: next },
-                            });
-                          }}
-                          placeholder="Company"
-                          className="md:col-span-4 rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                        />
-                        <input
-                          type="text"
-                          value={exp.role}
-                          onChange={(e) => {
-                            const next = [...content.process.experiences];
-                            next[idx] = { ...exp, role: e.target.value };
-                            setContent({
-                              ...content,
-                              process: { ...content.process, experiences: next },
-                            });
-                          }}
-                          placeholder="Role"
-                          className="md:col-span-5 rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                        />
-                        <div className="md:col-span-3 flex gap-2">
-                          <input
-                            type="text"
-                            value={exp.period}
-                            onChange={(e) => {
-                              const next = [...content.process.experiences];
-                              next[idx] = { ...exp, period: e.target.value };
-                              setContent({
-                                ...content,
-                                process: {
-                                  ...content.process,
-                                  experiences: next,
-                                },
-                              });
-                            }}
-                            placeholder="Jan 2023 — Present"
-                            className="flex-1 rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-xs font-mono text-white"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setContent({
-                                ...content,
-                                process: {
-                                  ...content.process,
-                                  experiences:
-                                    content.process.experiences.filter(
-                                      (_, i) => i !== idx
-                                    ),
-                                },
-                              })
-                            }
-                            className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === "testimonials" && (
-              <div className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-5">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-white">
-                    Client Testimonials
-                  </h2>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setContent({
-                        ...content,
-                        testimonials: [
-                          ...content.testimonials,
-                          {
-                            id: `t-${Date.now()}`,
-                            author: "Client Name",
-                            role: "Creative Director",
-                            company: "Studio",
-                            rating: 5,
-                            quote: "Exceptional turnaround and retention impact.",
-                          },
-                        ],
-                      })
-                    }
-                    className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-xs font-semibold"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Testimonial</span>
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {content.testimonials.map((t, idx) => (
-                    <div
-                      key={t.id}
-                      className="rounded-2xl bg-black/40 border border-white/10 p-4 space-y-3"
-                    >
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <input
-                          type="text"
-                          value={t.author}
-                          onChange={(e) => {
-                            const next = [...content.testimonials];
-                            next[idx] = { ...t, author: e.target.value };
-                            setContent({ ...content, testimonials: next });
-                          }}
-                          placeholder="Author"
-                          className="rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                        />
-                        <input
-                          type="text"
-                          value={t.role}
-                          onChange={(e) => {
-                            const next = [...content.testimonials];
-                            next[idx] = { ...t, role: e.target.value };
-                            setContent({ ...content, testimonials: next });
-                          }}
-                          placeholder="Role"
-                          className="rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                        />
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={t.company}
-                            onChange={(e) => {
-                              const next = [...content.testimonials];
-                              next[idx] = { ...t, company: e.target.value };
-                              setContent({ ...content, testimonials: next });
-                            }}
-                            placeholder="Company"
-                            className="flex-1 rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-sm text-white"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setContent({
-                                ...content,
-                                testimonials: content.testimonials.filter(
-                                  (item) => item.id !== t.id
-                                ),
-                              })
-                            }
-                            className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                      <textarea
-                        rows={2}
-                        value={t.quote}
-                        onChange={(e) => {
-                          const next = [...content.testimonials];
-                          next[idx] = { ...t, quote: e.target.value };
-                          setContent({ ...content, testimonials: next });
-                        }}
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3 py-2 text-xs text-zinc-200"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {activeTab === "settings" && (
-              <div className="space-y-6">
-                <div className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-4">
-                  <h2 className="text-lg font-bold text-white">
-                    Global Contact &amp; Availability
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Header Availability Pill
-                      </label>
-                      <input
-                        type="text"
-                        value={content.siteSettings.availabilityStatus}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              availabilityStatus: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Contact Card Availability Subtext
-                      </label>
-                      <input
-                        type="text"
-                        value={content.siteSettings.availabilitySubtext}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              availabilitySubtext: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Public Studio Email
-                      </label>
-                      <input
-                        type="email"
-                        value={content.siteSettings.email}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              email: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Calendar / Booking URL
-                      </label>
-                      <input
-                        type="url"
-                        value={content.siteSettings.calendarLink}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              calendarLink: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        YouTube URL
-                      </label>
-                      <input
-                        type="url"
-                        value={content.siteSettings.socials.youtube || ""}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              socials: {
-                                ...content.siteSettings.socials,
-                                youtube: e.target.value,
-                              },
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase text-zinc-400 mb-1.5">
-                        Instagram URL
-                      </label>
-                      <input
-                        type="url"
-                        value={content.siteSettings.socials.instagram || ""}
-                        onChange={(e) =>
-                          setContent({
-                            ...content,
-                            siteSettings: {
-                              ...content.siteSettings,
-                              socials: {
-                                ...content.siteSettings.socials,
-                                instagram: e.target.value,
-                              },
-                            },
-                          })
-                        }
-                        className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <form
-                  onSubmit={handleChangePassword}
-                  className="rounded-3xl bg-[#101014] border border-white/10 p-6 space-y-4"
-                >
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-accentGreen" />
-                    <h2 className="text-lg font-bold text-white">
-                      Supabase Auth Security
-                    </h2>
-                  </div>
-                  <p className="text-xs text-zinc-400">
-                    Update the administrator login password for{" "}
-                    <span className="font-mono text-zinc-200">{email}</span>.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3 max-w-md">
-                    <input
-                      type="password"
-                      minLength={6}
-                      required
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="New password (min 6 chars)"
-                      className="flex-1 rounded-xl bg-black/60 border border-white/15 px-3.5 py-2.5 text-sm text-white"
-                    />
-                    <button
-                      type="submit"
-                      className="bg-white text-black px-5 py-2.5 rounded-full text-xs font-bold hover:bg-zinc-200"
-                    >
-                      Update Password
-                    </button>
-                  </div>
-                </form>
-              </div>
+              <SettingsCmsTab
+                content={content}
+                onChange={handleContentDraftChange}
+                email={email}
+                newPassword={newPassword}
+                onNewPasswordChange={setNewPassword}
+                onChangePassword={handleChangePassword}
+              />
             )}
-          </>
+          </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
