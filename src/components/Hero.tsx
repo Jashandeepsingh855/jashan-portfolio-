@@ -77,13 +77,13 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
   return (
     <section className="relative pt-4 sm:pt-8 md:pt-10 pb-14 sm:pb-20 px-4 sm:px-8 md:px-12 overflow-hidden bg-white">
       <div className="relative">
-        {/* Continuous Unbroken Outlined Wordmark + Centered Cutout Portrait */}
-        <div className="relative w-full max-w-full overflow-hidden flex flex-col items-center justify-center min-w-0">
+        {/* Continuous Unbroken Outlined Wordmark + Centered Cutout Portrait with Animated Circle */}
+        <div className="relative w-full max-w-full overflow-hidden flex flex-col items-center justify-center min-w-0 pt-2 sm:pt-4">
           <motion.h1
             initial={{ opacity: 0, y: 16, scale: 0.985 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="text-outline font-sans font-extrabold uppercase select-none pointer-events-none whitespace-nowrap text-center z-0 leading-[0.9] tracking-[0.02em]"
+            className="text-outline font-sans font-extrabold uppercase select-none pointer-events-none whitespace-nowrap text-center z-[5] leading-[0.9] tracking-[0.02em]"
             style={{
               fontSize: "clamp(1.85rem, 8.6vw, 7.6rem)",
             }}
@@ -91,29 +91,49 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
             {wordmark}
           </motion.h1>
 
-          {/* Centered Transparent Cutout Portrait Overlapping Wordmark */}
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{
-              duration: 0.85,
-              delay: 0.1,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="relative z-10 -mt-5 sm:-mt-8 md:-mt-12 lg:-mt-16 flex flex-col items-center pointer-events-none max-w-full"
-          >
-            <div className="relative w-[225px] sm:w-[285px] md:w-[325px] lg:w-[375px] flex justify-center">
-              <img
+          {/* Centered Bigger Cutout Portrait + Scaling Backdrop Circle */}
+          <div className="relative -mt-5 sm:-mt-8 md:-mt-12 lg:-mt-16 flex flex-col items-center pointer-events-none max-w-full">
+            <div className="relative w-[285px] sm:w-[355px] md:w-[410px] lg:w-[465px] xl:w-[500px] flex justify-center items-end pt-3 sm:pt-4">
+              {/* Animated Circular Backdrop (MinimalistHero scale-in) */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: 0.2,
+                }}
+                className="absolute z-0 bottom-0 h-[245px] w-[245px] sm:h-[330px] sm:w-[330px] md:h-[395px] md:w-[395px] lg:h-[440px] lg:w-[440px] xl:h-[470px] xl:w-[470px] rounded-full bg-yellow-400/90"
+              />
+
+              <motion.img
                 src={hero.portraitImage || "/portrait-cutout.png"}
                 alt={`${siteSettings.name} — ${siteSettings.role}`}
-                className="w-full h-auto max-h-[300px] sm:max-h-[360px] lg:max-h-[410px] object-contain object-bottom drop-shadow-[0_18px_28px_rgba(0,0,0,0.08)]"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 1,
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: 0.4,
+                }}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.onerror = null;
+                  target.src = "/portrait-cutout.png";
+                }}
+                className="relative z-10 w-full h-auto max-h-[340px] sm:max-h-[405px] md:max-h-[450px] lg:max-h-[490px] xl:max-h-[520px] object-contain object-bottom drop-shadow-[0_18px_28px_rgba(0,0,0,0.08)]"
               />
               {/* Subtle Baseline Feather tucked under Telemetry Pill */}
-              <div className="absolute inset-x-0 bottom-0 h-3 sm:h-3.5 bg-gradient-to-t from-white to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 z-10 h-3 sm:h-4 bg-gradient-to-t from-white to-transparent" />
             </div>
 
             {/* Subtle Telemetry Pill Anchored cleanly below Portrait Bust */}
-            <div className="pointer-events-auto -mt-3 sm:-mt-4 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full px-3.5 sm:px-4 py-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 shadow-sm border border-neutral-200 max-w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto relative z-20 -mt-3 sm:-mt-4 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full px-3.5 sm:px-4 py-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 shadow-sm border border-neutral-200 max-w-full"
+            >
               <span className="flex items-center gap-1.5 text-center">
                 <Film className="w-3.5 h-3.5 text-neutral-700 shrink-0" />
                 <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-neutral-500">
@@ -128,12 +148,12 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
                   {hero.portraitStatBadge}
                 </span>
               )}
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
 
         {/* Aligned Flanking Side Copy (Left) & Social Links Stack (Right) */}
-        <div className="relative z-20 mt-8 md:mt-6 xl:-mt-44 grid grid-cols-1 md:grid-cols-12 items-end gap-8 pointer-events-none min-w-0">
+        <div className="relative z-20 mt-8 md:mt-6 xl:-mt-16 min-[1400px]:-mt-24 2xl:-mt-32 grid grid-cols-1 md:grid-cols-12 items-end gap-8 pointer-events-none min-w-0">
           {/* Left Side Info & CTAs */}
           <motion.div
             custom={0.2}
@@ -148,10 +168,10 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-950 leading-tight">
+              <h2 className="text-2xl sm:text-3xl xl:text-[26px] min-[1400px]:text-3xl font-bold tracking-tight text-neutral-950 leading-tight">
                 {siteSettings.role || hero.headline}
               </h2>
-              <p className="text-neutral-500 text-sm leading-relaxed max-w-md mx-auto md:mx-0">
+              <p className="text-neutral-500 text-sm leading-relaxed max-w-[340px] mx-auto md:mx-0">
                 {hero.description}
               </p>
             </div>

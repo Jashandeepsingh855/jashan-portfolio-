@@ -81,8 +81,11 @@ export default function Header({
     >
       <div className="flex items-center justify-between gap-2 sm:gap-3">
         {/* Availability Status Pill */}
-        <a
+        <motion.a
           href="#contact"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="glass-pill rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[195px] md:max-w-[175px] lg:max-w-none shrink-0"
         >
           <span className="relative flex h-2.5 w-2.5 shrink-0">
@@ -92,10 +95,16 @@ export default function Header({
           <span className="text-[11px] sm:text-xs font-medium tracking-tight text-neutral-800 truncate">
             {siteSettings.availabilityStatus}
           </span>
-        </a>
+        </motion.a>
 
         {/* Center Animated Clip-Path Pill Navigation */}
-        <nav aria-label="Primary Navigation" className="hidden md:flex items-center">
+        <motion.nav
+          aria-label="Primary Navigation"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          className="hidden md:flex items-center"
+        >
           <AnimatedTabs
             tabs={navItems}
             activeTab={activeNavLabel}
@@ -104,10 +113,15 @@ export default function Header({
               setActiveNavLabel(tab.label);
             }}
           />
-        </nav>
+        </motion.nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-2 sm:gap-2.5 shrink-0"
+        >
           <Link
             href="/admin"
             aria-label="Open Studio Admin Portal"
@@ -137,7 +151,7 @@ export default function Header({
               <Menu className="w-4 h-4" />
             )}
           </button>
-        </div>
+        </motion.div>
       </div>
 
       {/* Mobile / Tablet Drawer */}
