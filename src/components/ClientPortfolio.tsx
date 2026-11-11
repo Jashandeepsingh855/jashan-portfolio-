@@ -1,143 +1,100 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { SiteContent, Project } from "@/lib/data";
+import { useState } from "react";
+import { MotionConfig } from "framer-motion";
+import type { Project, PublicSiteContent } from "@/lib/data";
 import Header from "./Header";
 import Hero from "./Hero";
 import WorkSection from "./WorkSection";
 import ServicesSection from "./ServicesSection";
-import AboutSection from "./AboutSection";
 import ProcessSection from "./ProcessSection";
 import TestimonialsSection from "./TestimonialsSection";
 import ContactSection from "./ContactSection";
 import Footer from "./Footer";
-import VideoModal from "./VideoModal";
+import VideoModal, { type VideoModalItem } from "./VideoModal";
 
 interface ClientPortfolioProps {
-  initialContent: SiteContent;
+  initialContent: PublicSiteContent;
 }
 
-export default function ClientPortfolio({ initialContent }: ClientPortfolioProps) {
-  const [content, setContent] = useState<SiteContent>(initialContent);
-
-  useEffect(() => {
-    fetch("/api/content")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.projects) {
-          setContent(data);
-        }
-      })
-      .catch((err) => console.log("Using cached content:", err));
-  }, []);
-  const [activeVideo, setActiveVideo] = useState<{
-    isOpen: boolean;
-    title: string;
-    category?: string;
-    client?: string;
-    description?: string;
-    videoUrl: string;
-  }>({
-    isOpen: false,
-    title: "",
-    category: "",
-    client: "",
-    description: "",
-    videoUrl: "",
-  });
-
-  const handleOpenShowreel = () => {
-    setActiveVideo({
-      isOpen: true,
-      title: content.hero.showreelTitle || "2025 SHOWREEL // SELECTED WORKS",
-      category: "MASTER SHOWREEL",
-      client: "DIRECTOR'S CUT",
-      description: content.hero.description,
-      videoUrl: content.hero.showreelVideoUrl,
-    });
-  };
+export default function ClientPortfolio({
+  initialContent,
+}: ClientPortfolioProps) {
+  const [selectedVideo, setSelectedVideo] = useState<VideoModalItem | null>(
+    null
+  );
 
   const handleOpenProject = (project: Project) => {
-    setActiveVideo({
-      isOpen: true,
+    setSelectedVideo({
       title: project.title,
-      category: project.category,
       client: project.client,
-      description: project.description,
+      category: project.category,
+      duration: project.duration,
+      format: project.format,
       videoUrl: project.videoUrl,
+      thumbnail: project.thumbnail,
+      description: project.description,
+      tags: project.tags,
+      views: project.views,
     });
   };
 
-  const handleCloseVideo = () => {
-    setActiveVideo((prev) => ({ ...prev, isOpen: false }));
+  const handlePlayShowreel = () => {
+    setSelectedVideo({
+      title: initialContent.hero.showreelTitle || "Official Showreel",
+      client: initialContent.siteSettings.name,
+      category: "MASTER SHOWREEL",
+      duration: initialContent.hero.showreelTc || "02:48",
+      format: initialContent.hero.showreelFormat || "4K PRORES",
+      videoUrl: initialContent.hero.showreelVideoUrl,
+      thumbnail: initialContent.hero.showreelCoverImage,
+      description: initialContent.hero.description,
+      tags: initialContent.hero.hardwarePipeline.slice(0, 3),
+    });
   };
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface flex flex-col selection:bg-accent selection:text-white">
-      {/* Navigation Header */}
-      <Header
-        name={content.siteSettings.name}
-        role={content.siteSettings.role}
-        year={content.siteSettings.year}
-      />
-
-      {/* Main Content Area */}
-      <main className="flex-1">
-        {/* Hero Section */}
-        <Hero
-          siteSettings={content.siteSettings}
-          hero={content.hero}
-          onPlayShowreel={handleOpenShowreel}
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen w-full overflow-x-clip bg-[#050505] text-[#f4f4f5] flex flex-col">
+        <Header
+          siteSettings={initialContent.siteSettings}
+          projectCount={initialContent.projects.length}
+          serviceCount={initialContent.services.length}
         />
 
-        {/* My Work Section */}
-        <WorkSection
-          categories={content.categories}
-          projects={content.projects}
-          onPlayProject={handleOpenProject}
+        <main className="flex-1">
+          <Hero
+            hero={initialContent.hero}
+            siteSettings={initialContent.siteSettings}
+            onPlayShowreel={handlePlayShowreel}
+          />
+
+          <WorkSection
+            projects={initialContent.projects}
+            categories={initialContent.categories}
+            onSelectProject={handleOpenProject}
+          />
+
+          <ServicesSection services={initialContent.services} />
+
+          <ProcessSection
+            process={initialContent.process}
+            about={initialContent.about}
+            hero={initialContent.hero}
+          />
+
+          <TestimonialsSection testimonials={initialContent.testimonials} />
+
+          <ContactSection siteSettings={initialContent.siteSettings} />
+        </main>
+
+        <Footer siteSettings={initialContent.siteSettings} />
+
+        <VideoModal
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
         />
-
-        {/* Capabilities & Services Section */}
-        <ServicesSection services={content.services} />
-
-        {/* About & Studio Pipeline Section */}
-        <AboutSection
-          about={content.about}
-          name={content.siteSettings.name}
-          location={content.siteSettings.location}
-        />
-
-        {/* 5-Stage Process Section */}
-        <ProcessSection process={content.process} />
-
-        {/* Testimonials & Reviews Section */}
-        <TestimonialsSection testimonials={content.testimonials} />
-
-        {/* Contact & Inquiries Section */}
-        <ContactSection
-          siteSettings={content.siteSettings}
-          services={content.services}
-        />
-      </main>
-
-      {/* Footer */}
-      <Footer
-        name={content.siteSettings.name}
-        role={content.siteSettings.role}
-        year={content.siteSettings.year}
-        footerNote={content.siteSettings.footerNote}
-      />
-
-      {/* Global Cinematic Video Modal */}
-      <VideoModal
-        isOpen={activeVideo.isOpen}
-        onClose={handleCloseVideo}
-        title={activeVideo.title}
-        category={activeVideo.category}
-        client={activeVideo.client}
-        description={activeVideo.description}
-        videoUrl={activeVideo.videoUrl}
-      />
-    </div>
+      </div>
+    </MotionConfig>
   );
 }

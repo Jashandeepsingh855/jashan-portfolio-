@@ -1,18 +1,24 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
-import { resetToDefault } from "@/lib/data";
+import { resetToDefaultContent } from "@/lib/data";
 
 export async function POST() {
-  try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const isAdmin = await verifyAdminSession();
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    const restored = resetToDefault();
-    return NextResponse.json({ success: true, message: "Restored to default Stitch design", data: restored });
+  try {
+    const resetContent = await resetToDefaultContent();
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return NextResponse.json({ success: true, content: resetContent });
   } catch (error) {
-    console.error("Reset error:", error);
-    return NextResponse.json({ error: "Failed to reset data" }, { status: 500 });
+    console.error("Failed to reset content:", error);
+    return NextResponse.json(
+      { error: "Failed to reset portfolio content" },
+      { status: 500 }
+    );
   }
 }

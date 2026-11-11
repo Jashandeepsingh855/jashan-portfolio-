@@ -1,93 +1,148 @@
 "use client";
 
-import React from "react";
-import { Service } from "@/lib/data";
-import { ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Check, Plus } from "lucide-react";
+import type { Service } from "@/lib/data";
 
 interface ServicesSectionProps {
   services: Service[];
 }
 
 export default function ServicesSection({ services }: ServicesSectionProps) {
+  const [expandedId, setExpandedId] = useState<string>(
+    services[0]?.id || "short-form-retention"
+  );
+
   return (
-    <section className="w-full bg-surface py-24" id="services">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between pb-12 mb-12 gap-6 border-b border-border-subtle">
-          <div>
-            <div className="font-mono text-xs uppercase tracking-widest text-accent font-bold mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent"></span>
-              02 // CAPABILITIES & SERVICES
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-extrabold uppercase text-on-surface tracking-tight">
-              From the first cut to the final frame.
-            </h2>
-          </div>
-          <p className="text-on-surface-muted max-w-md text-base leading-relaxed">
-            Full-service post-production capabilities scaled for commercial agencies, independent directors, and digital-first brands.
+    <section
+      id="services"
+      className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10 bg-[#050505]"
+    >
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-12"
+        >
+          <p className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-400 mb-2">
+            / SERVICES
           </p>
-        </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight uppercase">
+            WHAT I DELIVER
+          </h2>
+        </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, idx) => (
-            <div
-              key={service.id || idx}
-              className="bg-surface-pure p-8 rounded-3xl border border-border-subtle flex flex-col justify-between shadow-sm hover:shadow-xl hover:border-accent/40 transition-all duration-300 group"
-            >
-              <div>
-                {/* Header row */}
-                <div className="flex items-center justify-between pb-6 border-b border-border-subtle">
-                  <span className="font-mono text-lg font-bold text-accent">
-                    {service.number || `0${idx + 1}`}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md bg-surface-muted text-on-surface-muted group-hover:text-accent group-hover:bg-accent-glow transition-colors">
-                    {service.badge || "CAPABILITY"}
-                  </span>
-                </div>
+        <div className="space-y-4">
+          {services.map((service, index) => {
+            const isOpen = expandedId === service.id;
 
-                {/* Service Title */}
-                <h3 className="text-2xl font-bold uppercase text-on-surface mt-6 mb-3 tracking-tight group-hover:text-accent transition-colors">
-                  {service.title}
-                </h3>
-
-                <p className="text-on-surface-muted text-sm leading-relaxed mb-6">
-                  {service.description}
-                </p>
-
-                {/* Deliverables List */}
-                {service.deliverables && service.deliverables.length > 0 && (
-                  <div className="space-y-2 mb-6">
-                    <span className="font-mono text-[10px] text-on-surface-subtle uppercase tracking-wider block">
-                      DELIVERABLES:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {service.deliverables.map((item, dIdx) => (
-                        <span
-                          key={dIdx}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-muted text-xs font-mono text-on-surface"
-                        >
-                          <CheckCircle2 className="w-3 h-3 text-accent" />
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Inquire link */}
-              <div className="pt-6 border-t border-border-subtle mt-2">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center justify-between w-full font-mono text-xs uppercase font-bold text-on-surface group-hover:text-accent transition-colors"
+            return (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{
+                  duration: 0.5,
+                  delay: Math.min(index * 0.06, 0.2),
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className={`rounded-3xl border transition-colors duration-300 overflow-hidden ${
+                  isOpen
+                    ? "bg-[#121216] border-white/20 shadow-2xl"
+                    : "bg-[#0b0b0e] border-white/[0.08] hover:border-white/20"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setExpandedId(isOpen ? "" : service.id)}
+                  className="w-full text-left p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <span>Inquire for this workflow</span>
-                  <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </a>
-              </div>
-            </div>
-          ))}
+                  <div className="space-y-2 max-w-2xl">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-xs font-mono uppercase font-bold tracking-widest ${
+                          isOpen ? "text-accentGreen" : "text-zinc-500"
+                        }`}
+                      >
+                        {service.badge || `${service.number} / CAPABILITY`}
+                      </span>
+                      {service.turnaround && (
+                        <span className="text-[11px] font-mono text-zinc-400 glass-pill px-2.5 py-0.5 rounded-full">
+                          {service.turnaround}
+                        </span>
+                      )}
+                    </div>
+                    <h3
+                      className={`text-xl sm:text-3xl font-extrabold uppercase tracking-tight transition-colors ${
+                        isOpen ? "text-white" : "text-zinc-200"
+                      }`}
+                    >
+                      {service.title}
+                    </h3>
+                  </div>
+
+                  <div className="flex items-center justify-end shrink-0">
+                    <span
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                        isOpen
+                          ? "bg-white text-black"
+                          : "border border-white/20 text-zinc-300"
+                      }`}
+                    >
+                      {isOpen ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
+                    </span>
+                  </div>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 sm:px-8 pb-7 pt-0 space-y-5 border-t border-white/[0.06] mt-1 pt-5">
+                        <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-2xl">
+                          {service.description}
+                        </p>
+
+                        <div className="flex flex-wrap items-center justify-between gap-4">
+                          <div className="flex flex-wrap gap-2">
+                            {service.deliverables.map((item) => (
+                              <span
+                                key={item}
+                                className="glass-pill text-[11px] font-mono text-zinc-300 px-3 py-1.5 rounded-full"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+
+                          <a
+                            href="#contact"
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-zinc-300 transition-colors"
+                          >
+                            <span>Book This Service</span>
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                          </a>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

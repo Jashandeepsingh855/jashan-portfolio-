@@ -1,47 +1,97 @@
-import { cookies } from "next/headers";
-import { getContent } from "./data";
-import crypto from "crypto";
+import { DEFAULT_ADMIN_EMAIL } from "@/lib/supabase/config";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const ADMIN_COOKIE_NAME = "jashan_admin_auth";
+export interface AdminSession {
+  isAdmin: boolean;
+  email: string | null;
+  userId: string | null;
+}
 
-export function generateToken(password: string): string {
-  const content = getContent();
-  const secret = content.admin?.sessionToken || "default_fallback_secret_7728";
-  return crypto.createHmac("sha256", secret).update(password).digest("hex");
+export async function getAdminSession(): Promise<AdminSession> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.getClaims();
+
+    if (error || !data?.claims) {
+      return { isAdmin: false, email: null, userId: null };
+    }
+
+    const claims = data.claims as {
+      sub?: string;
+      email?: string;
+      app_metadata?: { role?: string };
+    };
+
+    const isAdmin = claims?.app_metadata?.role === "admin";
+    return {
+      isAdmin,
+      email: isAdmin ? claims.email || DEFAULT_ADMIN_EMAIL : null,
+      userId: isAdmin ? claims.sub || null : null,
+    };
+  } catch {
+    return { isAdmin: false, email: null, userId: null };
+  }
 }
 
 export async function verifyAdminSession(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
-  if (!token) return false;
-
-  const content = getContent();
-  const expectedPassword = content.admin?.password || "admin123";
-  const expectedToken = generateToken(expectedPassword);
-
-  return token === expectedToken;
+  const session = await getAdminSession();
+  return session.isAdmin;
 }
 
-export async function setAdminSession(password: string): Promise<boolean> {
-  const content = getContent();
-  const expectedPassword = content.admin?.password || "admin123";
+export async function signInAdmin(email: string, password: string) {
+  const supabase = await createSupabaseServerClient();
+  const resolvedEmail = email.trim() || DEFAULT_ADMIN_EMAIL;
 
-  if (password === expectedPassword) {
-    const token = generateToken(password);
-    const cookieStore = await cookies();
-    cookieStore.set(ADMIN_COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    });
-    return true;
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: resolvedEmail,
+    password,
+  });
+
+  if (error || !data.user) {
+    return {
+      ok: false as const,
+      error: error?.message || "Invalid administrator credentials",
+    };
   }
-  return false;
+
+  const role = (data.user.app_metadata as { role?: string } | undefined)?.role;
+  if (role !== "admin") {
+    await supabase.auth.signOut();
+    return {
+      ok: false as const,
+      error: "This account does not have administrator privileges.",
+    };
+  }
+
+  return {
+    ok: true as const,
+    email: data.user.email || resolvedEmail,
+  };
 }
 
-export async function clearAdminSession(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(ADMIN_COOKIE_NAME);
+export async function signOutAdmin() {
+  const supabase = await createSupabaseServerClient();
+  await supabase.auth.signOut();
+}
+
+export async function updateAdminPassword(newPassword: string) {
+  const session = await getAdminSession();
+  if (!session.isAdmin) {
+    return { ok: false as const, error: "Unauthorized" };
+  }
+
+  if (newPassword.length < 6) {
+    return {
+      ok: false as const,
+      error: "Password must be at least 6 characters.",
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) {
+    return { ok: false as const, error: error.message };
+  }
+
+  return { ok: true as const };
 }

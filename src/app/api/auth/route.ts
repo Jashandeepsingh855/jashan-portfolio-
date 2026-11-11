@@ -1,52 +1,84 @@
-import { NextResponse } from "next/server";
-import { verifyAdminSession, setAdminSession, clearAdminSession } from "@/lib/auth";
-import { getContent, saveContent } from "@/lib/data";
+import { NextRequest, NextResponse } from "next/server";
+import {
+  getAdminSession,
+  signInAdmin,
+  signOutAdmin,
+  updateAdminPassword,
+} from "@/lib/auth";
+import { DEFAULT_ADMIN_EMAIL } from "@/lib/supabase/config";
 
 export async function GET() {
-  const isAuth = await verifyAdminSession();
-  return NextResponse.json({ authenticated: isAuth });
+  const session = await getAdminSession();
+  return NextResponse.json({
+    authenticated: session.isAdmin,
+    email: session.email,
+    defaultEmail: DEFAULT_ADMIN_EMAIL,
+  });
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { action, password, newPassword } = await request.json();
+    const body = await req.json();
+    const { action, email, password, newPassword } = body as {
+      action?: string;
+      email?: string;
+      password?: string;
+      newPassword?: string;
+    };
 
     if (action === "login") {
-      const success = await setAdminSession(password);
-      if (success) {
-        return NextResponse.json({ success: true, message: "Logged in successfully" });
+      if (!password || typeof password !== "string") {
+        return NextResponse.json(
+          { error: "Password is required" },
+          { status: 400 }
+        );
       }
-      return NextResponse.json({ success: false, error: "Invalid password" }, { status: 401 });
+
+      const result = await signInAdmin(email || DEFAULT_ADMIN_EMAIL, password);
+      if (!result.ok) {
+        return NextResponse.json({ error: result.error }, { status: 401 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        authenticated: true,
+        email: result.email,
+      });
     }
 
     if (action === "logout") {
-      await clearAdminSession();
-      return NextResponse.json({ success: true, message: "Logged out successfully" });
+      await signOutAdmin();
+      return NextResponse.json({ success: true, authenticated: false });
     }
 
     if (action === "change_password") {
-      const isAuth = await verifyAdminSession();
-      if (!isAuth) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-      if (!newPassword || newPassword.length < 4) {
-        return NextResponse.json({ error: "Password must be at least 4 characters" }, { status: 400 });
+      if (!newPassword || typeof newPassword !== "string") {
+        return NextResponse.json(
+          { error: "New password is required" },
+          { status: 400 }
+        );
       }
 
-      const content = getContent();
-      content.admin = {
-        ...content.admin,
-        password: newPassword,
-      };
-      saveContent(content);
-      await setAdminSession(newPassword);
+      const result = await updateAdminPassword(newPassword);
+      if (!result.ok) {
+        return NextResponse.json(
+          { error: result.error },
+          { status: result.error === "Unauthorized" ? 401 : 400 }
+        );
+      }
 
-      return NextResponse.json({ success: true, message: "Password updated successfully" });
+      return NextResponse.json({
+        success: true,
+        message: "Administrator password updated successfully.",
+      });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error) {
-    console.error("Auth error:", error);
-    return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
+    console.error("Auth API error:", error);
+    return NextResponse.json(
+      { error: "Authentication service failed" },
+      { status: 500 }
+    );
   }
 }

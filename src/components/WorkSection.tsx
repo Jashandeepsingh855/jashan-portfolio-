@@ -1,210 +1,259 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Project } from "@/lib/data";
-import { Play, ArrowUpRight, Film, ExternalLink } from "lucide-react";
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Play } from "lucide-react";
+import type { Project } from "@/lib/data";
 
 interface WorkSectionProps {
-  categories: string[];
   projects: Project[];
-  onPlayProject: (project: Project) => void;
+  categories: string[];
+  onSelectProject: (project: Project) => void;
 }
 
 export default function WorkSection({
-  categories,
   projects,
-  onPlayProject,
+  categories,
+  onSelectProject,
 }: WorkSectionProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All Works");
+  const availableCategories = useMemo(() => {
+    const base =
+      categories && categories.length > 0
+        ? categories
+        : ["All", "Short-Form", "Long-Form", "Commercial"];
+    return base.includes("All") ? base : ["All", ...base];
+  }, [categories]);
 
-  // Filter projects dynamically
+  const [activeCategory, setActiveCategory] = useState("All");
+
   const filteredProjects = useMemo(() => {
-    if (selectedCategory === "All Works" || !selectedCategory) {
-      return projects;
-    }
-    return projects.filter(
-      (p) => p.category.toLowerCase() === selectedCategory.toLowerCase()
+    const sorted = [...projects].sort((a, b) => a.order - b.order);
+    if (activeCategory === "All") return sorted;
+    return sorted.filter(
+      (proj) =>
+        proj.category.toLowerCase() === activeCategory.toLowerCase() ||
+        proj.tags.some(
+          (tag) => tag.toLowerCase() === activeCategory.toLowerCase()
+        )
     );
-  }, [projects, selectedCategory]);
+  }, [projects, activeCategory]);
+
+  const getCountForCategory = (cat: string) => {
+    if (cat === "All") return projects.length;
+    return projects.filter(
+      (proj) =>
+        proj.category.toLowerCase() === cat.toLowerCase() ||
+        proj.tags.some((tag) => tag.toLowerCase() === cat.toLowerCase())
+    ).length;
+  };
 
   return (
-    <section className="w-full bg-surface-muted/60 py-24 border-y border-border-subtle" id="work">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between pb-12 mb-8 gap-6 border-b border-border-subtle">
-          <div>
-            <div className="font-mono text-xs uppercase tracking-widest text-accent font-bold mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent"></span>
-              01 // SELECTED WORK
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-extrabold uppercase text-on-surface tracking-tight">
-              A selection of my work.
-            </h2>
-          </div>
-          <p className="text-on-surface-muted max-w-md text-base leading-relaxed">
-            Carefully crafted edits balanced between raw emotional resonance and surgical pacing. Every cut motivated by intention.
+    <section
+      id="work"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10 bg-[#070709] overflow-hidden"
+    >
+      {/* Massive Watermark Backdrop */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute top-8 left-1/2 -translate-x-1/2 watermark-text font-display text-[17vw] sm:text-[14vw] font-extrabold uppercase tracking-widest leading-none whitespace-nowrap"
+      >
+        PORTFOLIO
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-10 sm:mb-14"
+        >
+          <p className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-400 mb-2">
+            / SELECTED WORK
           </p>
-        </div>
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight uppercase">
+            FEATURED PRODUCTIONS
+          </h2>
+        </motion.div>
 
-        {/* Category Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-6 mb-8 no-scrollbar font-mono text-xs uppercase">
-          {categories.map((cat, idx) => {
-            const count =
-              cat === "All Works"
-                ? projects.length
-                : projects.filter((p) => p.category.toLowerCase() === cat.toLowerCase()).length;
-            const isActive = selectedCategory === cat;
-
-            return (
-              <button
-                key={idx}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap transition-all text-xs ${
-                  isActive
-                    ? "bg-surface-dark text-white font-medium shadow-sm"
-                    : "bg-surface-pure hover:bg-surface-dark hover:text-white text-on-surface-muted border border-border-subtle"
-                }`}
-              >
-                {cat} {cat === "All Works" && `(${count})`}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Asymmetric Editorial Grid */}
-        {filteredProjects.length === 0 ? (
-          <div className="p-12 text-center bg-surface-pure rounded-3xl border border-border-subtle text-on-surface-muted font-mono text-sm">
-            No projects in this category yet.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            {filteredProjects.map((project, idx) => {
-              // Alternate large 8-col and small 4-col or respect project.featured
-              const isLarge = project.featured ?? (idx % 3 === 0);
-              const colSpanClass = isLarge ? "md:col-span-8" : "md:col-span-4";
-              const aspectClass = isLarge ? "aspect-[16/9]" : "aspect-[4/3]";
-
+        {/* Filter Controls */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-10 pb-6 border-b border-white/10">
+          <div className="flex flex-wrap items-center gap-2">
+            {availableCategories.map((cat) => {
+              const isActive = activeCategory === cat;
+              const count = getCountForCategory(cat);
               return (
-                <div
-                  key={project.id || idx}
-                  className={`${colSpanClass} bg-surface-pure rounded-3xl overflow-hidden border border-border-subtle shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group`}
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategory(cat)}
+                  className={`relative px-4 py-2 rounded-full text-xs font-semibold transition-colors ${
+                    isActive
+                      ? "text-black"
+                      : "glass-pill text-zinc-400 hover:text-white"
+                  }`}
                 >
-                  {/* Thumbnail & Video Play Trigger */}
-                  <div
-                    onClick={() => onPlayProject(project)}
-                    className={`relative ${aspectClass} w-full overflow-hidden bg-surface-dark cursor-pointer group`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={project.thumbnail}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  {isActive && (
+                    <motion.span
+                      layoutId="activePortfolioTab"
+                      transition={{
+                        type: "spring",
+                        stiffness: 380,
+                        damping: 32,
+                      }}
+                      className="absolute inset-0 bg-white rounded-full -z-0"
                     />
-
-                    {/* Dark gradient overlay on hover */}
-                    <div className="absolute inset-0 bg-surface-dark/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <div className="w-14 h-14 rounded-full bg-accent text-white flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
-                        <Play className="w-6 h-6 ml-0.5 fill-current" />
-                      </div>
-                    </div>
-
-                    {/* Duration Badge */}
-                    {project.duration && (
-                      <div className="absolute top-4 left-4 px-3 py-1 rounded-md bg-surface-dark/80 backdrop-blur-md text-white font-mono text-[11px] uppercase tracking-wider">
-                        RUN: {project.duration}
-                      </div>
-                    )}
-
-                    {/* Format / Resolution Badge */}
-                    {project.format && isLarge && (
-                      <div className="absolute top-4 right-4 px-3 py-1 rounded-md bg-white/90 backdrop-blur-md text-on-surface font-mono text-[11px] uppercase font-semibold">
-                        {project.format}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Project Details */}
-                  <div className="p-8 flex flex-col justify-between flex-grow">
-                    <div>
-                      <div className="flex items-center justify-between pb-2">
-                        <span className="font-mono text-xs uppercase tracking-wider text-accent font-bold">
-                          {project.category}
-                        </span>
-                        <span className="font-mono text-xs text-on-surface-muted">
-                          {project.year}
-                        </span>
-                      </div>
-
-                      <h3
-                        onClick={() => onPlayProject(project)}
-                        className="text-2xl md:text-3xl font-extrabold uppercase text-on-surface tracking-tight group-hover:text-accent transition-colors cursor-pointer"
-                      >
-                        {project.title}
-                      </h3>
-
-                      <p className="text-on-surface-muted mt-3 text-base leading-relaxed">
-                        {project.description}
-                      </p>
-
-                      {/* Project Tags */}
-                      {project.tags && project.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-4">
-                          {project.tags.map((tag, tIdx) => (
-                            <span
-                              key={tIdx}
-                              className="px-2 py-0.5 rounded bg-surface-muted text-[11px] font-mono text-on-surface-muted uppercase"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Project Footer Strip */}
-                    <div className="pt-6 border-t border-border-subtle mt-6 flex items-center justify-between font-mono text-xs uppercase">
-                      <span className="text-on-surface-muted truncate max-w-[55%]">
-                        {project.client ? `CLIENT: ${project.client}` : "DIRECTOR'S CUT"}
-                      </span>
-
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => onPlayProject(project)}
-                          className="inline-flex items-center gap-1 font-bold text-accent hover:text-on-surface transition-colors"
-                        >
-                          <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Watch Cut</span>
-                        </button>
-                        {project.caseStudyUrl && (
-                          <a
-                            href={project.caseStudyUrl}
-                            className="hidden sm:inline-flex items-center gap-0.5 text-on-surface hover:text-accent font-semibold transition-colors"
-                          >
-                            <span>Info</span>
-                            <ArrowUpRight className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  )}
+                  <span className="relative z-10 flex items-center gap-1.5">
+                    <span>{cat}</span>
+                    <span
+                      className={`font-mono text-[11px] ${
+                        isActive ? "text-zinc-600" : "text-zinc-500"
+                      }`}
+                    >
+                      [{count}]
+                    </span>
+                  </span>
+                </button>
               );
             })}
           </div>
-        )}
 
-        {/* Archive Footer Bar */}
-        <div className="mt-12 p-4 bg-surface-pure rounded-2xl border border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs uppercase">
-          <span className="text-on-surface-muted">
-            ARCHIVE REEL // 2021 – 2025 ALL RELEASES CONFORMED
-          </span>
           <a
             href="#contact"
-            className="text-accent hover:text-on-surface font-bold tracking-wider inline-flex items-center gap-1 transition-colors"
+            className="glass-pill hover:bg-zinc-800 text-zinc-200 px-5 py-2.5 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors self-start sm:self-auto"
           >
-            Request Full Editorial Archive (30+ Cuts) ↗
+            <span>Request Private Cut</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </a>
         </div>
+
+        {/* Responsive Multi-Format Masonry/Grid */}
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-start"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((project, index) => {
+              const isVertical = project.aspectRatio === "9:16";
+              return (
+                <motion.article
+                  key={project.id}
+                  layout
+                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: Math.min(index * 0.06, 0.24),
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  onClick={() => onSelectProject(project)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelectProject(project);
+                    }
+                  }}
+                  className="group cursor-pointer bg-[#111114] rounded-3xl p-4 sm:p-5 border border-white/[0.08] glow-card focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  {/* Visual Frame */}
+                  <div
+                    className={`relative overflow-hidden rounded-2xl bg-zinc-950 mb-5 flex items-center justify-center ${
+                      isVertical
+                        ? "aspect-[4/5] sm:aspect-[16/10] md:aspect-[4/5]"
+                        : "aspect-[16/10]"
+                    }`}
+                  >
+                    <img
+                      src={project.thumbnail}
+                      alt={project.title}
+                      className={`h-full transition-transform duration-700 ease-out group-hover:scale-105 ${
+                        isVertical
+                          ? "w-auto max-w-[76%] rounded-xl object-cover shadow-2xl border border-white/10"
+                          : "w-full object-cover"
+                      }`}
+                    />
+
+                    {/* Ambient Backdrop for 9:16 Reels */}
+                    {isVertical && (
+                      <img
+                        src={project.thumbnail}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover opacity-20 blur-2xl scale-110 -z-10 pointer-events-none"
+                      />
+                    )}
+
+                    {/* Top Meta Badges */}
+                    <div className="absolute top-3.5 left-3.5 flex flex-wrap items-center gap-2 z-10">
+                      <span className="glass-pill px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-wider text-white uppercase">
+                        {project.category}
+                      </span>
+                      <span className="bg-black/65 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-full text-[10px] font-mono text-zinc-200">
+                        {project.format || project.aspectRatio}
+                      </span>
+                    </div>
+
+                    <div className="absolute top-3.5 right-3.5 z-10">
+                      <span className="bg-black/75 backdrop-blur-md border border-white/10 text-white font-mono text-[11px] px-2.5 py-1 rounded-full">
+                        {project.duration}
+                      </span>
+                    </div>
+
+                    {/* Blur-Backdrop Play Overlay on Hover */}
+                    <div className="absolute inset-0 bg-black/35 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+                      <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-300">
+                        <Play className="w-6 h-6 fill-black translate-x-0.5" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metadata */}
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-1">
+                          {project.client} · {project.year}
+                        </p>
+                        <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-zinc-200 transition-colors">
+                          {project.title}
+                        </h3>
+                      </div>
+                      <ArrowUpRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 leading-relaxed">
+                      {project.description}
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/[0.06]">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {project.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="glass-pill text-[11px] font-medium text-zinc-300 px-2.5 py-1 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      {project.views && (
+                        <span className="text-[11px] font-mono text-accentGreen font-semibold">
+                          {project.views}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

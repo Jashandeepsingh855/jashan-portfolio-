@@ -1,177 +1,153 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, ArrowUpRight, Shield } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Lock, Menu, X } from "lucide-react";
+import type { SiteSettings } from "@/lib/data";
 
 interface HeaderProps {
-  name: string;
-  role: string;
-  year: string;
-  isAdmin?: boolean;
+  siteSettings: SiteSettings;
+  projectCount: number;
+  serviceCount: number;
 }
 
-export default function Header({ name, role, year, isAdmin }: HeaderProps) {
+export default function Header({
+  siteSettings,
+  projectCount,
+  serviceCount,
+}: HeaderProps) {
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const navItems = [
+    { href: "#work", label: "Work", badge: `[${projectCount}]` },
+    { href: "#services", label: "Services", badge: `[${serviceCount}]` },
+    { href: "#experience", label: "Experience", badge: "[7y+]" },
+    { href: "#contact", label: "Contact", badge: null },
+  ];
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-xl border-b border-border-subtle/80 transition-all">
-      <div className="h-20 max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12 flex items-center justify-between">
-        {/* Brand Logo & Name */}
-        <Link href="#" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-lg bg-surface-dark flex items-center justify-center font-mono font-bold text-white text-xs group-hover:bg-accent transition-colors shadow-sm">
-            JS
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-sm tracking-tight text-on-surface uppercase group-hover:text-accent transition-colors">
-              {name || "JASHANDEEP SINGH"}
-            </span>
-            <span className="font-mono text-[10px] tracking-widest uppercase text-on-surface-muted">
-              {role || "DIRECTOR & EDIT"} // {year || "2025"}
-            </span>
-          </div>
-        </Link>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? "px-4 md:px-8 py-3" : "px-4 md:px-8 py-5"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+        {/* Availability Status Pill */}
+        <a
+          href="#contact"
+          className="glass-nav rounded-full px-3.5 sm:px-4 py-2 flex items-center gap-2.5 shadow-lg hover:border-white/25 transition-colors max-w-[215px] sm:max-w-none"
+        >
+          <span className="relative flex h-2.5 w-2.5 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accentGreen opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accentGreen" />
+          </span>
+          <span className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-zinc-200 truncate">
+            {siteSettings.availabilityStatus}
+          </span>
+        </a>
 
-        {/* Desktop Navigation */}
-        <div className="flex items-center gap-6 lg:gap-8">
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-xs font-mono tracking-wider font-semibold uppercase">
+        {/* Center Floating Nav */}
+        <nav className="hidden lg:flex items-center gap-1 glass-nav rounded-full px-4 py-1.5 shadow-lg">
+          {navItems.map((item) => (
             <a
-              href="#"
-              className="text-accent flex items-center gap-1.5"
+              key={item.href}
+              href={item.href}
+              className="text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.06] px-3.5 py-1.5 rounded-full transition-colors flex items-center gap-1.5"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
-              HOME
+              <span>{item.label}</span>
+              {item.badge && (
+                <span className="text-zinc-500 text-[11px] font-mono">
+                  {item.badge}
+                </span>
+              )}
             </a>
-            <a
-              href="#work"
-              className="text-on-surface-muted hover:text-on-surface transition-colors"
-            >
-              WORK
-            </a>
-            <a
-              href="#about"
-              className="text-on-surface-muted hover:text-on-surface transition-colors"
-            >
-              ABOUT
-            </a>
-            <a
-              href="#services"
-              className="text-on-surface-muted hover:text-on-surface transition-colors"
-            >
-              SERVICES
-            </a>
-            <a
-              href="#process"
-              className="text-on-surface-muted hover:text-on-surface transition-colors"
-            >
-              PROCESS
-            </a>
-            <a
-              href="#contact"
-              className="text-on-surface-muted hover:text-on-surface transition-colors"
-            >
-              CONTACT
-            </a>
-          </nav>
+          ))}
+        </nav>
 
-          {/* Action CTAs */}
-          <div className="flex items-center gap-3">
-            <a
-              href="#contact"
-              className="hidden sm:inline-flex items-center gap-1.5 bg-surface-dark hover:bg-accent text-white font-mono text-xs uppercase tracking-wider font-semibold px-4 py-2.5 rounded-full transition-all shadow-sm group"
-            >
-              <span>BOOK AN EDIT</span>
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </a>
+        {/* Right Actions */}
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <Link
+            href="/admin"
+            aria-label="Open Studio Admin Portal"
+            title="Studio Admin"
+            className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full glass-nav text-zinc-400 hover:text-white hover:border-white/25 transition-colors"
+          >
+            <Lock className="w-3.5 h-3.5" />
+          </Link>
 
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1 text-[11px] font-mono uppercase px-3 py-2 rounded-full border border-border-subtle bg-surface-pure hover:border-accent hover:text-accent transition-colors text-on-surface-muted"
-              title="Admin Portal"
-            >
-              <Shield className="w-3 h-3 text-accent" />
-              <span className="hidden lg:inline">{isAdmin ? "Dashboard" : "Admin"}</span>
-            </Link>
+          <a
+            href="#contact"
+            className="group bg-white hover:bg-zinc-200 text-black px-3.5 sm:px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-md shadow-white/5 active:scale-95 whitespace-nowrap"
+          >
+            <span>Let&apos;s Talk</span>
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+          </a>
 
-            {/* Mobile menu hamburger */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-9 h-9 rounded-lg bg-surface-muted border border-border-subtle flex items-center justify-center text-on-surface"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle Navigation"
+            className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full glass-nav text-zinc-200 hover:text-white transition-colors"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-4 h-4" />
+            ) : (
+              <Menu className="w-4 h-4" />
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-surface-pure border-b border-border-subtle px-6 py-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col gap-4 font-mono text-sm uppercase tracking-wider font-semibold">
-            <a
-              href="#"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-accent flex items-center gap-2"
-            >
-              <span className="w-2 h-2 rounded-full bg-accent"></span>
-              HOME
-            </a>
-            <a
-              href="#work"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-on-surface hover:text-accent transition-colors"
-            >
-              WORK
-            </a>
-            <a
-              href="#about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-on-surface hover:text-accent transition-colors"
-            >
-              ABOUT
-            </a>
-            <a
-              href="#services"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-on-surface hover:text-accent transition-colors"
-            >
-              SERVICES
-            </a>
-            <a
-              href="#process"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-on-surface hover:text-accent transition-colors"
-            >
-              PROCESS
-            </a>
-            <a
-              href="#contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-on-surface hover:text-accent transition-colors"
-            >
-              CONTACT
-            </a>
-            <div className="pt-4 border-t border-border-subtle flex flex-col gap-3">
-              <a
-                href="#contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center bg-accent text-white py-3 rounded-xl font-mono text-xs uppercase font-bold"
-              >
-                BOOK AN EDIT
-              </a>
+      {/* Mobile / Tablet Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:hidden mt-3 max-w-7xl mx-auto glass-nav rounded-2xl p-4 shadow-2xl border border-white/10"
+          >
+            <div className="flex flex-col gap-1">
+              {navItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-colors"
+                >
+                  <span>{item.label}</span>
+                  {item.badge && (
+                    <span className="text-xs font-mono text-zinc-500">
+                      {item.badge}
+                    </span>
+                  )}
+                </a>
+              ))}
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center bg-surface-muted text-on-surface py-2.5 rounded-xl font-mono text-xs uppercase font-bold border border-border-subtle flex items-center justify-center gap-1.5"
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-mono text-zinc-400 hover:bg-white/10 hover:text-white border-t border-white/10 mt-1 pt-3"
               >
-                <Shield className="w-3.5 h-3.5 text-accent" />
-                ADMIN PORTAL
+                <span className="flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5" />
+                  STUDIO ADMIN PORTAL
+                </span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
-          </nav>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

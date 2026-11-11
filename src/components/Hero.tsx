@@ -1,238 +1,315 @@
 "use client";
 
-import React from "react";
-import { ArrowDown, ArrowUpRight, Play, Volume2, Maximize, Film } from "lucide-react";
+import { motion } from "framer-motion";
+import {
+  ArrowUpRight,
+  Film,
+  Instagram,
+  Layers,
+  Linkedin,
+  Play,
+  Sliders,
+  Twitter,
+  Youtube,
+} from "lucide-react";
+import type { HeroContent, SiteSettings } from "@/lib/data";
 
 interface HeroProps {
-  siteSettings: {
-    availabilityStatus: string;
-    specialties: string;
-    suite: string;
-    timelineFps: string;
-    name: string;
-  };
-  hero: {
-    badge: string;
-    headlineLine1: string;
-    headlineHighlight: string;
-    headlineLine3: string;
-    description: string;
-    showreelTitle: string;
-    showreelFormat: string;
-    showreelTc: string;
-    showreelColorspace: string;
-    showreelVideoUrl: string;
-    showreelCoverImage: string;
-    hardwarePipeline: string[];
-  };
+  hero: HeroContent;
+  siteSettings: SiteSettings;
   onPlayShowreel: () => void;
 }
 
-export default function Hero({ siteSettings, hero, onPlayShowreel }: HeroProps) {
+const fadeUp = {
+  hidden: { opacity: 0, y: 22 },
+  visible: (delay = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.65,
+      delay,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  }),
+};
+
+export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) {
+  const wordmark = (siteSettings.wordmark || "JASHANDEEP").toUpperCase();
+
+  const socialItems = [
+    {
+      label: "YouTube",
+      handle: siteSettings.socials.youtubeHandle || "1.2M+ Reach",
+      href: siteSettings.socials.youtube,
+      icon: Youtube,
+      accent: "group-hover:text-red-400",
+    },
+    {
+      label: "Instagram",
+      handle: siteSettings.socials.instagramHandle || "@jashan.cuts",
+      href: siteSettings.socials.instagram,
+      icon: Instagram,
+      accent: "group-hover:text-pink-400",
+    },
+    {
+      label: "LinkedIn",
+      handle: siteSettings.socials.linkedinHandle || "/in/jashandeep",
+      href: siteSettings.socials.linkedin,
+      icon: Linkedin,
+      accent: "group-hover:text-sky-400",
+    },
+    {
+      label: "Behance",
+      handle: siteSettings.socials.behanceHandle || "Showcases",
+      href: siteSettings.socials.behance,
+      icon: Layers,
+      accent: "group-hover:text-blue-400",
+    },
+    {
+      label: "X / Twitter",
+      handle: siteSettings.socials.xHandle || "@jashanedit",
+      href: siteSettings.socials.x,
+      icon: Twitter,
+      accent: "group-hover:text-white",
+    },
+  ].filter((item) => Boolean(item.href));
+
   return (
-    <section className="relative w-full max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12 pt-28 pb-20 overflow-hidden">
-      {/* Live Status Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-2.5 mb-12 gap-3 bg-surface-pure rounded-xl border border-border-subtle shadow-sm">
-        <div className="inline-flex items-center gap-2">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-          </span>
-          <span className="font-mono text-[11px] uppercase tracking-wider text-on-surface font-semibold">
-            {siteSettings.availabilityStatus || "AVAILABLE FOR COMMISSIONS"}
-          </span>
-          <span className="text-border-subtle mx-1 hidden sm:inline">•</span>
-          <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-wider text-accent font-medium">
-            {siteSettings.specialties || "COMMERCIAL // CREATOR // NARRATIVE"}
-          </span>
-        </div>
-        <div className="font-mono text-[11px] text-on-surface-muted uppercase tracking-widest flex items-center gap-4">
-          <span>SUITE: {siteSettings.suite || "RESOLVE STUDIO 19"}</span>
-          <span className="text-border-subtle hidden sm:inline">•</span>
-          <span className="text-on-surface font-semibold hidden sm:inline">
-            TIMELINE: {siteSettings.timelineFps || "24.000 FPS"}
-          </span>
-          <span className="inline-flex items-center gap-1 text-accent font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>REC
-          </span>
-        </div>
-      </div>
+    <section className="relative pt-28 sm:pt-32 md:pt-36 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden bg-[#050505]">
+      {/* Studio Ambient Rim Light */}
+      <div className="pointer-events-none absolute top-28 left-1/2 -translate-x-1/2 w-[min(780px,92vw)] h-[420px] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.11)_0%,rgba(63,63,70,0.06)_45%,transparent_72%)] blur-3xl" />
 
-      {/* Hero Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center mb-16">
-        {/* Left Column: Sharp Studio Copy */}
-        <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
-          <div className="inline-flex items-center gap-2 bg-surface-muted px-3.5 py-1.5 rounded-full border border-border-subtle self-start shadow-sm">
-            <Film className="w-3.5 h-3.5 text-accent" />
-            <span className="font-mono text-[11px] uppercase tracking-wider text-on-surface font-semibold">
-              {hero.badge || "JASHANDEEP SINGH // LEAD VIDEO EDITOR"}
-            </span>
-          </div>
+      <div className="max-w-7xl mx-auto relative">
+        {/* Continuous Unbroken Outlined Wordmark + Centered Cutout Portrait */}
+        <div className="relative w-full max-w-full overflow-hidden flex flex-col items-center justify-center min-w-0">
+          <motion.h1
+            initial={{ opacity: 0, y: 18, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+            className="text-outline font-display font-extrabold uppercase select-none pointer-events-none whitespace-nowrap text-center z-0 leading-[0.9] tracking-[0.015em] sm:tracking-[0.03em]"
+            style={{
+              fontSize: "clamp(1.32rem, 6.15vw, 5.75rem)",
+            }}
+          >
+            {wordmark}
+          </motion.h1>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-[84px] font-extrabold uppercase text-on-surface tracking-tighter leading-[0.92]">
-            {hero.headlineLine1 || "I EDIT."}
-            <br />
-            <span className="text-accent underline decoration-accent/30 decoration-wavy underline-offset-8">
-              {hero.headlineHighlight || "I SHAPE."}
-            </span>
-            <br />
-            {hero.headlineLine3 || "I TELL STORIES."}
-          </h1>
-
-          <p className="text-lg md:text-xl text-on-surface-muted max-w-xl font-normal leading-relaxed">
-            {hero.description ||
-              "Crafting high-velocity commercial cuts, documentary narratives, and cultural stories with surgical rhythm, emotional depth, and cinematic punch."}
-          </p>
-
-          {/* Magnetic Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <a
-              href="#work"
-              className="inline-flex items-center gap-2.5 bg-surface-dark hover:bg-accent text-white font-mono text-xs uppercase tracking-wider font-semibold px-7 py-4 rounded-full transition-all shadow-md hover:shadow-xl hover:shadow-accent/25 group"
-            >
-              <span>EXPLORE WORK</span>
-              <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 bg-surface-pure hover:bg-surface-muted text-on-surface font-mono text-xs uppercase tracking-wider font-semibold px-6 py-4 rounded-full border border-border-subtle hover:border-on-surface transition-all shadow-sm"
-            >
-              <span>BOOK AN EDIT / CONNECT</span>
-              <ArrowUpRight className="w-4 h-4 text-accent" />
-            </a>
-          </div>
-
-          {/* Pipeline Stack Pills */}
-          <div className="pt-6 border-t border-border-subtle flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase text-on-surface-muted">
-            <span className="font-semibold text-on-surface tracking-wider mr-1">HARDWARE PIPELINE:</span>
-            {hero.hardwarePipeline?.map((tool, idx) => (
-              <span
-                key={idx}
-                className={
-                  tool.includes("ACES")
-                    ? "px-2.5 py-1 rounded-md bg-accent-glow text-accent font-semibold border border-accent/20"
-                    : "px-2.5 py-1 rounded-md bg-surface-pure border border-border-subtle text-on-surface font-medium"
-                }
-              >
-                {tool}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Column: High-Tech Editor Showcase Card */}
-        <div className="lg:col-span-5 relative">
-          <div className="relative bg-surface-pure p-3 rounded-3xl shadow-xl shadow-slate-200/60 border border-border-subtle overflow-hidden group">
-            {/* Card Header HUD */}
-            <div className="flex items-center justify-between px-3 py-2 bg-surface-muted rounded-2xl text-on-surface-muted font-mono text-[11px] uppercase mb-3">
-              <span className="inline-flex items-center gap-1.5 font-bold text-on-surface">
-                <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-                {hero.showreelTitle || "2025 SHOWREEL // SELECTED WORKS"}
-              </span>
-              <span className="text-on-surface-subtle">PRORES CONFORM</span>
-            </div>
-
-            {/* Sub-bar */}
-            <div className="flex items-center justify-between px-2 text-on-surface-muted text-xs">
-              <div className="flex items-center gap-2 font-mono">
-                <span className="text-on-surface font-bold text-[11px]">ACTIVE MONITOR 01</span>
-                <span className="hidden sm:inline text-border-subtle">|</span>
-                <span className="hidden sm:inline font-mono text-on-surface text-[11px]">
-                  {hero.showreelFormat || "4K DCI // PRORES 4444 XQ"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="text-on-surface font-semibold bg-white px-2 py-0.5 rounded-md border border-border-subtle text-[10px]">
-                  {hero.showreelTc || "TC [00:01:42:18]"}
-                </span>
-                <span className="px-2 py-0.5 rounded-md bg-accent text-white font-bold text-[10px]">
-                  {hero.showreelColorspace || "ACEScc"}
-                </span>
-              </div>
-            </div>
-
-            {/* Video Display Container */}
-            <div
-              onClick={onPlayShowreel}
-              className="relative w-full aspect-video rounded-2xl bg-surface-dark overflow-hidden group mt-3 cursor-pointer shadow-inner"
-            >
-              {/* Cover Image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* Centered Transparent Cutout Portrait Overlapping Wordmark */}
+          <motion.div
+            initial={{ opacity: 0, y: 28, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              duration: 0.85,
+              delay: 0.1,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="relative z-10 -mt-3 sm:-mt-6 md:-mt-9 lg:-mt-12 flex flex-col items-center pointer-events-none max-w-full"
+          >
+            <div className="relative w-[225px] sm:w-[290px] md:w-[330px] lg:w-[380px] flex justify-center">
               <img
-                src={hero.showreelCoverImage || "https://lh3.googleusercontent.com/aida-public/AB6AXuDckJkF64scxM5EChWslou80YpCIhPbiFu9jusxZqSqyvA4ARZgyIclm2pb9Nzxrk6Ncj3ckDG_vcu-dIl_UJtnPLCDUccAj1fDAwJDzYAyBpjIkyJalWAdZLxAZqGl8b3vNunp1cHvi3McklhurPi3rSvycFmaQH_oICJwjXRxz0Jj_kE0Dauypr04upDoHfGzYcajraIWZlr4cx3FfctxFrx4foLdWcKUgorY7kI"}
-                alt="Cinematic Showreel Preview"
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                src={hero.portraitImage || "/portrait-cutout.png"}
+                alt={`${siteSettings.name} — ${siteSettings.role}`}
+                className="w-full h-auto max-h-[320px] sm:max-h-[390px] lg:max-h-[440px] object-contain object-bottom drop-shadow-[0_24px_55px_rgba(0,0,0,0.95)]"
               />
-
-              {/* Dark Scrim */}
-              <div className="absolute inset-0 bg-gradient-to-t from-surface-dark/90 via-surface-dark/30 to-transparent pointer-events-none" />
-
-              {/* Central Modern Play Trigger Button */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button
-                  type="button"
-                  aria-label="Play Showreel"
-                  className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/95 text-surface-dark backdrop-blur-md flex items-center justify-center group-hover:scale-110 group-hover:bg-accent group-hover:text-white transition-all duration-300 shadow-2xl relative"
-                >
-                  <Play className="w-8 h-8 ml-1 fill-current" />
-                  <div className="absolute -inset-2 rounded-full border border-white/30 animate-pulse pointer-events-none" />
-                </button>
-              </div>
-
-              {/* Sleek Glass HUD Transport Controls (Bottom) */}
-              <div className="absolute bottom-0 inset-x-0 p-4 flex flex-col gap-2 bg-gradient-to-t from-surface-dark to-transparent">
-                {/* Scrubber Bar */}
-                <div className="w-full h-1.5 bg-white/20 rounded-full relative overflow-hidden">
-                  <div className="absolute left-0 top-0 bottom-0 w-[58%] bg-accent"></div>
-                </div>
-
-                {/* Transport Info Row */}
-                <div className="flex items-center justify-between text-white font-mono text-[11px] uppercase pt-1">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1.5 text-accent font-semibold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping"></span>
-                      ACTIVE CUT // 23.976 FPS
-                    </span>
-                    <span className="hidden md:inline text-white/30">|</span>
-                    <span className="hidden md:inline text-white/80">AUDIO: 48 KHZ 24-BIT</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="p-1 rounded bg-white/10 hover:bg-white/20">
-                      <Volume2 className="w-3.5 h-3.5 text-white" />
-                    </span>
-                    <span className="p-1 rounded bg-white/10 hover:bg-white/20">
-                      <Maximize className="w-3.5 h-3.5 text-white" />
-                    </span>
-                  </div>
-                </div>
-              </div>
+              {/* Bottom studio dissolve mask into #050505 canvas */}
+              <div className="absolute inset-x-0 bottom-0 h-16 sm:h-20 bg-gradient-to-t from-[#050505] via-[#050505]/75 to-transparent" />
             </div>
 
-            {/* Lower Card Metadata Strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4 bg-surface-muted p-4 rounded-2xl gap-4 font-mono text-xs uppercase mt-3">
-              <div>
-                <span className="text-on-surface-muted block text-[10px]">EDITOR / COLOURIST</span>
-                <span className="text-on-surface font-semibold">{siteSettings.name || "JASHANDEEP SINGH"}</span>
+            {/* Subtle Telemetry Badge Anchored Below Portrait Bust */}
+            <div className="pointer-events-auto -mt-4 sm:-mt-5 glass-nav rounded-2xl sm:rounded-full px-3.5 sm:px-4 py-2 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 shadow-2xl border border-white/10 max-w-full">
+              <span className="flex items-center gap-1.5 text-center">
+                <Film className="w-3.5 h-3.5 text-zinc-300 shrink-0" />
+                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+                  {hero.portraitStatLabel || "TOTAL REACH"}:
+                </span>
+                <span className="text-[11px] sm:text-xs font-bold text-white">
+                  {hero.portraitStatValue || "120M+ Views Driven"}
+                </span>
+              </span>
+              {hero.portraitStatBadge && (
+                <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-accentGreen bg-accentGreen/10 px-2 py-0.5 rounded-full">
+                  {hero.portraitStatBadge}
+                </span>
+              )}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Aligned Flanking Side Copy (Left) & Social Links Stack (Right) */}
+        <div className="relative z-20 mt-8 md:mt-6 lg:-mt-40 grid grid-cols-1 md:grid-cols-12 items-end gap-8 pointer-events-none min-w-0">
+          {/* Left Side Info & CTAs */}
+          <motion.div
+            custom={0.2}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            className="md:col-span-6 lg:col-span-4 space-y-4 text-center md:text-left pointer-events-auto"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-[#121215]/90 text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-zinc-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-white" />
+              <span>{hero.badge || "HIGH-RETENTION SPECIALIST"}</span>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
+                {siteSettings.role || hero.headline}
+              </h2>
+              <p className="text-zinc-400 text-sm leading-relaxed max-w-md mx-auto md:mx-0">
+                {hero.description}
+              </p>
+            </div>
+
+            <div className="pt-1 flex flex-wrap items-center justify-center md:justify-start gap-3">
+              <a
+                href="#contact"
+                className="inline-flex items-center justify-center gap-2 bg-white text-black font-bold text-xs px-6 py-3 rounded-full hover:bg-zinc-200 transition-all shadow-lg active:scale-95"
+              >
+                <span>Let&apos;s collaborate</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+              <button
+                type="button"
+                onClick={onPlayShowreel}
+                className="inline-flex items-center justify-center gap-2 glass-pill text-zinc-200 font-semibold text-xs px-5 py-3 rounded-full hover:bg-zinc-800/90 hover:text-white transition-all active:scale-95"
+              >
+                <Play className="w-3 h-3 fill-current" />
+                <span>Watch Showreel</span>
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Center Clear Zone Preserving Portrait on Desktop */}
+          <div className="hidden lg:block lg:col-span-4" aria-hidden="true" />
+
+          {/* Right Social Links Pill Stack */}
+          <motion.div
+            custom={0.28}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            className="md:col-span-6 lg:col-span-4 flex flex-col gap-2.5 w-full sm:w-auto md:items-end pointer-events-auto"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-2 w-full md:w-[270px]">
+              {socialItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="glass-pill rounded-full px-4 py-2.5 flex items-center justify-between group hover:border-white/25 hover:bg-zinc-800/75 transition-all duration-200"
+                  >
+                    <span className="flex items-center gap-2.5 text-xs font-medium text-zinc-300 group-hover:text-white">
+                      <Icon
+                        className={`w-3.5 h-3.5 text-zinc-400 transition-colors ${item.accent}`}
+                      />
+                      <span>{item.label}</span>
+                    </span>
+                    <span className="text-[11px] text-zinc-500 group-hover:text-zinc-300 font-mono transition-colors">
+                      {item.handle}
+                    </span>
+                  </a>
+                );
+              })}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* 4 Obsidian Metric Badges Row */}
+        <motion.div
+          custom={0.36}
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          className="mt-12 sm:mt-16 pt-8 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+        >
+          {(hero.metrics || []).map((metric, idx) => (
+            <div
+              key={`${metric.label}-${idx}`}
+              className="p-4 sm:p-5 rounded-2xl bg-[#0e0e11] border border-white/[0.08] text-center hover:border-white/20 transition-colors"
+            >
+              <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                {metric.value}
               </div>
-              <div>
-                <span className="text-on-surface-muted block text-[10px]">PRIMARY NLE</span>
-                <span className="text-on-surface font-semibold">{siteSettings.suite || "DAVINCI RESOLVE"}</span>
+              <div className="text-[11px] sm:text-xs text-zinc-400 mt-1 uppercase tracking-wider font-medium">
+                {metric.label}
               </div>
-              <div>
-                <span className="text-on-surface-muted block text-[10px]">DELIVERY COLORSPACE</span>
-                <span className="text-on-surface font-semibold">{hero.showreelColorspace || "ACEScc / DCI-P3"}</span>
-              </div>
-              <div className="text-right flex items-center justify-end">
-                <a
-                  href="#work"
-                  className="text-accent hover:text-on-surface transition-colors font-bold tracking-wider inline-flex items-center gap-1"
-                >
-                  EXPLORE <ArrowDown className="w-3 h-3" />
-                </a>
-              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Interactive Official Showreel Player Pod */}
+        <motion.div
+          id="showreel"
+          initial={{ opacity: 0, y: 26 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-12 sm:mt-16 rounded-3xl bg-[#0b0b0e] border border-white/10 p-4 sm:p-6 shadow-2xl"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-[11px] sm:text-xs font-mono tracking-widest text-zinc-300 uppercase">
+                {hero.showreelSubtitle || "OFFICIAL SHOWREEL 2025"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2.5 text-[11px] font-mono text-zinc-400">
+              <span className="bg-zinc-900 border border-white/10 text-zinc-200 px-2.5 py-0.5 rounded-full font-semibold">
+                {hero.showreelFormat || "4K 60FPS · PRORES 4444 XQ"}
+              </span>
+              <span className="hidden sm:inline text-zinc-500">
+                {hero.showreelColorspace || "ACEScg"}
+              </span>
             </div>
           </div>
-        </div>
+
+          <button
+            type="button"
+            onClick={onPlayShowreel}
+            className="group relative w-full rounded-2xl overflow-hidden bg-black border border-white/10 aspect-video text-left cursor-pointer"
+          >
+            {hero.showreelCoverImage && (
+              <img
+                src={hero.showreelCoverImage}
+                alt={hero.showreelTitle || "Official Showreel"}
+                className="absolute inset-0 w-full h-full object-cover opacity-55 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/50" />
+
+            <div className="relative z-10 h-full w-full flex flex-col items-center justify-center p-6 text-center">
+              <p className="text-zinc-400 text-[10px] sm:text-xs font-mono tracking-[0.22em] uppercase mb-2">
+                {siteSettings.specialties || "COMMERCIAL // LONG-FORM // SHORT-FORM"}
+              </p>
+              <h3 className="text-xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-6">
+                {hero.showreelTitle || "THE RHYTHM OF ATTENTION"}
+              </h3>
+
+              <div className="relative w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-full bg-white text-black flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-black translate-x-0.5" />
+              </div>
+            </div>
+
+            {/* Decorative Studio Player Bar */}
+            <div className="absolute bottom-0 inset-x-0 px-4 sm:px-6 pb-4 pt-8 bg-gradient-to-t from-black/95 to-transparent flex flex-col gap-2.5">
+              <div className="w-full h-1 bg-white/15 rounded-full overflow-hidden">
+                <div className="h-full w-[42%] bg-white rounded-full" />
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-mono text-zinc-300">
+                <span>TC {hero.showreelTc || "01:14 / 02:48"}</span>
+                <span className="hidden sm:inline-flex items-center gap-1.5 text-zinc-400">
+                  <Sliders className="w-3 h-3" />
+                  STEREO MASTER · -14 LUFS
+                </span>
+                <span className="text-white font-semibold group-hover:underline">
+                  PLAY REEL
+                </span>
+              </div>
+            </div>
+          </button>
+        </motion.div>
       </div>
     </section>
   );

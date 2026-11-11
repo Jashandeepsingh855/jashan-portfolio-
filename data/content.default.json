@@ -1,237 +1,288 @@
 {
   "siteSettings": {
     "name": "Jashandeep Singh",
-    "role": "Lead Video Editor & Filmmaker",
+    "wordmark": "JASHANDEEP",
+    "role": "Video Editor & Colorist",
     "year": "2025",
-    "availabilityStatus": "AVAILABLE FOR Q2/Q3 GLOBAL DIRECTORS",
-    "specialties": "COMMERCIAL // CREATOR // NARRATIVE",
+    "availabilityStatus": "Available for New Projects",
+    "availabilitySubtext": "Available for Select Projects [Q2/Q3]",
+    "specialties": "COMMERCIAL // LONG-FORM // SHORT-FORM",
     "suite": "RESOLVE STUDIO 19.1",
     "timelineFps": "24.000 FPS",
     "email": "contact@jashandeepsingh.film",
     "phone": "+1 (555) 843-3348",
-    "location": "Global Remote // Based in Vancouver & Toronto",
+    "location": "Vancouver & Toronto // Worldwide Remote",
     "calendarLink": "https://cal.com",
     "socials": {
-      "instagram": "https://instagram.com",
       "youtube": "https://youtube.com",
-      "vimeo": "https://vimeo.com",
+      "youtubeHandle": "1.2M+ Reach",
+      "instagram": "https://instagram.com",
+      "instagramHandle": "@jashan.cuts",
       "linkedin": "https://linkedin.com",
+      "linkedinHandle": "/in/jashandeep",
+      "behance": "https://behance.net",
+      "behanceHandle": "Showcases",
       "x": "https://x.com",
-      "behance": "https://behance.net"
+      "xHandle": "@jashanedit",
+      "vimeo": "https://vimeo.com"
     },
-    "footerNote": "ARCHIVE REEL // 2021 – 2025 ALL RELEASES CONFORMED"
+    "footerNote": "Engineered for maximum visual retention."
   },
   "hero": {
-    "badge": "JASHANDEEP SINGH // LEAD VIDEO EDITOR",
+    "badge": "HIGH-RETENTION SPECIALIST",
+    "headline": "Cinematic Video Editor & Visual Architect",
     "headlineLine1": "I EDIT.",
     "headlineHighlight": "I SHAPE.",
     "headlineLine3": "I TELL STORIES.",
-    "description": "Crafting high-velocity commercial cuts, documentary narratives, and cultural stories with surgical rhythm, emotional depth, and cinematic punch.",
-    "showreelTitle": "2025 SHOWREEL // SELECTED WORKS",
-    "showreelFormat": "4K DCI // PRORES 4444 XQ",
-    "showreelTc": "TC [00:01:42:18] / [00:03:15:00]",
-    "showreelColorspace": "ACEScc",
-    "showreelVideoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "showreelCoverImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuDckJkF64scxM5EChWslou80YpCIhPbiFu9jusxZqSqyvA4ARZgyIclm2pb9Nzxrk6Ncj3ckDG_vcu-dIl_UJtnPLCDUccAj1fDAwJDzYAyBpjIkyJalWAdZLxAZqGl8b3vNunp1cHvi3McklhurPi3rSvycFmaQH_oICJwjXRxz0Jj_kE0Dauypr04upDoHfGzYcajraIWZlr4cx3FfctxFrx4foLdWcKUgorY7kI",
+    "description": "Crafting high-impact digital narratives with surgical pacing, ACES cinema grade, and psychological retention triggers that keep audiences locked in.",
+    "portraitImage": "/portrait-cutout.png",
+    "portraitStatLabel": "TOTAL REACH",
+    "portraitStatValue": "120M+ Views Driven",
+    "portraitStatBadge": "+48% Ret.",
+    "showreelTitle": "THE RHYTHM OF ATTENTION",
+    "showreelSubtitle": "OFFICIAL SHOWREEL 2025 · 2018 – 2025",
+    "showreelFormat": "4K 60FPS · PRORES 4444 XQ",
+    "showreelTc": "01:14 / 02:48",
+    "showreelColorspace": "ACEScg",
+    "showreelVideoUrl": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4",
+    "showreelCoverImage": "/covers/commercial-pulse.jpg",
+    "metrics": [
+      { "value": "120M+", "label": "Organic Views Generated" },
+      { "value": "+48%", "label": "Avg. Retention Increase" },
+      { "value": "4K DCI", "label": "HDR & ACES Master Grade" },
+      { "value": "180+", "label": "High-Ticket Deliverables" }
+    ],
     "hardwarePipeline": [
       "DaVinci Resolve Studio 19",
-      "Premiere Pro 2025",
+      "Adobe Premiere Pro",
       "After Effects",
-      "ACEScc Color Pipeline",
-      "Fairlight Audio"
+      "Fairlight Audio Engine",
+      "Fusion VFX",
+      "ACEScg Workflow",
+      "Blender 3D",
+      "Dehancer Pro"
     ]
   },
   "categories": [
-    "All Works",
-    "Commercial Films",
-    "Healthcare & Hospital",
-    "Creator Content",
-    "Documentary & Storytelling",
-    "Motion Graphics"
+    "All",
+    "Short-Form",
+    "Long-Form",
+    "Commercial"
   ],
   "projects": [
     {
-      "id": "pulse-of-motion",
-      "title": "The Pulse of Motion",
-      "category": "Commercial Films",
+      "id": "aura-pulse-commercial",
+      "title": "Aura Pulse — Commercial Launch Film",
+      "category": "Commercial",
       "client": "APEX ACTIVEWEAR",
-      "year": "2024",
-      "duration": "01:15",
-      "format": "4K 2.39:1",
-      "description": "A high-octane commercial cut for an athletics brand, utilizing split screens, speed ramps, and rhythmic sound design to mirror heart rates under maximum threshold.",
-      "thumbnail": "https://lh3.googleusercontent.com/aida-public/AB6AXuBrZEfgtAlqxuPZBsvlfbqKOC9ZV3u6yEskXR8V-AD_45r4byaXpoOrME2qDBw-wYBh8m7fkiqssKkyktGp033HKeRTI5Vr_Zs7qwdawseTF9ci1XFRM-1LuQuYEJJ-VVsdN3lsN2ytJ0P3tvOj1sdcaxhojQRkEJfUjL--tatSIwHHCULI7Nl77Wq7w8UNUDze7RnwR54mswiLV1i4xQZmfX21I7yNGoE1ftHtiUA",
-      "videoUrl": "https://www.youtube.com/watch?v=ScMzIvxBSi4",
+      "year": "2025",
+      "duration": "01:45",
+      "format": "4K HDR",
+      "aspectRatio": "16:9",
+      "description": "High-octane commercial cut blending dynamic speed ramps, layered sound design risers, and contrast-driven ACES color grading.",
+      "thumbnail": "/covers/commercial-pulse.jpg",
+      "videoUrl": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4",
       "featured": true,
-      "caseStudyUrl": "#contact",
-      "tags": ["Speed Ramps", "Sound Design", "Split Screen", "Commercial"],
+      "tags": ["Fast Pacing", "Sound Design", "ACES Color"],
+      "views": "4.2M Views",
       "order": 1
     },
     {
-      "id": "care-across-borders",
-      "title": "Care Across Borders",
-      "category": "Healthcare & Hospital",
-      "client": "SAINT JUDE CLINICAL RESEARCH",
-      "year": "2024",
-      "duration": "03:45",
-      "format": "PRORES 422",
-      "description": "Cinematic institutional documentary focusing on pediatric surgical specialists. Precision-paced transitions, warm skin-tone grading, and compassionate human storytelling.",
-      "thumbnail": "https://lh3.googleusercontent.com/aida-public/AB6AXuBccyy1mAW-U9jZ08Pq0xR4b0m-m9yEskXR8V-AD_45r4byaXpoOrME2qDBw-wYBh8m7fkiqssKkyktGp033HKeRTI5Vr_Zs7qwdawseTF9ci1XFRM-1LuQuYEJJ-VVsdN3lsN2ytJ0P3tvOj1sdcaxhojQRkEJfUjL--tatSIwHHCULI7Nl77Wq7w8UNUDze7RnwR54mswiLV1i4xQZmfX21I7yNGoE1ftHtiUA",
-      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "featured": false,
-      "caseStudyUrl": "#contact",
-      "tags": ["Medical", "Documentary", "Human Interest"],
+      "id": "the-silicon-frontier",
+      "title": "The Silicon Frontier — AI Economy Docuseries",
+      "category": "Long-Form",
+      "client": "CURIOSITY STREAM",
+      "year": "2025",
+      "duration": "24:18",
+      "format": "2.39:1 SCOPE",
+      "aspectRatio": "16:9",
+      "description": "Deep narrative retention architecture, archival treatment, minimalist motion infographics, and surgical studio vocal mastering.",
+      "thumbnail": "/covers/silicon-frontier.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=LXb3EKWsInQ",
+      "featured": true,
+      "tags": ["Long-Form Story", "DaVinci Grade", "Documentary"],
+      "views": "1.8M Views · 64% Ret.",
       "order": 2
     },
     {
-      "id": "finding-north",
-      "title": "Finding North",
-      "category": "Documentary & Storytelling",
-      "client": "NORDIC PICTURES",
-      "year": "2023",
-      "duration": "14:20",
-      "format": "2K FLAT",
-      "description": "Meditative long-take pacing and ambient score sync exploring ancestral woodworkers in remote Scandinavia. Screened at DocEdge 2024.",
-      "thumbnail": "https://lh3.googleusercontent.com/aida-public/AB6AXuDxOdDDMwOp-N_yVGgx4YsLo_8YQkCIyKUTfm8Tuz1h2b64D1B7sx4zvI3Ms3q5X_NqgOKWC9lurQHIQwMIAEAFmykLwL07Ns0lo-mXR7HkggdOltHD20LvJvAezPmQn1MpUKP9By3y6Loz_j3p6kkN51tY_HYZDcNyhv1jDd7TU3bmOxe-K6W1Id_Q0NbRVffAiRpOswqwwGRMf3SAzzWZ_k-BbDIDqWX7P6IjaXQ",
-      "videoUrl": "https://www.youtube.com/watch?v=ScMzIvxBSi4",
-      "featured": false,
-      "caseStudyUrl": "#contact",
-      "tags": ["DocEdge Festival", "Long-Take", "Atmospheric"],
+      "id": "viral-saas-founder-reel",
+      "title": "The $100M Founder Mindset — Short-Form Series",
+      "category": "Short-Form",
+      "client": "FOUNDER STUDIO",
+      "year": "2025",
+      "duration": "00:54",
+      "format": "VERTICAL 9:16",
+      "aspectRatio": "9:16",
+      "description": "First 3-second hook mastery, synchronized kinetic captions, micro-SFX punctuation, and dynamic pacing for vertical retention.",
+      "thumbnail": "/covers/viral-saas-vertical.jpg",
+      "videoUrl": "https://vimeo.com/76979871",
+      "featured": true,
+      "tags": ["Short-Form", "Motion Graphics", "Reels / TikTok"],
+      "views": "18.4M Views · 72% Ret.",
       "order": 3
     },
     {
+      "id": "finding-north-doc",
+      "title": "Finding North — Nordic Craftsmanship Short Doc",
+      "category": "Long-Form",
+      "client": "NORDIC PICTURES",
+      "year": "2024",
+      "duration": "14:20",
+      "format": "2K FLAT",
+      "aspectRatio": "16:9",
+      "description": "Meditative long-take pacing and ambient score sync exploring ancestral woodworkers in remote Scandinavia. Screened at DocEdge.",
+      "thumbnail": "/covers/finding-north.jpg",
+      "videoUrl": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+      "featured": true,
+      "tags": ["Documentary", "Film Emulation", "Atmospheric"],
+      "views": "920K Views",
+      "order": 4
+    },
+    {
+      "id": "tunnel-velocity-cutdown",
+      "title": "Tunnel Velocity — High-Tempo Athletics Cutdown",
+      "category": "Short-Form",
+      "client": "APEX LABS",
+      "year": "2025",
+      "duration": "00:42",
+      "format": "4K 60FPS",
+      "aspectRatio": "16:9",
+      "description": "Precision beat-matched montage, optical flow speed ramps, and Kodak 2383 film halation grade for flagship social launches.",
+      "thumbnail": "/covers/tunnel-motion.jpg",
+      "videoUrl": "https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4",
+      "featured": false,
+      "tags": ["Short-Form", "Rhythm Cut", "Kodak 2383"],
+      "views": "6.1M Views",
+      "order": 5
+    },
+    {
       "id": "architects-of-sound",
-      "title": "Architects of Sound",
-      "category": "Creator Content",
+      "title": "Architects of Sound — Analog Synth Brand Film",
+      "category": "Commercial",
       "client": "SYNTH COLLECTIVE",
       "year": "2024",
-      "duration": "02:05",
+      "duration": "02:15",
       "format": "PRORES 422 HQ",
-      "description": "Rhythmic montage, kinetic typographic transitions, and high-retention audio cuts engineered for an episodic music synthesis masterclass series.",
-      "thumbnail": "https://lh3.googleusercontent.com/aida-public/AB6AXuDd8FLFDgNumikw7vZnPSjvxCEXd5XkkHlNI3hwBOs4tgKMZ0upAMfukXuJE_JDSqSWmX5devd5PIrNJO3N3UuAyLbga_6Rr0xaf4Ay147zBK_SfyWagDxtB-wXZQswfcS8nCLpWpswmWvyp0ndlPeNHirpOV3wWgSfkLe29n9At-fGUyH7KEdacjJOV-xyx90XjQyV-Xa-vxWChjcLHg_3WxjodgQWMCBLknoCa2k",
-      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "featured": true,
-      "caseStudyUrl": "#contact",
-      "tags": ["Kinetic Type", "Episodic", "YouTube Masterclass"],
-      "order": 4
+      "aspectRatio": "16:9",
+      "description": "Rhythmic montage, tactile analog waveform visualizers, and warm tungsten studio color grading for an episodic flagship campaign.",
+      "thumbnail": "/covers/architects-of-sound.jpg",
+      "videoUrl": "https://vimeo.com/76979871",
+      "featured": false,
+      "tags": ["Commercial", "Sound Design", "ACEScg"],
+      "views": "1.4M Views",
+      "order": 6
     }
   ],
   "services": [
     {
-      "id": "commercial-editing",
+      "id": "short-form-retention",
       "number": "01",
-      "title": "Commercial Video Editing",
-      "description": "Precision high-impact cuts built for brands, agencies, and broadcast. Surgical pacing, rhythmic momentum, and seamless brand voice alignment.",
-      "deliverables": ["TV Commercials", "Brand Anthems", "Product Launches", "Digital Ads"],
-      "badge": "PREMIUM NLE"
+      "badge": "01 / VIRAL CORE",
+      "title": "SHORT-FORM RETENTION EDITING",
+      "description": "Tailored specifically for TikTok, Reels, and YouTube Shorts. First 3-second hook mastery, kinetic typography, dynamic SFX punctuation, and pacing designed to maximize re-watches and shares.",
+      "deliverables": ["9:16 Vertical Video", "Hook Architecture", "Kinetic Captions", "Sound FX Stems"],
+      "turnaround": "Turnaround: 24-48h"
     },
     {
-      "id": "youtube-editing",
+      "id": "youtube-storytelling",
       "number": "02",
-      "title": "YouTube Video Editing",
-      "description": "High-retention storytelling engineered to hold viewer attention past the 50% milestone without generic brainrot fluff. Narrative hooks, soundscapes, and visual pacing.",
-      "deliverables": ["Long-form Documentaries", "Video Essays", "Talking Head Overhauls", "Hook Architecture"],
-      "badge": "RETENTION FOCUSED"
+      "badge": "02 / LONG FORM PACING",
+      "title": "YOUTUBE STORYTELLING & ESSAYS",
+      "description": "Transforming hours of raw footage into seamless episodic stories. Narrative curve optimization, custom motion infographics, B-roll curation, and retention drop-off prevention.",
+      "deliverables": ["Long-Form Docs", "Video Essays", "Chapter Structuring", "Paper Cuts"],
+      "turnaround": "Turnaround: 3-5d"
     },
     {
-      "id": "social-content",
+      "id": "color-grading-aces",
       "number": "03",
-      "title": "Social Media Content",
-      "description": "Punchy, vertical-first edits tailored for TikTok, Instagram Reels, and YouTube Shorts. Dynamic subtitles, swift cuts, and scroll-stopping intros.",
-      "deliverables": ["9:16 Vertical Video", "Micro-Documentaries", "Podcast Highlights", "Campaign Cutdowns"],
-      "badge": "VIRAL FORMATS"
+      "badge": "03 / COLOR SCIENCE",
+      "title": "CINEMATIC COLOR GRADING & ACES",
+      "description": "Certified DaVinci Resolve color finishing. Film stock emulation (Kodak/Fuji), custom look design, HDR Dolby Vision delivery, and seamless multi-camera tone matching.",
+      "deliverables": ["ACEScg Pipeline", "Kodak 2383 Looks", "Skin-Tone Polish", "Rec.709 & DCI-P3"],
+      "turnaround": "Turnaround: 48h"
     },
     {
-      "id": "healthcare-corporate",
+      "id": "sound-design-mixing",
       "number": "04",
-      "title": "Healthcare & Corporate Films",
-      "description": "Refined and empathetic storytelling for medical institutions, life sciences, and corporate flagships. Clear narrative structure and pristine timeline hygiene.",
-      "deliverables": ["Hospital Profiles", "Patient Journeys", "Investor Overviews", "Executive Keynotes"],
-      "badge": "AUTHENTIC STORY"
-    },
-    {
-      "id": "documentary-storytelling",
-      "number": "05",
-      "title": "Documentary & Storytelling",
-      "description": "Deep-form editorial work that finds the emotional thread in massive footage pools. Interview curation, verité rhythm, and nuanced dramatic timing.",
-      "deliverables": ["Doc Shorts", "Feature Assembly", "Web Series", "Festival Conforms"],
-      "badge": "NARRATIVE ARCH"
-    },
-    {
-      "id": "motion-graphics",
-      "number": "06",
-      "title": "Motion Graphics",
-      "description": "Bespoke 2D/3D kinetic typography, animated data visualization, UI mockups, lower thirds, and title cards designed to augment the edit seamlessly.",
-      "deliverables": ["Kinetic Titles", "HUD Graphics", "Infographic Sequences", "Logo Resolves"],
-      "badge": "AFTER EFFECTS"
-    },
-    {
-      "id": "color-grading",
-      "number": "07",
-      "title": "Color Correction & Grading",
-      "description": "Industry-grade ACES and DaVinci YRGB color grading. Shot matching, look development, skin-tone optimization, and HDR/SDR mastering delivery.",
-      "deliverables": ["Look Development", "ACEScc Conforms", "Skin-Tone Polish", "Rec.709 & DCI-P3"],
-      "badge": "DAVINCI RESOLVE"
+      "badge": "04 / AUDIO MASTERING",
+      "title": "SOUND DESIGN & PUNCHY MIXING",
+      "description": "Audio is 60% of video perception. Multi-layer foley design, surgical dialogue clarity, sub-bass impacts, and broadcast loudness compliance (-14 LUFS).",
+      "deliverables": ["Multi-Layer Foley", "Vocal Isolation", "Spatial Stems", "-14 LUFS Master"],
+      "turnaround": "Included / Standalone"
     }
   ],
   "about": {
-    "badge": "03 / ABOUT ME",
-    "heading": "Good editing is more than cutting clips.",
-    "subheading": "It's rhythm, psychological tension, and respect for the viewer's clock.",
-    "portraitImage": "/portrait.png",
+    "badge": "/ ABOUT ME",
+    "heading": "Good editing is invisible pacing & emotional tension.",
+    "subheading": "Respecting every millisecond of the viewer's attention.",
+    "portraitImage": "/portrait-cutout.png",
     "bio": [
-      "I am Jashandeep Singh, a video editor and post-production specialist dedicated to shaping footage into memorable cinematic experiences.",
-      "Over the past 7+ years, I've partnered with international directors, agencies, healthcare networks, and top-tier creator brands. My philosophy is rooted in intentional pacing: every frame must earn its place on the timeline.",
-      "Operating from a calibrated dual-monitor studio with hardware control surfaces, I handle the complete post pipeline from initial assembly and paper cut through to final ACES color grading and sound master conform."
+      "I am Jashandeep Singh, a video editor and colorist dedicated to turning raw footage into high-retention cinema.",
+      "Over the past 7+ years, I've partnered with global directors, flagship brands, and high-growth YouTube creators—driving 120M+ organic views through intentional cuts, rhythmic sound design, and ACES color science."
     ],
     "stats": [
       { "label": "YEARS CUTTING", "value": "7+", "detail": "Commercial & narrative" },
-      { "label": "PROJECTS DELIVERED", "value": "150+", "detail": "On-time delivery" },
-      { "label": "ORGANIC VIEWS", "value": "12M+", "detail": "Across client platforms" },
-      { "label": "REPEAT CLIENT RATE", "value": "94%", "detail": "Direct collaboration" }
+      { "label": "PROJECTS DELIVERED", "value": "180+", "detail": "On-time delivery" },
+      { "label": "ORGANIC VIEWS", "value": "120M+", "detail": "Across client platforms" },
+      { "label": "RETENTION LIFT", "value": "+48%", "detail": "Average audience gain" }
     ],
     "softwareSkills": [
-      { "name": "DaVinci Resolve Studio", "level": "Expert / Master", "category": "NLE & Color" },
+      { "name": "DaVinci Resolve Studio 19", "level": "Master", "category": "NLE & Color" },
       { "name": "Adobe Premiere Pro", "level": "Expert", "category": "NLE" },
-      { "name": "Adobe After Effects", "level": "Advanced", "category": "Motion Graphics" },
-      { "name": "Fairlight & Pro Tools", "level": "Advanced", "category": "Audio Post" },
-      { "name": "ACES Color Workflow", "level": "Master", "category": "Color Science" },
-      { "name": "Cinema 4D / Blender", "level": "Intermediate", "category": "3D & VFX" }
+      { "name": "After Effects", "level": "Advanced", "category": "Motion Graphics" },
+      { "name": "Fairlight Audio Engine", "level": "Advanced", "category": "Audio Post" }
     ]
   },
   "process": {
-    "badge": "04 / WORKFLOW",
-    "heading": "Simple process. Thoughtful execution.",
-    "description": "A transparent, frictionless workflow designed to respect client timelines and creative integrity at every milestone.",
+    "badge": "/ EXPERIENCE",
+    "heading": "TRACK RECORD",
+    "description": "7+ years in high-stakes video production",
+    "experiences": [
+      {
+        "company": "Hyperion Creative Agency",
+        "role": "Lead Video Editor & Head of Post-Production",
+        "period": "Jan 2023 — Present"
+      },
+      {
+        "company": "Velocity Media Labs",
+        "role": "Senior Commercial Editor & Retention Strategist",
+        "period": "Mar 2021 — Dec 2022"
+      },
+      {
+        "company": "Studio Apex Prime",
+        "role": "Lead Colorist & Motion Designer",
+        "period": "Jul 2019 — Feb 2021"
+      },
+      {
+        "company": "Independent Filmmaker & Editor",
+        "role": "Freelance Post-Production for Global Creators",
+        "period": "Feb 2018 — Jun 2019"
+      }
+    ],
     "steps": [
       {
         "stage": "STAGE // 01",
         "title": "DISCOVER",
-        "description": "Deep dive into project briefs, audience objectives, references, brand guidelines, and raw asset ingestion.",
-        "duration": "EST. 24–48 HRS"
+        "description": "Ingest rushes, dissect brief & retention goals.",
+        "duration": "24–48 HRS"
       },
       {
         "stage": "STAGE // 02",
         "title": "PLAN",
-        "description": "Establish narrative arcs, select key interview selects, design soundscape foundation, and build paper cut outlines.",
-        "duration": "STORYBOARD / PAPER CUT"
+        "description": "Paper cut, hook architecture & sonic pacing map.",
+        "duration": "STORY ARC"
       },
       {
         "stage": "STAGE // 03",
         "title": "EDIT",
-        "description": "Assemble the timeline through surgical pacing, sound effects design, motivated cuts, and rough grade pass.",
+        "description": "Surgical timeline assembly, VFX, motion & temp mix.",
         "duration": "ROUGH CUT V1"
       },
       {
         "stage": "STAGE // 04",
         "title": "REFINE",
-        "description": "Frame.io collaborative review. Tightening timing, pacing micro-adjustments, kinetic typography, and audio leveling.",
-        "duration": "2 REVISION ROUNDS"
-      },
-      {
-        "stage": "STAGE // 05",
-        "title": "DELIVER",
-        "description": "Master conform export in Apple ProRes 4444/422, H.264 web delivery, social aspect ratios, and full archive project packaging.",
-        "duration": "MASTER ARCHIVE"
+        "description": "Frame.io passes, ACES look dev & -14 LUFS master.",
+        "duration": "MASTER FINAL"
       }
     ]
   },
@@ -242,7 +293,7 @@
       "role": "Creative Director",
       "company": "Vogel Studio NYC",
       "rating": 5,
-      "quote": "Jashandeep possesses an uncanny instinct for rhythm. When we handed him 14 hours of unstructured footage for our brand commercial, he returned an edit that made our executive team pause in silence. Zero fluff, absolute narrative punch."
+      "quote": "Jashandeep possesses an uncanny instinct for rhythm. Handing him 14 hours of unstructured footage yielded a launch film that left our executive team silent. Zero fluff, pure impact."
     },
     {
       "id": "t2",
@@ -250,7 +301,7 @@
       "role": "Series Producer",
       "company": "Doc MediaLab",
       "rating": 5,
-      "quote": "In medical documentary, balance is everything. If the cut is too fast, you lose trust; if it's too slow, you lose audience retention. Jashandeep found the sweet spot on our first version cut. His timeline hygiene and communication are pristine."
+      "quote": "Balance is everything in documentary. Jashandeep nails emotional weight without sacrificing momentum. His timeline hygiene and ACES conforms are world-class."
     },
     {
       "id": "t3",
@@ -258,24 +309,7 @@
       "role": "Founder & Host",
       "company": "The Architectural Diary (480K Subs)",
       "rating": 5,
-      "quote": "Working with Jashandeep boosted our YouTube average view duration from 32% to over 54% within two months. He understands how modern viewers process information without resorting to annoying hype edits."
+      "quote": "Working with Jashandeep boosted our average view duration from 32% to over 54% within two months. He elevates storytelling without cheap gimmicks."
     }
-  ],
-  "inquiries": [
-    {
-      "id": "sample-inquiry-1",
-      "name": "Sarah Jenkins",
-      "email": "sarah@luminafilms.co",
-      "projectType": "Commercial Video Editing",
-      "budget": "$5,000 - $10,000",
-      "timeline": "Next 2 weeks",
-      "message": "Hi Jashandeep, we love your editorial pacing on The Pulse of Motion. We have a 60-second sportswear commercial shooting next week and need an editor who can build out an energetic cut with sound design. Let us know your availability!",
-      "date": "2026-11-05T14:30:00Z",
-      "status": "unread"
-    }
-  ],
-  "admin": {
-    "password": "admin123",
-    "sessionToken": "jashan_admin_session_secret_key_8042"
-  }
+  ]
 }

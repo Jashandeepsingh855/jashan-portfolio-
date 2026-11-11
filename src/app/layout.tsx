@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Jashandeep Singh — Modern Cinematic Portfolio & Director's Cut",
-  description: "Crafting high-velocity commercial cuts, documentary narratives, and cultural stories with surgical rhythm, emotional depth, and cinematic punch.",
-  icons: {
-    icon: "/favicon.ico",
-  },
+  title: "Jashandeep Singh — Cinematic Video Editor & Colorist",
+  description:
+    "High-retention video editor, commercial storyteller, and ACES colorist helping brands and global creators turn raw footage into cinema.",
 };
 
 export default function RootLayout({
@@ -15,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className="bg-surface text-on-surface antialiased selection:bg-accent selection:text-white">
+    <html lang="en" className="dark scroll-smooth">
+      <body className="min-h-screen bg-[#050505] text-[#f4f4f5] font-sans antialiased selection:bg-white selection:text-black">
         {children}
       </body>
     </html>

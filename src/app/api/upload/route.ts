@@ -1,58 +1,74 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
-import fs from "fs";
-import path from "path";
+import { MEDIA_BUCKET } from "@/lib/supabase/config";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function POST(request: Request) {
+const MAX_BYTES = 50 * 1024 * 1024; // 50MB bucket limit
+
+export async function POST(req: NextRequest) {
+  const isAdmin = await verifyAdminSession();
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const formData = await request.formData();
+    const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const folder =
+      ((formData.get("folder") as string | null) || "uploads").replace(
+        /[^a-zA-Z0-9_-]/g,
+        ""
+      ) || "uploads";
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    if (file.size > MAX_BYTES) {
+      return NextResponse.json(
+        { error: "File exceeds the 50MB storage limit." },
+        { status: 400 }
+      );
+    }
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Clean filename
-    const ext = path.extname(file.name) || ".png";
-    const base = path.basename(file.name, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
-    const uniqueFilename = `${base}_${Date.now()}${ext}`;
+    const baseName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+    const uniqueName = `${Date.now()}-${baseName}`;
+    const storagePath = `${folder}/${uniqueName}`;
 
-    // Vercel serverless functions have a read-only deployment filesystem; return a data URL there.
-    if (process.env.VERCEL === "1") {
-      const mimeType = file.type || "application/octet-stream";
-      const dataUrl = `data:${mimeType};base64,${buffer.toString("base64")}`;
-      return NextResponse.json({
-        success: true,
-        url: dataUrl,
-        filename: uniqueFilename,
+    const supabase = await createSupabaseServerClient();
+    const { error: uploadError } = await supabase.storage
+      .from(MEDIA_BUCKET)
+      .upload(storagePath, buffer, {
+        contentType: file.type || "application/octet-stream",
+        cacheControl: "31536000",
+        upsert: false,
       });
+
+    if (uploadError) {
+      return NextResponse.json(
+        { error: uploadError.message },
+        { status: 500 }
+      );
     }
 
-    const uploadsDir = path.join(/* turbopackIgnore: true */ process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    const filePath = path.join(uploadsDir, uniqueFilename);
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${uniqueFilename}`;
+    const { data } = supabase.storage
+      .from(MEDIA_BUCKET)
+      .getPublicUrl(storagePath);
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
-      filename: uniqueFilename,
+      url: data.publicUrl,
+      filename: uniqueName,
+      storagePath,
     });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to upload media to storage bucket" },
+      { status: 500 }
+    );
   }
 }

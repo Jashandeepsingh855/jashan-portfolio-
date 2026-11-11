@@ -1,60 +1,77 @@
 "use client";
 
-import React from "react";
-import { Testimonial } from "@/lib/data";
-import { Star } from "lucide-react";
+import { motion } from "framer-motion";
+import { Quote, Star } from "lucide-react";
+import type { Testimonial } from "@/lib/data";
 
 interface TestimonialsSectionProps {
   testimonials: Testimonial[];
 }
 
-export default function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
-  return (
-    <section className="w-full bg-surface-muted/60 py-24 border-y border-border-subtle" id="testimonials">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between pb-12 mb-12 gap-6 border-b border-border-subtle">
-          <div>
-            <div className="font-mono text-xs uppercase tracking-widest text-accent font-bold mb-2 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent"></span>
-              05 // COLLABORATION REVIEWS
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-extrabold uppercase text-on-surface tracking-tight">
-              Built on collaboration.
-            </h2>
-          </div>
-          <p className="text-on-surface-muted max-w-md text-base leading-relaxed">
-            Feedback from directors, brand leads, and creators who prioritize visual distinction over volume.
-          </p>
-        </div>
+export default function TestimonialsSection({
+  testimonials,
+}: TestimonialsSectionProps) {
+  if (!testimonials || testimonials.length === 0) return null;
 
-        {/* Testimonials Grid */}
+  return (
+    <section
+      id="testimonials"
+      className="py-20 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-white/10 bg-[#050505]"
+    >
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-12 sm:mb-14"
+        >
+          <p className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-400 mb-2">
+            / CLIENT VALIDATION
+          </p>
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight uppercase">
+            DIRECTOR &amp; CREATOR REVIEWS
+          </h2>
+        </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((test, idx) => (
-            <div
-              key={test.id || idx}
-              className="bg-surface-pure p-8 rounded-3xl border border-border-subtle flex flex-col justify-between shadow-sm hover:shadow-lg transition-shadow"
+          {testimonials.map((t, index) => (
+            <motion.article
+              key={t.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.5,
+                delay: Math.min(index * 0.08, 0.24),
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="rounded-3xl bg-[#111114] border border-white/[0.08] p-6 sm:p-7 flex flex-col justify-between gap-6 glow-card"
             >
-              <div>
-                <div className="flex items-center gap-1 text-accent pb-6">
-                  {Array.from({ length: test.rating || 5 }).map((_, sIdx) => (
-                    <Star key={sIdx} className="w-4 h-4 fill-current" />
-                  ))}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-white">
+                    {Array.from({ length: t.rating || 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 fill-white text-white"
+                      />
+                    ))}
+                  </div>
+                  <Quote className="w-5 h-5 text-zinc-600" />
                 </div>
-                <p className="text-base text-on-surface leading-relaxed">
-                  “{test.quote}”
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  &ldquo;{t.quote}&rdquo;
                 </p>
               </div>
 
-              <div className="pt-8 border-t border-border-subtle mt-8">
-                <span className="font-bold text-base uppercase text-on-surface block">
-                  {test.author}
-                </span>
-                <span className="font-mono text-[11px] uppercase text-on-surface-muted tracking-wider block mt-0.5">
-                  {test.role} // {test.company}
-                </span>
+              <div className="pt-4 border-t border-white/[0.08]">
+                <p className="text-sm font-bold text-white">{t.author}</p>
+                <p className="text-xs font-mono text-zinc-500 mt-0.5">
+                  {t.role} · {t.company}
+                </p>
               </div>
-            </div>
+            </motion.article>
           ))}
         </div>
       </div>

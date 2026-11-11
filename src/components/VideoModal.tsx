@@ -1,153 +1,183 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { X, Play, Film, ExternalLink } from "lucide-react";
+import { useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Film, X } from "lucide-react";
 
-interface VideoModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+export interface VideoModalItem {
   title: string;
-  category?: string;
-  client?: string;
-  description?: string;
+  client: string;
+  category: string;
+  duration: string;
+  format?: string;
   videoUrl: string;
+  thumbnail?: string;
+  description?: string;
+  tags?: string[];
+  views?: string;
 }
 
-export default function VideoModal({
-  isOpen,
-  onClose,
-  title,
-  category,
-  client,
-  description,
-  videoUrl,
-}: VideoModalProps) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
+interface VideoModalProps {
+  video: VideoModalItem | null;
+  onClose: () => void;
+}
+
+function getEmbedUrl(rawUrl: string): string | null {
+  if (!rawUrl) return null;
+
+  try {
+    const parsed = new URL(rawUrl);
+
+    if (
+      parsed.hostname.includes("youtube.com") ||
+      parsed.hostname.includes("youtu.be")
+    ) {
+      let videoId = "";
+      if (parsed.hostname.includes("youtu.be")) {
+        videoId = parsed.pathname.slice(1).split("/")[0];
+      } else if (parsed.pathname.includes("/shorts/")) {
+        videoId = parsed.pathname.split("/shorts/")[1]?.split("/")[0] || "";
+      } else if (parsed.pathname.includes("/embed/")) {
+        videoId = parsed.pathname.split("/embed/")[1]?.split("/")[0] || "";
+      } else {
+        videoId = parsed.searchParams.get("v") || "";
       }
-    };
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      window.addEventListener("keydown", handleKeyDown);
+
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+      }
     }
+
+    if (parsed.hostname.includes("vimeo.com")) {
+      const segments = parsed.pathname.split("/").filter(Boolean);
+      const id = segments[segments.length - 1];
+      if (id && /^\d+$/.test(id)) {
+        return `https://player.vimeo.com/video/${id}?autoplay=1&title=0&byline=0&portrait=0`;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+export default function VideoModal({ video, onClose }: VideoModalProps) {
+  useEffect(() => {
+    if (!video) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [video, onClose]);
 
-  if (!isOpen) return null;
-
-  // Helper to extract embed url for YouTube or Vimeo
-  const getEmbedUrl = (url: string) => {
-    if (!url) return "";
-
-    // YouTube watch or short URL
-    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-    if (ytMatch) {
-      return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1`;
-    }
-
-    // Vimeo
-    const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)/);
-    if (vimeoMatch) {
-      return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&title=0&byline=0&portrait=0`;
-    }
-
-    // Direct video file (mp4, webm) or generic embed
-    return url;
-  };
-
-  const embedUrl = getEmbedUrl(videoUrl);
-  const isDirectVideo = embedUrl.endsWith(".mp4") || embedUrl.endsWith(".webm") || embedUrl.includes("/uploads/");
+  const embedUrl = video ? getEmbedUrl(video.videoUrl) : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-      {/* Background click listener */}
-      <div className="absolute inset-0" onClick={onClose} />
-
-      {/* Modal Container */}
-      <div className="relative w-full max-w-5xl bg-surface-dark border border-border-dark rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[92vh]">
-        {/* Modal Header HUD */}
-        <div className="flex items-center justify-between px-6 py-4 bg-surface-dark/95 border-b border-white/10 font-mono text-xs uppercase tracking-wider text-white/70">
-          <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse"></span>
-            <span className="font-bold text-white text-sm tracking-tight">{title}</span>
-            {client && (
-              <>
-                <span className="text-white/30 hidden sm:inline">•</span>
-                <span className="text-white/70 hidden sm:inline">CLIENT: {client}</span>
-              </>
-            )}
-            {category && (
-              <span className="hidden md:inline px-2 py-0.5 rounded bg-white/10 text-[10px] text-accent">
-                {category}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/10 hover:bg-accent text-white flex items-center justify-center transition-colors"
-            aria-label="Close modal"
+    <AnimatePresence>
+      {video && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 16 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-5xl rounded-3xl bg-[#0b0b0e] border border-white/15 overflow-hidden shadow-2xl"
           >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+            {/* Header Bar */}
+            <div className="flex items-center justify-between gap-4 px-5 sm:px-6 py-4 border-b border-white/10">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center shrink-0 text-white">
+                  <Film className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-sm sm:text-base font-bold text-white truncate">
+                    {video.title}
+                  </h3>
+                  <p className="text-[11px] font-mono text-zinc-400 truncate">
+                    {video.client} · {video.category} · {video.duration}
+                    {video.format ? ` · ${video.format}` : ""}
+                  </p>
+                </div>
+              </div>
 
-        {/* Video Player Area */}
-        <div className="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden">
-          {isDirectVideo ? (
-            <video
-              src={embedUrl}
-              controls
-              autoPlay
-              className="w-full h-full object-contain"
-            />
-          ) : embedUrl ? (
-            <iframe
-              src={embedUrl}
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center text-white/50 p-8 text-center font-mono text-sm">
-              <Film className="w-12 h-12 mb-3 text-accent" />
-              <p>No video URL provided for this project.</p>
-              <p className="text-xs text-white/30 mt-1">Add a video URL in the Admin Portal.</p>
-            </div>
-          )}
-        </div>
-
-        {/* Modal Footer Info */}
-        <div className="p-6 bg-[#0E1420] border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 font-mono text-xs">
-          <div className="flex-1">
-            <div className="text-white font-semibold text-sm mb-1">{title}</div>
-            {description && <p className="text-white/60 font-sans text-xs leading-relaxed max-w-2xl">{description}</p>}
-          </div>
-          <div className="flex items-center gap-3 shrink-0">
-            {videoUrl && (
-              <a
-                href={videoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-mono text-xs transition-colors"
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close cinema player"
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white hover:text-black text-white flex items-center justify-center transition-colors shrink-0"
               >
-                <span>Open Source</span>
-                <ExternalLink className="w-3.5 h-3.5 text-accent" />
-              </a>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Player Frame */}
+            <div className="relative bg-black aspect-video w-full">
+              {embedUrl ? (
+                <iframe
+                  src={embedUrl}
+                  title={video.title}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full border-0"
+                />
+              ) : (
+                <video
+                  src={video.videoUrl}
+                  poster={video.thumbnail}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-contain bg-black"
+                />
+              )}
+            </div>
+
+            {/* Footer Info */}
+            {(video.description || (video.tags && video.tags.length > 0)) && (
+              <div className="px-5 sm:px-6 py-4 bg-[#0f0f13] border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                {video.description && (
+                  <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl leading-relaxed">
+                    {video.description}
+                  </p>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
+                  {(video.tags || []).map((tag) => (
+                    <span
+                      key={tag}
+                      className="glass-pill text-[11px] font-mono text-zinc-300 px-2.5 py-1 rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  {video.views && (
+                    <span className="text-xs font-mono text-accentGreen font-semibold ml-1">
+                      {video.views}
+                    </span>
+                  )}
+                </div>
+              </div>
             )}
-            <button
-              onClick={onClose}
-              className="px-4 py-1.5 rounded-lg bg-accent text-white font-mono font-semibold text-xs hover:bg-accent/90 transition-colors"
-            >
-              CLOSE CUT
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

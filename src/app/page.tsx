@@ -1,9 +1,10 @@
-import { getPublicContent } from "@/lib/data";
 import ClientPortfolio from "@/components/ClientPortfolio";
+import { getPublicContent } from "@/lib/data";
 
-// Revalidate frequently or dynamic so changes in admin portal reflect immediately
-export default function HomePage() {
-  const content = getPublicContent();
+export const dynamic = "force-dynamic";
 
-  return <ClientPortfolio initialContent={content as any} />;
+export default async function HomePage() {
+  const initialContent = await getPublicContent();
+
+  return <ClientPortfolio initialContent={initialContent} />;
 }

@@ -1,323 +1,278 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowUpRight, Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle, Calendar } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { ArrowUpRight, CheckCircle2, Mail, Send } from "lucide-react";
+import type { SiteSettings } from "@/lib/data";
 
 interface ContactSectionProps {
-  siteSettings: {
-    email: string;
-    phone: string;
-    location: string;
-    calendarLink: string;
-    socials: {
-      instagram?: string;
-      youtube?: string;
-      vimeo?: string;
-      linkedin?: string;
-      x?: string;
-      behance?: string;
-    };
-  };
-  services: { title: string }[];
+  siteSettings: SiteSettings;
 }
 
-export default function ContactSection({ siteSettings, services }: ContactSectionProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    projectType: services[0]?.title || "Commercial Video Editing",
-    budget: "$5,000 - $10,000",
-    timeline: "Within 1 month",
-    message: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+export default function ContactSection({ siteSettings }: ContactSectionProps) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [projectType, setProjectType] = useState("Commercial");
+  const [budget, setBudget] = useState("$2,500 – $5,000");
+  const [timeline, setTimeline] = useState("2–3 Weeks");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setSuccessMessage("");
+    setStatus("submitting");
     setErrorMessage("");
 
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name,
+          email,
+          projectType,
+          budget,
+          timeline,
+          message,
+        }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || "Failed to submit message");
+        throw new Error(data.error || "Could not submit your inquiry.");
       }
 
-      setSuccessMessage(data.message || "Message delivered successfully!");
-      setFormData({
-        name: "",
-        email: "",
-        projectType: services[0]?.title || "Commercial Video Editing",
-        budget: "$5,000 - $10,000",
-        timeline: "Within 1 month",
-        message: "",
-      });
-    } catch (err: any) {
-      setErrorMessage(err.message || "Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
+      setStatus("success");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (err) {
+      setStatus("error");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Failed to submit project inquiry."
+      );
     }
   };
 
   return (
-    <section className="w-full bg-surface py-24" id="contact">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          {/* Left Column: Direct Info */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
-            <div>
-              <div className="font-mono text-xs uppercase tracking-widest text-accent font-bold mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-accent"></span>
-                06 / START A PROJECT
+    <section
+      id="contact"
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/10 bg-gradient-to-b from-[#070709] via-[#0b0b0e] to-black overflow-hidden"
+    >
+      <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 w-[min(650px,90vw)] h-[320px] bg-zinc-700/10 blur-[130px] rounded-full" />
+
+      <div className="relative z-10 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-gradient-to-b from-[#141418] to-[#0b0b0e] border border-white/10 rounded-3xl p-6 sm:p-12 shadow-2xl space-y-8"
+        >
+          {/* Availability Header */}
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2.5 glass-pill px-4 py-2 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-accentGreen" />
+              <span className="text-[11px] sm:text-xs font-semibold text-zinc-200 uppercase tracking-wide">
+                {siteSettings.availabilitySubtext ||
+                  siteSettings.availabilityStatus}
+              </span>
+            </div>
+
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight uppercase">
+              HAVE A PROJECT IN MIND?
+            </h2>
+
+            <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+              Send your footage scope, target release window, and creative
+              references. Every inquiry routes directly into the studio tracker.
+            </p>
+          </div>
+
+          {status === "success" ? (
+            <div className="rounded-2xl bg-accentGreen/10 border border-accentGreen/30 p-8 text-center space-y-4">
+              <CheckCircle2 className="w-10 h-10 text-accentGreen mx-auto" />
+              <h3 className="text-xl font-bold text-white">
+                Brief Logged Successfully
+              </h3>
+              <p className="text-sm text-zinc-300 max-w-md mx-auto">
+                Thank you for reaching out. {siteSettings.name} reviews new
+                production briefs personally and responds within 24 hours.
+              </p>
+              <button
+                type="button"
+                onClick={() => setStatus("idle")}
+                className="inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-xs font-bold hover:bg-zinc-200 transition-colors"
+              >
+                Send Another Inquiry
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5"
+                  >
+                    Your Name *
+                  </label>
+                  <input
+                    id="contact-name"
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Alex Mercer"
+                    className="w-full rounded-xl bg-black/60 border border-white/15 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white transition-colors"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5"
+                  >
+                    Email Address *
+                  </label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="alex@studio.com"
+                    className="w-full rounded-xl bg-black/60 border border-white/15 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white transition-colors"
+                  />
+                </div>
               </div>
 
-              <h2 className="text-4xl sm:text-5xl font-extrabold uppercase text-on-surface tracking-tight mb-6">
-                Have something worth showing? Let&apos;s make it happen.
-              </h2>
-
-              <p className="text-base text-on-surface-muted mb-8 leading-relaxed">
-                Currently accepting projects for Q2 &amp; Q3. Whether you have 200 hours of documentary rushes or a high-concept commercial treatment, let&apos;s build an edit that resonates.
-              </p>
-
-              {/* Direct Channels */}
-              <div className="space-y-3">
-                <div className="bg-surface-pure p-4 rounded-2xl border border-border-subtle hover:border-accent/40 transition-colors">
-                  <span className="font-mono text-[11px] uppercase text-on-surface-muted block mb-1">
-                    DIRECT EMAIL
-                  </span>
-                  <a
-                    href={`mailto:${siteSettings.email || "contact@jashandeepsingh.film"}`}
-                    className="text-lg text-on-surface hover:text-accent font-bold transition-colors inline-flex items-center gap-1"
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label
+                    htmlFor="contact-type"
+                    className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5"
                   >
-                    {siteSettings.email || "contact@jashandeepsingh.film"}
-                    <ArrowUpRight className="w-4 h-4 text-accent" />
+                    Format
+                  </label>
+                  <select
+                    id="contact-type"
+                    value={projectType}
+                    onChange={(e) => setProjectType(e.target.value)}
+                    className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                  >
+                    <option value="Commercial">Commercial / Launch Film</option>
+                    <option value="Short-Form">Short-Form / Reels Pack</option>
+                    <option value="Long-Form">Long-Form / Documentary</option>
+                    <option value="Color & Finish">ACES Color Grading</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-budget"
+                    className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5"
+                  >
+                    Estimated Budget
+                  </label>
+                  <select
+                    id="contact-budget"
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                  >
+                    <option value="$1,000 – $2,500">$1,000 – $2,500</option>
+                    <option value="$2,500 – $5,000">$2,500 – $5,000</option>
+                    <option value="$5,000 – $10,000">$5,000 – $10,000</option>
+                    <option value="$10,000+">$10,000+ Monthly Retainer</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-timeline"
+                    className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5"
+                  >
+                    Target Turnaround
+                  </label>
+                  <select
+                    id="contact-timeline"
+                    value={timeline}
+                    onChange={(e) => setTimeline(e.target.value)}
+                    className="w-full rounded-xl bg-black/60 border border-white/15 px-3.5 py-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                  >
+                    <option value="48–72 Hours (Rush)">48–72 Hours (Rush)</option>
+                    <option value="1 Week">1 Week</option>
+                    <option value="2–3 Weeks">2–3 Weeks</option>
+                    <option value="Ongoing Partnership">
+                      Ongoing Partnership
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="contact-message"
+                  className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-1.5"
+                >
+                  Project Brief &amp; Footage Notes *
+                </label>
+                <textarea
+                  id="contact-message"
+                  required
+                  rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Tell me about the deliverable count, camera codecs, pacing style, or reference links..."
+                  className="w-full rounded-xl bg-black/60 border border-white/15 px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white transition-colors resize-none"
+                />
+              </div>
+
+              {status === "error" && (
+                <p className="text-xs font-mono text-red-400">{errorMessage}</p>
+              )}
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-zinc-400">
+                  <a
+                    href={`mailto:${siteSettings.email}`}
+                    className="inline-flex items-center gap-1.5 hover:text-white transition-colors font-mono"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>{siteSettings.email}</span>
                   </a>
-                </div>
-
-                {siteSettings.phone && (
-                  <div className="bg-surface-pure p-4 rounded-2xl border border-border-subtle hover:border-accent/40 transition-colors">
-                    <span className="font-mono text-[11px] uppercase text-on-surface-muted block mb-1">
-                      DIRECT LINE
-                    </span>
-                    <a
-                      href={`tel:${siteSettings.phone}`}
-                      className="text-lg text-on-surface hover:text-accent font-bold transition-colors inline-flex items-center gap-1"
-                    >
-                      {siteSettings.phone}
-                      <ArrowUpRight className="w-4 h-4 text-accent" />
-                    </a>
-                  </div>
-                )}
-
-                <div className="bg-surface-pure p-4 rounded-2xl border border-border-subtle">
-                  <span className="font-mono text-[11px] uppercase text-on-surface-muted block mb-1">
-                    STUDIO BASE &amp; TIMEZONE
-                  </span>
-                  <span className="text-base text-on-surface font-semibold block">
-                    {siteSettings.location || "Global Remote // Based in Vancouver & Toronto"}
-                  </span>
-                </div>
-
-                {siteSettings.calendarLink && (
-                  <div className="bg-surface-pure p-4 rounded-2xl border border-border-subtle hover:border-accent/40 transition-colors">
-                    <span className="font-mono text-[11px] uppercase text-on-surface-muted block mb-1">
-                      DIRECT VIDEO DISCOVERY CALL
-                    </span>
+                  {siteSettings.calendarLink && (
                     <a
                       href={siteSettings.calendarLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-base text-accent hover:text-on-surface font-bold transition-colors inline-flex items-center gap-1.5"
+                      className="inline-flex items-center gap-1 hover:text-white transition-colors font-mono"
                     >
-                      <Calendar className="w-4 h-4" />
-                      <span>Book a 20-Min Edit Discovery Call ↗</span>
+                      <span>Book 15m Sync</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
                     </a>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Social Channels Strip */}
-            <div className="pt-8 mt-8 border-t border-border-subtle">
-              <span className="font-mono text-xs uppercase tracking-wider text-on-surface-muted block mb-3">
-                DIRECT SOCIAL CHANNELS
-              </span>
-              <div className="flex flex-wrap gap-2 font-mono text-xs uppercase">
-                {Object.entries(siteSettings.socials || {}).map(([key, url]) => {
-                  if (!url) return null;
-                  return (
-                    <a
-                      key={key}
-                      href={url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3 py-1.5 rounded-lg bg-surface-pure border border-border-subtle hover:border-accent hover:text-accent font-bold transition-colors inline-flex items-center gap-1"
-                    >
-                      <span>{key}</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Interactive Project Inquiry Form */}
-          <div className="lg:col-span-7">
-            <div className="bg-surface-pure p-8 sm:p-10 rounded-3xl border border-border-subtle shadow-lg">
-              <div className="flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
-                <span className="font-mono text-xs uppercase text-accent font-bold tracking-wider">
-                  COMMISSION BRIEF // FORM 01-A
-                </span>
-                <span className="font-mono text-[11px] text-on-surface-muted uppercase">
-                  RESPONSE TIME: &lt; 24 HRS
-                </span>
-              </div>
-
-              {successMessage ? (
-                <div className="p-8 text-center bg-emerald-50 rounded-2xl border border-emerald-200">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold uppercase text-emerald-900 mb-2">
-                    Inquiry Received
-                  </h3>
-                  <p className="text-sm text-emerald-700 max-w-md mx-auto mb-6">
-                    {successMessage}
-                  </p>
-                  <button
-                    onClick={() => setSuccessMessage("")}
-                    className="px-6 py-2.5 rounded-full bg-emerald-600 text-white font-mono text-xs uppercase font-bold hover:bg-emerald-700 transition-colors"
-                  >
-                    Send Another Message
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {errorMessage && (
-                    <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-800 text-sm">
-                      <AlertCircle className="w-5 h-5 shrink-0" />
-                      <span>{errorMessage}</span>
-                    </div>
                   )}
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block font-mono text-xs uppercase text-on-surface-muted mb-2 font-semibold">
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Marcus Vogel"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border-subtle text-on-surface focus:outline-none focus:border-accent transition-colors font-sans text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-mono text-xs uppercase text-on-surface-muted mb-2 font-semibold">
-                        Work Email *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="marcus@vogelstudio.nyc"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border-subtle text-on-surface focus:outline-none focus:border-accent transition-colors font-sans text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block font-mono text-xs uppercase text-on-surface-muted mb-2 font-semibold">
-                        Service Focus
-                      </label>
-                      <select
-                        value={formData.projectType}
-                        onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border-subtle text-on-surface focus:outline-none focus:border-accent transition-colors font-sans text-sm"
-                      >
-                        {services.map((s, idx) => (
-                          <option key={idx} value={s.title}>
-                            {s.title}
-                          </option>
-                        ))}
-                        <option value="Full Campaign Post">Full Campaign Post</option>
-                        <option value="Other / Retainer">Other / Retainer</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs uppercase text-on-surface-muted mb-2 font-semibold">
-                        Target Budget
-                      </label>
-                      <select
-                        value={formData.budget}
-                        onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border-subtle text-on-surface focus:outline-none focus:border-accent transition-colors font-sans text-sm"
-                      >
-                        <option value="$2,000 - $5,000">$2,000 - $5,000</option>
-                        <option value="$5,000 - $10,000">$5,000 - $10,000</option>
-                        <option value="$10,000 - $25,000">$10,000 - $25,000</option>
-                        <option value="$25,000+">$25,000+</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-xs uppercase text-on-surface-muted mb-2 font-semibold">
-                        Delivery Horizon
-                      </label>
-                      <select
-                        value={formData.timeline}
-                        onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border-subtle text-on-surface focus:outline-none focus:border-accent transition-colors font-sans text-sm"
-                      >
-                        <option value="Rush (Next 1-2 weeks)">Rush (Next 1-2 weeks)</option>
-                        <option value="Within 1 month">Within 1 month</option>
-                        <option value="Within 2-3 months">Within 2-3 months</option>
-                        <option value="Flexible / Q3-Q4">Flexible / Q3-Q4</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block font-mono text-xs uppercase text-on-surface-muted mb-2 font-semibold">
-                      Project Overview &amp; Footage Details *
-                    </label>
-                    <textarea
-                      required
-                      rows={4}
-                      placeholder="Share a brief overview of the project, raw footage volume, cameras used (e.g. ARRI Alexa, RED, Sony FX3), references or moodboard links..."
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-surface border border-border-subtle text-on-surface focus:outline-none focus:border-accent transition-colors font-sans text-sm"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full py-4 rounded-xl bg-surface-dark hover:bg-accent text-white font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-md hover:shadow-xl hover:shadow-accent/25 flex items-center justify-center gap-2 group disabled:opacity-50"
-                  >
-                    <span>{loading ? "TRANSMITTING BRIEF..." : "SEND PROJECT INQUIRY"}</span>
-                    <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </form>
-              )}
-            </div>
-          </div>
-        </div>
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-black px-7 py-3.5 rounded-full text-xs font-bold hover:bg-zinc-200 transition-colors disabled:opacity-60"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>
+                    {status === "submitting"
+                      ? "Sending Brief..."
+                      : "Dispatch Project Inquiry"}
+                  </span>
+                </button>
+              </div>
+            </form>
+          )}
+        </motion.div>
       </div>
     </section>
   );
