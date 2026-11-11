@@ -15,6 +15,13 @@ module.exports = {
         cardBorder: "#E5E7EB",
         subtle: "#666666",
         accentGreen: "#22c55e",
+        background: "#FFFFFF",
+        foreground: "#0A0A0C",
+        border: "#E5E7EB",
+        muted: {
+          DEFAULT: "#F4F4F5",
+          foreground: "#666666",
+        },
       },
       fontFamily: {
         sans: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],

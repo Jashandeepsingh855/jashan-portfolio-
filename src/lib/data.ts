@@ -34,6 +34,7 @@ export interface Service {
   description: string;
   deliverables: string[];
   turnaround: string;
+  image?: string;
 }
 
 export interface HeroMetric {
