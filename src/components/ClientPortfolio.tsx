@@ -12,6 +12,7 @@ import TestimonialsSection from "./TestimonialsSection";
 import ContactSection from "./ContactSection";
 import Footer from "./Footer";
 import VideoModal, { type VideoModalItem } from "./VideoModal";
+import { StackedSection } from "./ui/stacked-section";
 
 interface ClientPortfolioProps {
   initialContent: PublicSiteContent;
@@ -53,44 +54,66 @@ export default function ClientPortfolio({
     });
   };
 
+  const hasTestimonials =
+    initialContent.testimonials && initialContent.testimonials.length > 0;
+
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen w-full overflow-x-clip py-3 sm:py-8 md:py-12 px-2.5 sm:px-6 md:px-10 lg:px-14">
-        <div className="max-w-[1360px] mx-auto bg-white rounded-[24px] sm:rounded-[34px] ethereal-canvas overflow-x-clip border border-white/80 flex flex-col">
-          <Header
-            siteSettings={initialContent.siteSettings}
-            projectCount={initialContent.projects.length}
-            serviceCount={initialContent.services.length}
-          />
+      <div className="min-h-screen w-full bg-background flex flex-col">
+        <Header
+          siteSettings={initialContent.siteSettings}
+          projectCount={initialContent.projects.length}
+          serviceCount={initialContent.services.length}
+        />
 
-          <main className="flex-1">
+        <main className="relative flex-1 w-full bg-background">
+          <StackedSection className="z-10" withCurtainShadow={false}>
             <Hero
               hero={initialContent.hero}
               siteSettings={initialContent.siteSettings}
               onPlayShowreel={handlePlayShowreel}
             />
+          </StackedSection>
 
+          <StackedSection anchorId="work" className="z-20">
             <WorkSection
               projects={initialContent.projects}
               categories={initialContent.categories}
               onSelectProject={handleOpenProject}
             />
+          </StackedSection>
 
+          <StackedSection anchorId="services" className="z-30 justify-center">
             <ServicesSection services={initialContent.services} />
+          </StackedSection>
 
+          <StackedSection anchorId="experience" className="z-40 justify-center">
             <ProcessSection
               process={initialContent.process}
               about={initialContent.about}
               hero={initialContent.hero}
             />
+          </StackedSection>
 
-            <TestimonialsSection testimonials={initialContent.testimonials} />
+          {hasTestimonials && (
+            <StackedSection
+              anchorId="testimonials"
+              className="z-50 justify-center"
+            >
+              <TestimonialsSection
+                testimonials={initialContent.testimonials}
+              />
+            </StackedSection>
+          )}
 
+          <StackedSection
+            anchorId="contact"
+            className="z-[60] justify-between"
+          >
             <ContactSection siteSettings={initialContent.siteSettings} />
-          </main>
-
-          <Footer siteSettings={initialContent.siteSettings} />
-        </div>
+            <Footer siteSettings={initialContent.siteSettings} />
+          </StackedSection>
+        </main>
 
         <VideoModal
           video={selectedVideo}

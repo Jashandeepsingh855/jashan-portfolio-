@@ -58,7 +58,7 @@ interface VerticalTabsProps {
 }
 
 export function VerticalTabs({
-  id = "services",
+  id,
   services = DEFAULT_SERVICES,
 }: VerticalTabsProps) {
   const items = services.length > 0 ? services : DEFAULT_SERVICES;
@@ -117,7 +117,7 @@ export function VerticalTabs({
   return (
     <section
       id={id}
-      className="w-full bg-background border-t border-neutral-100 py-14 sm:py-20 lg:py-24 px-4 sm:px-8 md:px-12"
+      className="w-full bg-background pt-24 pb-16 sm:pt-28 sm:pb-20 lg:py-24 px-4 sm:px-8 md:px-12"
     >
       <div className="w-full mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">

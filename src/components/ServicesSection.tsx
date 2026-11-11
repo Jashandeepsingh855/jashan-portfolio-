@@ -22,10 +22,14 @@ const SERVICE_TITLE_BY_RAW: Record<string, string> = {
 };
 
 interface ServicesSectionProps {
+  id?: string;
   services: Service[];
 }
 
-export default function ServicesSection({ services }: ServicesSectionProps) {
+export default function ServicesSection({
+  id,
+  services,
+}: ServicesSectionProps) {
   const mappedServices: ServiceItem[] =
     services.length > 0
       ? services.map((service, index) => ({
@@ -39,5 +43,5 @@ export default function ServicesSection({ services }: ServicesSectionProps) {
         }))
       : DEFAULT_SERVICES;
 
-  return <VerticalTabs id="services" services={mappedServices} />;
+  return <VerticalTabs id={id} services={mappedServices} />;
 }

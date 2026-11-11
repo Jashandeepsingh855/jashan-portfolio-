@@ -73,10 +73,10 @@ export default function Header({
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 px-4 sm:px-6 lg:px-10 xl:px-12 ${
+      className={`sticky top-0 z-[80] w-full transition-all duration-300 px-4 sm:px-6 lg:px-10 xl:px-12 ${
         scrolled
-          ? "py-3.5 bg-white/90 backdrop-blur-xl border-b border-neutral-200/80 shadow-xs"
-          : "pt-6 sm:pt-8 pb-3 bg-white/80 backdrop-blur-md rounded-t-[24px] sm:rounded-t-[34px]"
+          ? "py-3.5 bg-background/90 backdrop-blur-xl border-b border-neutral-200/80 shadow-xs"
+          : "pt-5 sm:pt-6 pb-3 bg-background/95 backdrop-blur-md border-b border-neutral-100"
       }`}
     >
       <div className="flex items-center justify-between gap-2 sm:gap-3">

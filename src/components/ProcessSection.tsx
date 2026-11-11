@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import type { AboutContent, HeroContent, ProcessContent } from "@/lib/data";
 
 interface ProcessSectionProps {
+  id?: string;
   process: ProcessContent;
   about: AboutContent;
   hero: HeroContent;
 }
 
 export default function ProcessSection({
+  id,
   process,
   about,
   hero,
@@ -21,8 +23,8 @@ export default function ProcessSection({
 
   return (
     <section
-      id="experience"
-      className="py-10 sm:py-16 px-4 sm:px-8 md:px-12 bg-white"
+      id={id}
+      className="w-full pt-24 pb-12 sm:pt-24 sm:pb-16 px-4 sm:px-8 md:px-12 bg-background"
     >
       {/* Floating Obsidian Track Record Showcase Container matching 4.webp */}
       <div className="bg-[#1A1A1D] text-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-10 md:p-14 relative overflow-hidden shadow-2xl">

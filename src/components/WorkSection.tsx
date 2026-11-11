@@ -6,12 +6,14 @@ import { ArrowUpRight, Play } from "lucide-react";
 import type { Project } from "@/lib/data";
 
 interface WorkSectionProps {
+  id?: string;
   projects: Project[];
   categories: string[];
   onSelectProject: (project: Project) => void;
 }
 
 export default function WorkSection({
+  id,
   projects,
   categories,
   onSelectProject,
@@ -49,8 +51,8 @@ export default function WorkSection({
 
   return (
     <section
-      id="work"
-      className="relative py-16 sm:py-24 px-4 sm:px-8 md:px-12 border-t border-neutral-100 bg-white overflow-hidden"
+      id={id}
+      className="relative w-full pt-24 pb-16 sm:pt-28 sm:pb-24 px-4 sm:px-8 md:px-12 bg-background overflow-x-clip"
     >
       {/* Massive Soft Ghost Watermark Backdrop matching 2.webp */}
       <div

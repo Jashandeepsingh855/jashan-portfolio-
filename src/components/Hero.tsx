@@ -75,7 +75,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
   ].filter((item) => Boolean(item.href));
 
   return (
-    <section className="relative pt-4 sm:pt-8 md:pt-10 pb-14 sm:pb-20 px-4 sm:px-8 md:px-12 overflow-hidden bg-white">
+    <section className="relative w-full pt-4 sm:pt-6 md:pt-8 pb-14 sm:pb-20 px-4 sm:px-8 md:px-12 overflow-x-clip bg-background">
       <div className="relative">
         {/* Continuous Unbroken Outlined Wordmark + Centered Cutout Portrait with Animated Circle */}
         <div className="relative w-full max-w-full overflow-hidden flex flex-col items-center justify-center min-w-0 pt-2 sm:pt-4">

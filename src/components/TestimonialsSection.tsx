@@ -5,18 +5,20 @@ import { Quote, Star } from "lucide-react";
 import type { Testimonial } from "@/lib/data";
 
 interface TestimonialsSectionProps {
+  id?: string;
   testimonials: Testimonial[];
 }
 
 export default function TestimonialsSection({
+  id,
   testimonials,
 }: TestimonialsSectionProps) {
   if (!testimonials || testimonials.length === 0) return null;
 
   return (
     <section
-      id="testimonials"
-      className="py-16 sm:py-24 px-4 sm:px-8 md:px-12 border-t border-neutral-100 bg-white"
+      id={id}
+      className="w-full pt-24 pb-16 sm:py-24 px-4 sm:px-8 md:px-12 bg-background"
     >
       <div>
         <motion.div

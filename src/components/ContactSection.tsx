@@ -6,10 +6,14 @@ import { ArrowUpRight, CheckCircle2, Mail, Send } from "lucide-react";
 import type { SiteSettings } from "@/lib/data";
 
 interface ContactSectionProps {
+  id?: string;
   siteSettings: SiteSettings;
 }
 
-export default function ContactSection({ siteSettings }: ContactSectionProps) {
+export default function ContactSection({
+  id,
+  siteSettings,
+}: ContactSectionProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [projectType, setProjectType] = useState("Commercial");
@@ -59,8 +63,8 @@ export default function ContactSection({ siteSettings }: ContactSectionProps) {
 
   return (
     <section
-      id="contact"
-      className="py-14 sm:py-20 px-4 sm:px-8 md:px-12 bg-white"
+      id={id}
+      className="w-full pt-24 pb-10 sm:pt-24 sm:pb-12 px-4 sm:px-8 md:px-12 bg-background"
     >
       {/* Floating Light Card matching 5.webp & Jashandeep Stitch */}
       <motion.div

@@ -7,19 +7,13 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    background-color: #cacaca;
+    background-color: #ffffff;
     color: #121212;
     overflow-x: clip;
   }
 
   body {
-    background-color: #cacaca;
-    background-image:
-      radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.94), rgba(215, 220, 226, 0.86) 45%, rgba(185, 192, 200, 0.92) 82%),
-      radial-gradient(circle at 14% 44%, rgba(248, 250, 252, 0.72), transparent 52%),
-      radial-gradient(circle at 86% 68%, rgba(228, 233, 239, 0.8), transparent 52%);
-    background-attachment: fixed;
-    background-size: cover;
+    background-color: #ffffff;
     color: #121212;
     font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     overflow-x: clip;
