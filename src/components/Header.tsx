@@ -29,43 +29,45 @@ export default function Header({
 
   const navItems = [
     { href: "#work", label: "Work", badge: `[${projectCount}]` },
-    { href: "#services", label: "Services", badge: `[${serviceCount}]` },
+    { href: "#services", label: "Service", badge: `[${serviceCount}]` },
     { href: "#experience", label: "Experience", badge: "[7y+]" },
     { href: "#contact", label: "Contact", badge: null },
   ];
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "px-4 md:px-8 py-3" : "px-4 md:px-8 py-5"
+      className={`sticky top-0 z-40 transition-all duration-300 px-4 sm:px-8 md:px-12 ${
+        scrolled
+          ? "py-3.5 bg-white/90 backdrop-blur-xl border-b border-neutral-200/80 shadow-xs"
+          : "pt-6 sm:pt-8 pb-3 bg-white/80 backdrop-blur-md rounded-t-[24px] sm:rounded-t-[34px]"
       }`}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         {/* Availability Status Pill */}
         <a
           href="#contact"
-          className="glass-nav rounded-full px-3.5 sm:px-4 py-2 flex items-center gap-2.5 shadow-lg hover:border-white/25 transition-colors max-w-[215px] sm:max-w-none"
+          className="glass-pill rounded-full px-3.5 sm:px-4 py-2 flex items-center gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[205px] sm:max-w-none"
         >
           <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accentGreen opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accentGreen" />
           </span>
-          <span className="text-[11px] sm:text-xs font-semibold tracking-wide uppercase text-zinc-200 truncate">
+          <span className="text-[11px] sm:text-xs font-medium tracking-tight text-neutral-800 truncate">
             {siteSettings.availabilityStatus}
           </span>
         </a>
 
-        {/* Center Floating Nav */}
-        <nav className="hidden lg:flex items-center gap-1 glass-nav rounded-full px-4 py-1.5 shadow-lg">
+        {/* Center Clean Nav Links (Matching 1.webp & Jashandeep Stitch) */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           {navItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/[0.06] px-3.5 py-1.5 rounded-full transition-colors flex items-center gap-1.5"
+              className="text-[13.5px] font-medium text-neutral-600 hover:text-black transition-colors flex items-center gap-1.5 group"
             >
               <span>{item.label}</span>
               {item.badge && (
-                <span className="text-zinc-500 text-[11px] font-mono">
+                <span className="text-neutral-400 group-hover:text-neutral-600 text-[11px] font-mono font-normal">
                   {item.badge}
                 </span>
               )}
@@ -79,14 +81,14 @@ export default function Header({
             href="/admin"
             aria-label="Open Studio Admin Portal"
             title="Studio Admin"
-            className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full glass-nav text-zinc-400 hover:text-white hover:border-white/25 transition-colors"
+            className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-500 hover:text-black hover:border-neutral-300 transition-colors shadow-2xs"
           >
             <Lock className="w-3.5 h-3.5" />
           </Link>
 
           <a
             href="#contact"
-            className="group bg-white hover:bg-zinc-200 text-black px-3.5 sm:px-5 py-2 text-xs font-bold rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-md shadow-white/5 active:scale-95 whitespace-nowrap"
+            className="group bg-[#111111] hover:bg-neutral-800 text-white px-4 sm:px-5 py-2.5 text-xs font-semibold rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 whitespace-nowrap"
           >
             <span>Let&apos;s Talk</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
@@ -96,7 +98,7 @@ export default function Header({
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle Navigation"
-            className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full glass-nav text-zinc-200 hover:text-white transition-colors"
+            className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="w-4 h-4" />
@@ -111,11 +113,11 @@ export default function Header({
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
+            exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:hidden mt-3 max-w-7xl mx-auto glass-nav rounded-2xl p-4 shadow-2xl border border-white/10"
+            className="lg:hidden mt-3 bg-white rounded-2xl p-3 shadow-xl border border-neutral-200"
           >
             <div className="flex flex-col gap-1">
               {navItems.map((item) => (
@@ -123,11 +125,11 @@ export default function Header({
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold text-zinc-200 hover:bg-white/10 hover:text-white transition-colors"
+                  className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold text-neutral-800 hover:bg-neutral-100 transition-colors"
                 >
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="text-xs font-mono text-zinc-500">
+                    <span className="text-xs font-mono text-neutral-400">
                       {item.badge}
                     </span>
                   )}
@@ -136,7 +138,7 @@ export default function Header({
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-mono text-zinc-400 hover:bg-white/10 hover:text-white border-t border-white/10 mt-1 pt-3"
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-xs font-mono text-neutral-500 hover:bg-neutral-100 hover:text-black border-t border-neutral-100 mt-1 pt-3"
               >
                 <span className="flex items-center gap-2">
                   <Lock className="w-3.5 h-3.5" />

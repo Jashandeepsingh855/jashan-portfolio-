@@ -19,40 +19,44 @@ export default function Footer({ siteSettings }: FooterProps) {
   ].filter((item) => Boolean(item.href));
 
   return (
-    <footer className="border-t border-white/10 bg-black py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+    <footer className="border-t border-neutral-100 bg-white py-8 px-4 sm:px-8 md:px-12">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
-          <span className="font-display font-extrabold text-sm tracking-[0.14em] uppercase text-white">
-            {siteSettings.wordmark || "JASHANDEEP"}
-          </span>
-          <span className="hidden sm:inline text-zinc-700">|</span>
-          <span className="text-xs text-zinc-500">
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#111111] text-white text-xs font-semibold">
+            <img
+              src="/portrait-cutout.png"
+              alt={siteSettings.name}
+              className="w-5 h-5 rounded-full object-cover object-top bg-white"
+            />
+            <span>{siteSettings.name}</span>
+          </div>
+          <span className="text-xs text-neutral-500">
             {siteSettings.footerNote ||
               "Engineered for maximum visual retention."}
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-zinc-400">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-neutral-600">
           {socialLinks.map((social) => (
             <a
               key={social.label}
               href={social.href}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-white transition-colors"
+              className="hover:text-black transition-colors"
             >
               {social.label}
             </a>
           ))}
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-mono text-zinc-500">
+        <div className="flex items-center gap-4 text-xs font-mono text-neutral-500">
           <span>
             &copy; {siteSettings.year || "2025"} {siteSettings.name}
           </span>
           <Link
             href="/admin"
-            className="inline-flex items-center gap-1 text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 text-neutral-600 hover:text-black transition-colors font-semibold"
           >
             <span>Admin</span>
             <ArrowUpRight className="w-3 h-3" />

@@ -55,40 +55,42 @@ export default function ClientPortfolio({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen w-full overflow-x-clip bg-[#050505] text-[#f4f4f5] flex flex-col">
-        <Header
-          siteSettings={initialContent.siteSettings}
-          projectCount={initialContent.projects.length}
-          serviceCount={initialContent.services.length}
-        />
-
-        <main className="flex-1">
-          <Hero
-            hero={initialContent.hero}
+      <div className="min-h-screen w-full overflow-x-clip py-3 sm:py-8 md:py-12 px-2.5 sm:px-6 md:px-10 lg:px-14">
+        <div className="max-w-[1360px] mx-auto bg-white rounded-[24px] sm:rounded-[34px] ethereal-canvas overflow-x-clip border border-white/80 flex flex-col">
+          <Header
             siteSettings={initialContent.siteSettings}
-            onPlayShowreel={handlePlayShowreel}
+            projectCount={initialContent.projects.length}
+            serviceCount={initialContent.services.length}
           />
 
-          <WorkSection
-            projects={initialContent.projects}
-            categories={initialContent.categories}
-            onSelectProject={handleOpenProject}
-          />
+          <main className="flex-1">
+            <Hero
+              hero={initialContent.hero}
+              siteSettings={initialContent.siteSettings}
+              onPlayShowreel={handlePlayShowreel}
+            />
 
-          <ServicesSection services={initialContent.services} />
+            <WorkSection
+              projects={initialContent.projects}
+              categories={initialContent.categories}
+              onSelectProject={handleOpenProject}
+            />
 
-          <ProcessSection
-            process={initialContent.process}
-            about={initialContent.about}
-            hero={initialContent.hero}
-          />
+            <ServicesSection services={initialContent.services} />
 
-          <TestimonialsSection testimonials={initialContent.testimonials} />
+            <ProcessSection
+              process={initialContent.process}
+              about={initialContent.about}
+              hero={initialContent.hero}
+            />
 
-          <ContactSection siteSettings={initialContent.siteSettings} />
-        </main>
+            <TestimonialsSection testimonials={initialContent.testimonials} />
 
-        <Footer siteSettings={initialContent.siteSettings} />
+            <ContactSection siteSettings={initialContent.siteSettings} />
+          </main>
+
+          <Footer siteSettings={initialContent.siteSettings} />
+        </div>
 
         <VideoModal
           video={selectedVideo}

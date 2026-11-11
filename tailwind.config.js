@@ -8,17 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        canvas: "#050505",
-        obsidian: "#09090b",
-        surface: "#121215",
-        card: "#18181b",
-        cardBorder: "#27272a",
-        subtle: "#a1a1aa",
+        canvas: "#FFFFFF",
+        mist: "#CACACA",
+        surface: "#FAFAFB",
+        obsidian: "#1A1A1D",
+        cardBorder: "#E5E7EB",
+        subtle: "#666666",
         accentGreen: "#22c55e",
       },
       fontFamily: {
         sans: ["'Plus Jakarta Sans'", "system-ui", "sans-serif"],
-        display: ["'Syne'", "'Plus Jakarta Sans'", "sans-serif"],
+        display: ["'Plus Jakarta Sans'", "'Syne'", "sans-serif"],
         mono: ["'JetBrains Mono'", "ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
