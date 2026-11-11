@@ -2,10 +2,7 @@ const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: path.join(__dirname),
-  outputFileTracingIncludes: {
-    "/*": ["./data/**/*"],
-  },
+  ...(process.env.VERCEL ? {} : { outputFileTracingRoot: path.join(__dirname) }),
   images: {
     remotePatterns: [
       {
