@@ -73,17 +73,17 @@ export default function Header({
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 px-4 sm:px-8 md:px-12 ${
+      className={`sticky top-0 z-40 transition-all duration-300 px-4 sm:px-6 lg:px-10 xl:px-12 ${
         scrolled
           ? "py-3.5 bg-white/90 backdrop-blur-xl border-b border-neutral-200/80 shadow-xs"
           : "pt-6 sm:pt-8 pb-3 bg-white/80 backdrop-blur-md rounded-t-[24px] sm:rounded-t-[34px]"
       }`}
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-2 sm:gap-3">
         {/* Availability Status Pill */}
         <a
           href="#contact"
-          className="glass-pill rounded-full px-3.5 sm:px-4 py-2 flex items-center gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[205px] sm:max-w-none shrink-0"
+          className="glass-pill rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[195px] md:max-w-[175px] lg:max-w-none shrink-0"
         >
           <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accentGreen opacity-75" />
@@ -95,7 +95,7 @@ export default function Header({
         </a>
 
         {/* Center Animated Clip-Path Pill Navigation */}
-        <nav aria-label="Primary Navigation" className="hidden lg:flex items-center">
+        <nav aria-label="Primary Navigation" className="hidden md:flex items-center">
           <AnimatedTabs
             tabs={navItems}
             activeTab={activeNavLabel}
@@ -112,14 +112,14 @@ export default function Header({
             href="/admin"
             aria-label="Open Studio Admin Portal"
             title="Studio Admin"
-            className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-500 hover:text-black hover:border-neutral-300 transition-colors shadow-2xs"
+            className="hidden lg:inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-500 hover:text-black hover:border-neutral-300 transition-colors shadow-2xs"
           >
             <Lock className="w-3.5 h-3.5" />
           </Link>
 
           <a
             href="#contact"
-            className="group bg-[#111111] hover:bg-neutral-800 text-white px-4 sm:px-5 py-2.5 text-xs font-semibold rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 whitespace-nowrap"
+            className="group bg-[#111111] hover:bg-neutral-800 text-white px-3.5 sm:px-4 lg:px-5 py-2.5 text-xs font-semibold rounded-full transition-all duration-200 flex items-center gap-1.5 shadow-sm active:scale-95 whitespace-nowrap"
           >
             <span>Let&apos;s Talk</span>
             <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
@@ -129,7 +129,7 @@ export default function Header({
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle Navigation"
-            className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 transition-colors"
+            className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 transition-colors"
           >
             {mobileMenuOpen ? (
               <X className="w-4 h-4" />
@@ -148,7 +148,7 @@ export default function Header({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:hidden mt-3 bg-white rounded-2xl p-3 shadow-xl border border-neutral-200"
+            className="md:hidden mt-3 bg-white rounded-2xl p-3 shadow-xl border border-neutral-200"
           >
             <div className="flex flex-col gap-1">
               {navItems.map((item) => {
@@ -162,16 +162,27 @@ export default function Header({
                       setActiveNavLabel(item.label);
                       setMobileMenuOpen(false);
                     }}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                    className={`relative flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
                       isActive
-                        ? "bg-[#111111] text-white"
+                        ? "text-white"
                         : "text-neutral-800 hover:bg-neutral-100"
                     }`}
                   >
-                    <span>{item.label}</span>
+                    {isActive && (
+                      <motion.span
+                        layoutId="mobileNavActivePill"
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 30,
+                        }}
+                        className="absolute inset-0 rounded-xl bg-[#111111]"
+                      />
+                    )}
+                    <span className="relative z-10">{item.label}</span>
                     {item.badge && (
                       <span
-                        className={`text-xs font-mono ${
+                        className={`relative z-10 text-xs font-mono ${
                           isActive ? "text-zinc-300" : "text-neutral-400"
                         }`}
                       >
