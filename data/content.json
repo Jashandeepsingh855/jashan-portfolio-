@@ -376,9 +376,5 @@
       "date": "2026-11-05T14:30:00Z",
       "status": "unread"
     }
-  ],
-  "admin": {
-    "password": "admin123",
-    "sessionToken": "jashan_admin_session_secret_key_8042"
-  }
+  ]
 }

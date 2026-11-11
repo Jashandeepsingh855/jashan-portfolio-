@@ -32,11 +32,41 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Validates JWT claims and triggers token refresh when cookies near expiry.
-  await supabase.auth.getClaims();
+  // Validates JWT claims and refreshes expiring session cookies.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const claims = claimsData?.claims as
+    | { app_metadata?: { role?: string } }
+    | undefined;
+  const isAdmin = claims?.app_metadata?.role === "admin";
+  const { pathname } = request.nextUrl;
 
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  if (pathname.startsWith("/admin")) {
+    const isLoginRoute = pathname === "/admin/login";
+
+    if (!isAdmin && !isLoginRoute) {
+      const redirectUrl = new URL("/admin/login", request.url);
+      const redirectRes = NextResponse.redirect(redirectUrl);
+      response.cookies.getAll().forEach((cookie) => {
+        redirectRes.cookies.set(cookie.name, cookie.value, cookie);
+      });
+      redirectRes.headers.set("X-Robots-Tag", "noindex, nofollow");
+      redirectRes.headers.set("Cache-Control", "no-store, must-revalidate");
+      return redirectRes;
+    }
+
+    if (isAdmin && isLoginRoute) {
+      const redirectUrl = new URL("/admin", request.url);
+      const redirectRes = NextResponse.redirect(redirectUrl);
+      response.cookies.getAll().forEach((cookie) => {
+        redirectRes.cookies.set(cookie.name, cookie.value, cookie);
+      });
+      redirectRes.headers.set("X-Robots-Tag", "noindex, nofollow");
+      redirectRes.headers.set("Cache-Control", "no-store, must-revalidate");
+      return redirectRes;
+    }
+
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    response.headers.set("Cache-Control", "no-store, must-revalidate");
   }
 
   return response;

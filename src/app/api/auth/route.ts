@@ -5,7 +5,6 @@ import {
   signOutAdmin,
   updateAdminPassword,
 } from "@/lib/auth";
-import { DEFAULT_ADMIN_EMAIL } from "@/lib/supabase/config";
 
 export async function GET() {
   const session = await getAdminSession();
@@ -26,14 +25,20 @@ export async function POST(req: NextRequest) {
     };
 
     if (action === "login") {
-      if (!password || typeof password !== "string") {
+      if (
+        !email ||
+        typeof email !== "string" ||
+        !email.trim() ||
+        !password ||
+        typeof password !== "string"
+      ) {
         return NextResponse.json(
-          { error: "Password is required" },
+          { error: "Email and password are required" },
           { status: 400 }
         );
       }
 
-      const result = await signInAdmin(email || DEFAULT_ADMIN_EMAIL, password);
+      const result = await signInAdmin(email.trim(), password);
       if (!result.ok) {
         return NextResponse.json({ error: result.error }, { status: 401 });
       }

@@ -1,4 +1,3 @@
-import { DEFAULT_ADMIN_EMAIL } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export interface AdminSession {
@@ -25,7 +24,7 @@ export async function getAdminSession(): Promise<AdminSession> {
     const isAdmin = claims?.app_metadata?.role === "admin";
     return {
       isAdmin,
-      email: isAdmin ? claims.email || DEFAULT_ADMIN_EMAIL : null,
+      email: isAdmin ? claims.email || null : null,
       userId: isAdmin ? claims.sub || null : null,
     };
   } catch {
@@ -39,9 +38,15 @@ export async function verifyAdminSession(): Promise<boolean> {
 }
 
 export async function signInAdmin(email: string, password: string) {
-  const supabase = await createSupabaseServerClient();
-  const resolvedEmail = email.trim() || DEFAULT_ADMIN_EMAIL;
+  const resolvedEmail = email.trim();
+  if (!resolvedEmail || !password) {
+    return {
+      ok: false as const,
+      error: "Email and password are required.",
+    };
+  }
 
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email: resolvedEmail,
     password,
@@ -50,7 +55,7 @@ export async function signInAdmin(email: string, password: string) {
   if (error || !data.user) {
     return {
       ok: false as const,
-      error: error?.message || "Invalid administrator credentials",
+      error: error?.message || "Invalid login credentials",
     };
   }
 
