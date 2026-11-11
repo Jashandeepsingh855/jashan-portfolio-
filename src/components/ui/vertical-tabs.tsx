@@ -123,13 +123,13 @@ export function VerticalTabs({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Content */}
           <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 pt-4">
-            <div className="space-y-1.5 mb-10 sm:mb-12">
-              <h2 className="tracking-tighter text-balance text-3xl font-medium md:text-4xl lg:text-5xl text-foreground">
-                How I can help you
-              </h2>
-              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.3em] block ml-0.5">
-                (SERVICES)
+            <div className="space-y-1.5 mb-8">
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.3em] block">
+                WHAT I DELIVER
               </span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tighter text-foreground">
+                /SERVICES
+              </h2>
             </div>
 
             <div className="flex flex-col space-y-0">
@@ -171,7 +171,7 @@ export function VerticalTabs({
                     <div className="flex flex-col gap-2 flex-1 min-w-0">
                       <span
                         className={cn(
-                          "text-xl sm:text-2xl lg:text-[26px] xl:text-[28px] font-normal tracking-tight transition-colors duration-500",
+                          "text-lg sm:text-xl lg:text-[21px] xl:text-[22px] font-bold tracking-tight uppercase transition-colors duration-500",
                           isActive ? "text-foreground" : ""
                         )}
                       >
@@ -210,7 +210,7 @@ export function VerticalTabs({
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              <div className="relative aspect-[4/5] md:aspect-[4/3] lg:aspect-[16/11] rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-muted/30 border border-border/40">
+              <div className="relative aspect-[4/5] md:aspect-[4/3] lg:aspect-[16/11] rounded-3xl md:rounded-[2.5rem] overflow-hidden bg-neutral-950 border border-border/60 shadow-xl">
                 <AnimatePresence
                   custom={direction}
                   initial={false}
@@ -243,7 +243,7 @@ export function VerticalTabs({
                       className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 !m-0 !p-0 block"
                     />
 
-                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-60" />
+                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-75" />
                   </motion.div>
                 </AnimatePresence>
 
