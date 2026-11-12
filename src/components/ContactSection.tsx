@@ -66,7 +66,7 @@ export default function ContactSection({
   return (
     <section
       id={id}
-      className="w-full pt-24 pb-10 sm:pt-24 sm:pb-12 px-4 sm:px-8 md:px-12 bg-background"
+      className="w-full max-w-full overflow-x-hidden pt-24 pb-10 sm:pt-24 sm:pb-12 px-4 sm:px-8 md:px-12 bg-background"
     >
       {/* Floating Light Card matching 5.webp & Jashandeep Stitch */}
       <motion.div
@@ -74,18 +74,18 @@ export default function ContactSection({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-gradient-to-b from-[#FAFAFB] to-white border border-neutral-200/90 rounded-[28px] sm:rounded-[32px] p-6 sm:p-12 md:p-14 shadow-xs space-y-8"
+        className="w-full max-w-full overflow-hidden bg-gradient-to-b from-[#FAFAFB] to-white border border-neutral-200/90 rounded-[28px] sm:rounded-[32px] p-6 sm:p-12 md:p-14 shadow-xs space-y-8"
       >
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2.5 bg-white border border-neutral-200 px-4 py-1.5 rounded-full shadow-2xs">
-            <span className="w-2.5 h-2.5 rounded-full bg-accentGreen" />
-            <span className="text-xs font-medium text-neutral-800">
+          <div className="inline-flex items-center gap-2.5 max-w-full bg-white border border-neutral-200 px-4 py-1.5 rounded-full shadow-2xs">
+            <span className="w-2.5 h-2.5 rounded-full bg-accentGreen shrink-0" />
+            <span className="text-xs font-medium text-neutral-800 break-words">
               {siteSettings.availabilitySubtext ||
                 siteSettings.availabilityStatus}
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-neutral-950 tracking-tight uppercase max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-neutral-950 tracking-tight uppercase max-w-3xl mx-auto break-words">
             {sectionContent?.heading || "HAVE A PROJECT IN MIND?"}
           </h2>
 
@@ -119,7 +119,7 @@ export default function ContactSection({
             className="space-y-4 max-w-3xl mx-auto text-left"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="contact-name"
                   className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
@@ -136,7 +136,7 @@ export default function ContactSection({
                   className="w-full rounded-xl bg-white border border-neutral-200 px-4 py-3 text-sm text-neutral-950 placeholder-neutral-400 focus:outline-none focus:border-black transition-colors"
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="contact-email"
                   className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
@@ -156,7 +156,7 @@ export default function ContactSection({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="contact-type"
                   className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
@@ -167,7 +167,7 @@ export default function ContactSection({
                   id="contact-type"
                   value={projectType}
                   onChange={(e) => setProjectType(e.target.value)}
-                  className="w-full rounded-xl bg-white border border-neutral-200 px-3.5 py-3 text-sm text-neutral-950 focus:outline-none focus:border-black transition-colors"
+                  className="w-full max-w-full rounded-xl bg-white border border-neutral-200 px-3.5 py-3 text-sm text-neutral-950 focus:outline-none focus:border-black transition-colors"
                 >
                   <option value="Commercial">Commercial / Launch Film</option>
                   <option value="Short-Form">Short-Form / Reels Pack</option>
@@ -176,7 +176,7 @@ export default function ContactSection({
                 </select>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="contact-budget"
                   className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
@@ -187,7 +187,7 @@ export default function ContactSection({
                   id="contact-budget"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
-                  className="w-full rounded-xl bg-white border border-neutral-200 px-3.5 py-3 text-sm text-neutral-950 focus:outline-none focus:border-black transition-colors"
+                  className="w-full max-w-full rounded-xl bg-white border border-neutral-200 px-3.5 py-3 text-sm text-neutral-950 focus:outline-none focus:border-black transition-colors"
                 >
                   <option value="$1,000 – $2,500">$1,000 – $2,500</option>
                   <option value="$2,500 – $5,000">$2,500 – $5,000</option>
@@ -196,7 +196,7 @@ export default function ContactSection({
                 </select>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label
                   htmlFor="contact-timeline"
                   className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1.5"
@@ -207,7 +207,7 @@ export default function ContactSection({
                   id="contact-timeline"
                   value={timeline}
                   onChange={(e) => setTimeline(e.target.value)}
-                  className="w-full rounded-xl bg-white border border-neutral-200 px-3.5 py-3 text-sm text-neutral-950 focus:outline-none focus:border-black transition-colors"
+                  className="w-full max-w-full rounded-xl bg-white border border-neutral-200 px-3.5 py-3 text-sm text-neutral-950 focus:outline-none focus:border-black transition-colors"
                 >
                   <option value="48–72 Hours (Rush)">48–72 Hours (Rush)</option>
                   <option value="1 Week">1 Week</option>
@@ -242,12 +242,12 @@ export default function ContactSection({
             )}
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-neutral-600">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-neutral-600 min-w-0 max-w-full">
                 <a
                   href={`mailto:${siteSettings.email}`}
-                  className="inline-flex items-center gap-1.5 hover:text-black transition-colors font-mono"
+                  className="inline-flex items-center gap-1.5 hover:text-black transition-colors font-mono min-w-0 max-w-full break-all"
                 >
-                  <Mail className="w-3.5 h-3.5" aria-hidden="true" />
+                  <Mail className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                   <span>{siteSettings.email}</span>
                 </a>
                 {siteSettings.calendarLink && (

@@ -60,14 +60,14 @@ export default function ClientPortfolio({
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen w-full bg-background flex flex-col">
+      <div className="min-h-screen w-full max-w-full overflow-x-clip bg-background flex flex-col">
         <Header
           siteSettings={initialContent.siteSettings}
           projectCount={initialContent.projects.length}
           serviceCount={initialContent.services.length}
         />
 
-        <main className="relative flex-1 w-full bg-background">
+        <main className="relative flex-1 w-full max-w-full overflow-x-clip bg-background">
           <StackedSection className="z-10" withCurtainShadow={false}>
             <Hero
               hero={initialContent.hero}

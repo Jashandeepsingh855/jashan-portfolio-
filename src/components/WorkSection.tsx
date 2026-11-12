@@ -57,7 +57,7 @@ export default function WorkSection({
   return (
     <section
       id={id}
-      className="relative w-full pt-24 pb-16 sm:pt-28 sm:pb-24 px-4 sm:px-8 md:px-12 bg-background overflow-x-clip"
+      className="relative w-full max-w-full pt-24 pb-16 sm:pt-28 sm:pb-24 px-4 sm:px-8 md:px-12 bg-background overflow-x-hidden"
     >
       {/* Massive Soft Ghost Watermark Backdrop matching 2.webp */}
       <div
@@ -160,7 +160,7 @@ export default function WorkSection({
                     delay: Math.min(index * 0.06, 0.24),
                     ease: [0.22, 1, 0.36, 1],
                   }}
-                  className="group relative bg-white rounded-3xl p-4 sm:p-5 border border-neutral-200/90 glow-card h-full flex flex-col justify-between"
+                  className="group relative min-w-0 max-w-full bg-white rounded-3xl p-4 sm:p-5 border border-neutral-200/90 glow-card h-full flex flex-col justify-between"
                 >
                   <button
                     type="button"

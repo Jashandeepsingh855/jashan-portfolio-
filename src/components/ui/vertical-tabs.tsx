@@ -122,12 +122,12 @@ export function VerticalTabs({
   return (
     <section
       id={id}
-      className="w-full bg-background pt-24 pb-16 sm:pt-28 sm:pb-20 lg:py-24 px-4 sm:px-8 md:px-12"
+      className="w-full max-w-full overflow-x-hidden bg-background pt-24 pb-16 sm:pt-28 sm:pb-20 lg:py-24 px-4 sm:px-8 md:px-12"
     >
-      <div className="w-full mx-auto">
+      <div className="w-full max-w-full mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Content */}
-          <div className="lg:col-span-5 flex flex-col justify-center order-2 lg:order-1 pt-4">
+          <div className="lg:col-span-5 w-full min-w-0 max-w-full flex flex-col justify-center order-2 lg:order-1 pt-4">
             <div className="space-y-1.5 mb-8">
               <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.3em] block">
                 {eyebrow}
@@ -209,9 +209,9 @@ export function VerticalTabs({
           </div>
 
           {/* Right Column: Visual Preview Gallery */}
-          <div className="lg:col-span-7 flex flex-col justify-end h-full order-1 lg:order-2">
+          <div className="lg:col-span-7 w-full min-w-0 max-w-full flex flex-col justify-end h-full order-1 lg:order-2">
             <div
-              className="relative group/gallery"
+              className="relative w-full max-w-full overflow-hidden rounded-3xl md:rounded-[2.5rem] group/gallery"
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >

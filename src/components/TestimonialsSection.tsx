@@ -20,9 +20,9 @@ export default function TestimonialsSection({
   return (
     <section
       id={id}
-      className="w-full pt-24 pb-16 sm:py-24 px-4 sm:px-8 md:px-12 bg-background"
+      className="w-full max-w-full overflow-x-hidden pt-24 pb-16 sm:py-24 px-4 sm:px-8 md:px-12 bg-background"
     >
-      <div>
+      <div className="w-full max-w-full">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ export default function TestimonialsSection({
                 delay: Math.min(index * 0.08, 0.24),
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="rounded-3xl bg-[#FAFAFB] border border-neutral-200/80 p-6 sm:p-7 flex flex-col justify-between gap-6 glow-card"
+              className="min-w-0 max-w-full rounded-3xl bg-[#FAFAFB] border border-neutral-200/80 p-6 sm:p-7 flex flex-col justify-between gap-6 glow-card"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

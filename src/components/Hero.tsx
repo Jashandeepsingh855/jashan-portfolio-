@@ -92,7 +92,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
   ].filter((item) => Boolean(item.href));
 
   return (
-    <section className="relative w-full pt-4 sm:pt-6 md:pt-8 pb-14 sm:pb-20 px-4 sm:px-8 md:px-12 overflow-x-clip bg-background">
+    <section className="relative w-full max-w-full pt-4 sm:pt-6 md:pt-8 pb-14 sm:pb-20 px-4 sm:px-8 md:px-12 overflow-x-hidden bg-background">
       <div className="relative">
         {/* Continuous Unbroken Outlined Wordmark + Centered Cutout Portrait with Animated Circle */}
         <div className="relative w-full max-w-full overflow-hidden flex flex-col items-center justify-center min-w-0 pt-2 sm:pt-4">
@@ -100,17 +100,17 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
             initial={{ opacity: 0, y: 16, scale: 0.985 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
-            className="text-outline font-sans font-extrabold uppercase select-none pointer-events-none whitespace-nowrap text-center z-[5] leading-[0.9] tracking-[0.02em]"
+            className="text-outline font-sans font-extrabold uppercase select-none pointer-events-none whitespace-nowrap text-center z-[5] leading-[0.9] tracking-[0.02em] max-w-full"
             style={{
-              fontSize: "clamp(1.85rem, 8.6vw, 7.6rem)",
+              fontSize: "clamp(1.6rem, 8.2vw, 7.6rem)",
             }}
           >
             {wordmark}
           </motion.h1>
 
           {/* Centered Bigger Cutout Portrait + Scaling Backdrop Circle */}
-          <div className="relative -mt-5 sm:-mt-8 md:-mt-12 lg:-mt-16 flex flex-col items-center pointer-events-none max-w-full">
-            <div className="relative w-[285px] sm:w-[355px] md:w-[410px] lg:w-[465px] xl:w-[500px] flex justify-center items-end pt-3 sm:pt-4">
+          <div className="relative -mt-5 sm:-mt-8 md:-mt-12 lg:-mt-16 flex flex-col items-center pointer-events-none w-full max-w-full">
+            <div className="relative w-full max-w-[285px] sm:max-w-[355px] md:max-w-[410px] lg:max-w-[465px] xl:max-w-[500px] flex justify-center items-end pt-3 sm:pt-4">
               {/* Animated Circular Backdrop (MinimalistHero scale-in) */}
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -120,7 +120,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
                   ease: [0.22, 1, 0.36, 1],
                   delay: 0.2,
                 }}
-                className="absolute z-0 bottom-0 h-[245px] w-[245px] sm:h-[330px] sm:w-[330px] md:h-[395px] md:w-[395px] lg:h-[440px] lg:w-[440px] xl:h-[470px] xl:w-[470px] rounded-full bg-yellow-400/90"
+                className="absolute z-0 bottom-0 h-[245px] w-[245px] max-w-full sm:h-[330px] sm:w-[330px] md:h-[395px] md:w-[395px] lg:h-[440px] lg:w-[440px] xl:h-[470px] xl:w-[470px] rounded-full bg-yellow-400/90"
               />
 
               <motion.div
@@ -185,7 +185,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="md:col-span-6 lg:col-span-4 space-y-4 text-center md:text-left pointer-events-auto"
+            className="md:col-span-6 lg:col-span-4 min-w-0 max-w-full space-y-4 text-center md:text-left pointer-events-auto"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-200 bg-neutral-50 text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-neutral-600">
               <span className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
@@ -229,9 +229,9 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="md:col-span-6 lg:col-span-4 flex flex-col gap-2.5 w-full sm:w-auto md:items-end pointer-events-auto"
+            className="md:col-span-6 lg:col-span-4 min-w-0 flex flex-col gap-2.5 w-full max-w-full sm:w-auto md:items-end pointer-events-auto"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-2 w-full md:w-[255px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-col gap-2 w-full md:w-[255px] max-w-full">
               {socialItems.map((item) => {
                 const Icon = item.icon;
                 return (

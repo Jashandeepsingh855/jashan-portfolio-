@@ -18,7 +18,7 @@ export default function Footer({ siteSettings }: FooterProps) {
   ].filter((item) => Boolean(item.href));
 
   return (
-    <footer className="w-full border-t border-neutral-100 bg-background py-8 px-4 sm:px-8 md:px-12">
+    <footer className="w-full max-w-full overflow-x-hidden border-t border-neutral-100 bg-background py-8 px-4 sm:px-8 md:px-12">
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#111111] text-white text-xs font-semibold">

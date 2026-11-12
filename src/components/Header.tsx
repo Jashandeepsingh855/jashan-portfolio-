@@ -72,20 +72,20 @@ export default function Header({
 
   return (
     <header
-      className={`sticky top-0 z-[80] w-full transition-all duration-300 px-4 sm:px-6 lg:px-10 xl:px-12 ${
+      className={`sticky top-0 z-[80] w-full max-w-full overflow-x-clip transition-all duration-300 px-4 sm:px-6 lg:px-10 xl:px-12 ${
         scrolled
           ? "py-3.5 bg-background/90 backdrop-blur-xl border-b border-neutral-200/80 shadow-xs"
           : "pt-5 sm:pt-6 pb-3 bg-background/95 backdrop-blur-md border-b border-neutral-100"
       }`}
     >
-      <div className="flex items-center justify-between gap-2 sm:gap-3">
+      <div className="flex w-full min-w-0 items-center justify-between gap-2 sm:gap-3">
         {/* Availability Status Pill */}
         <motion.a
           href="#contact"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="glass-pill rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors max-w-[195px] md:max-w-[175px] lg:max-w-none shrink-0"
+          className="glass-pill rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-2.5 shadow-2xs hover:border-neutral-300 transition-colors min-w-0 flex-initial max-w-[calc(100vw-11rem)] sm:max-w-[220px] md:max-w-[175px] lg:max-w-none"
         >
           <span className="relative flex h-2.5 w-2.5 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accentGreen opacity-75" />

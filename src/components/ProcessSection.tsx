@@ -24,10 +24,10 @@ export default function ProcessSection({
   return (
     <section
       id={id}
-      className="w-full pt-24 pb-12 sm:pt-24 sm:pb-16 px-4 sm:px-8 md:px-12 bg-background"
+      className="w-full max-w-full overflow-x-hidden pt-24 pb-12 sm:pt-24 sm:pb-16 px-4 sm:px-8 md:px-12 bg-background"
     >
       {/* Floating Obsidian Track Record Showcase Container matching 4.webp */}
-      <div className="bg-[#1A1A1D] text-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-10 md:p-14 relative overflow-hidden shadow-2xl">
+      <div className="bg-[#1A1A1D] text-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-10 md:p-14 relative w-full max-w-full overflow-hidden shadow-2xl">
         <div
           aria-hidden="true"
           className="pointer-events-none select-none absolute top-6 left-1/2 -translate-x-1/2 watermark-text-dark font-sans text-[14vw] sm:text-[10vw] font-extrabold uppercase tracking-widest leading-none whitespace-nowrap"

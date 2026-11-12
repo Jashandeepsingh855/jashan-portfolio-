@@ -60,7 +60,7 @@ export function StackedSection({
         ref={ref}
         style={{ top: `${stickyTop}px` }}
         className={cn(
-          "sticky top-0 min-h-screen w-full bg-background flex flex-col",
+          "sticky top-0 min-h-screen w-full max-w-full overflow-x-clip bg-background flex flex-col",
           withCurtainShadow &&
             "border-t border-neutral-200/80 shadow-[0_-24px_60px_-15px_rgba(0,0,0,0.08)]",
           className
