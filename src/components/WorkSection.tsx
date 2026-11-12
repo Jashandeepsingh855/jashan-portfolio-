@@ -160,18 +160,15 @@ export default function WorkSection({
                     delay: Math.min(index * 0.06, 0.24),
                     ease: [0.22, 1, 0.36, 1],
                   }}
-                  onClick={() => onSelectProject(project)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Watch ${project.title}`}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      onSelectProject(project);
-                    }
-                  }}
-                  className="group cursor-pointer bg-white rounded-3xl p-4 sm:p-5 border border-neutral-200/90 glow-card focus:outline-none focus:ring-2 focus:ring-black/30 h-full flex flex-col justify-between"
+                  className="group relative bg-white rounded-3xl p-4 sm:p-5 border border-neutral-200/90 glow-card h-full flex flex-col justify-between"
                 >
+                  <button
+                    type="button"
+                    onClick={() => onSelectProject(project)}
+                    aria-label={`Watch ${project.title}`}
+                    className="absolute inset-0 z-20 rounded-3xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-black/30"
+                  />
+
                   <div>
                     {/* Standardized Aspect-Video Cinema Frame (zero letterboxing) */}
                     <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-neutral-100 mb-5">
@@ -211,7 +208,7 @@ export default function WorkSection({
                       {/* Blur-Backdrop Play Overlay */}
                       <div className="absolute inset-0 bg-black/35 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
                         <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-300">
-                          <Play className="w-6 h-6 fill-black translate-x-0.5" />
+                          <Play className="w-6 h-6 fill-black translate-x-0.5" aria-hidden="true" />
                         </div>
                       </div>
                     </div>
@@ -232,10 +229,9 @@ export default function WorkSection({
                             href={project.projectUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
                             title="Open project link"
                             aria-label={`Open external link for ${project.title}`}
-                            className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-black transition-colors shrink-0 mt-0.5"
+                            className="relative z-30 p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-black transition-colors shrink-0 mt-0.5"
                           >
                             <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
                           </a>

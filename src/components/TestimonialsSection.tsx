@@ -55,6 +55,7 @@ export default function TestimonialsSection({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div
+                    role="img"
                     className="flex items-center gap-1 text-neutral-900"
                     aria-label={`${t.rating || 5} out of 5 stars`}
                   >
