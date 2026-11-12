@@ -792,10 +792,7 @@ export async function deleteInquiry(id: string): Promise<void> {
 }
 
 export async function resetToDefaultContent(): Promise<SiteContent> {
+  // Reset only global settings; never touch custom projects (matches admin UI confirmation text)
   const defaultSettings = getDefaultSettingsPayload();
-  const defaultProjects = getDefaultProjects();
-  return savePortfolioSettings({
-    ...defaultSettings,
-    projects: defaultProjects,
-  });
+  return savePortfolioSettings(defaultSettings);
 }

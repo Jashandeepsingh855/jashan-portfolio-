@@ -12,7 +12,9 @@ export async function GET() {
 
   try {
     const inquiries = await listInquiries();
-    return NextResponse.json({ inquiries });
+    return NextResponse.json({ inquiries }, {
+      headers: { "Cache-Control": "private, no-store, must-revalidate" },
+    });
   } catch (error) {
     console.error("GET /api/contact error:", error);
     return NextResponse.json(
