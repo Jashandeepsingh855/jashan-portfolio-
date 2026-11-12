@@ -476,25 +476,26 @@ export async function getPublicContent(): Promise<PublicSiteContent> {
   try {
     const supabase = createSupabasePublicClient();
 
-    const [{ data: settingsRow }, { data: projectRows }] = await Promise.all([
-      supabase
-        .from("portfolio_settings")
-        .select("data")
-        .eq("id", "default")
-        .maybeSingle(),
-      supabase
-        .from("projects")
-        .select("*")
-        .order("display_order", { ascending: true })
-        .order("created_at", { ascending: false }),
-    ]);
+    const [{ data: settingsRow }, { data: projectRows, error: projectError }] =
+      await Promise.all([
+        supabase
+          .from("portfolio_settings")
+          .select("data")
+          .eq("id", "default")
+          .maybeSingle(),
+        supabase
+          .from("projects")
+          .select("*")
+          .order("display_order", { ascending: true })
+          .order("created_at", { ascending: false }),
+      ]);
 
     const settings = mergeSettingsWithDefaults(
       (settingsRow?.data as Partial<PortfolioSettingsPayload> | null) || null
     );
 
     const projects =
-      Array.isArray(projectRows) && projectRows.length > 0
+      !projectError && Array.isArray(projectRows)
         ? (projectRows as DbProjectRow[]).map(mapDbProjectToProject)
         : getDefaultProjects();
 
@@ -516,7 +517,7 @@ export async function getFullAdminContent(): Promise<SiteContent> {
 
   const [
     { data: settingsRow },
-    { data: projectRows },
+    { data: projectRows, error: projectError },
     { data: inquiryRows, error: inquiryError },
   ] = await Promise.all([
     supabase
@@ -539,9 +540,10 @@ export async function getFullAdminContent(): Promise<SiteContent> {
     (settingsRow?.data as Partial<PortfolioSettingsPayload> | null) || null
   );
 
-  const projects = Array.isArray(projectRows)
-    ? (projectRows as DbProjectRow[]).map(mapDbProjectToProject)
-    : [];
+  const projects =
+    !projectError && Array.isArray(projectRows)
+      ? (projectRows as DbProjectRow[]).map(mapDbProjectToProject)
+      : getDefaultProjects();
 
   const inquiries =
     !inquiryError && Array.isArray(inquiryRows)
@@ -550,7 +552,7 @@ export async function getFullAdminContent(): Promise<SiteContent> {
 
   return {
     ...settings,
-    projects: projects.length > 0 ? projects : getDefaultProjects(),
+    projects,
     inquiries,
   };
 }
@@ -589,25 +591,25 @@ export async function savePortfolioSettings(
       if (upsertError) {
         throw new Error(upsertError.message);
       }
+    }
 
-      const keepIds = new Set(formatted.map((item) => item.id));
-      const { data: existingRows } = await supabase
+    const keepIds = new Set(formatted.map((item) => item.id));
+    const { data: existingRows } = await supabase
+      .from("projects")
+      .select("id");
+
+    const toDelete = (existingRows || [])
+      .map((r) => r.id as string)
+      .filter((id) => !keepIds.has(id));
+
+    if (toDelete.length > 0) {
+      const { error: deleteError } = await supabase
         .from("projects")
-        .select("id");
+        .delete()
+        .in("id", toDelete);
 
-      const toDelete = (existingRows || [])
-        .map((r) => r.id as string)
-        .filter((id) => !keepIds.has(id));
-
-      if (toDelete.length > 0) {
-        const { error: deleteError } = await supabase
-          .from("projects")
-          .delete()
-          .in("id", toDelete);
-
-        if (deleteError) {
-          throw new Error(deleteError.message);
-        }
+      if (deleteError) {
+        throw new Error(deleteError.message);
       }
     }
   }

@@ -33,13 +33,33 @@ export async function POST(req: NextRequest) {
       message?: string;
     };
 
-    const name = body.name?.trim() || "";
-    const email = body.email?.trim() || "";
-    const message = body.message?.trim() || "";
+    const name = typeof body.name === "string" ? body.name.trim() : "";
+    const email = typeof body.email === "string" ? body.email.trim() : "";
+    const message = typeof body.message === "string" ? body.message.trim() : "";
+    const projectType =
+      typeof body.projectType === "string" ? body.projectType.trim() : undefined;
+    const budget =
+      typeof body.budget === "string" ? body.budget.trim() : undefined;
+    const timeline =
+      typeof body.timeline === "string" ? body.timeline.trim() : undefined;
 
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: "Name, email, and project message are required." },
+        { status: 400 }
+      );
+    }
+
+    if (
+      name.length > 120 ||
+      email.length > 254 ||
+      message.length > 5000 ||
+      (projectType && projectType.length > 100) ||
+      (budget && budget.length > 100) ||
+      (timeline && timeline.length > 100)
+    ) {
+      return NextResponse.json(
+        { error: "Submitted fields exceed maximum allowed length." },
         { status: 400 }
       );
     }
@@ -54,9 +74,9 @@ export async function POST(req: NextRequest) {
     const inquiry = await createInquiry({
       name,
       email,
-      projectType: body.projectType,
-      budget: body.budget,
-      timeline: body.timeline,
+      projectType,
+      budget,
+      timeline,
       message,
     });
 

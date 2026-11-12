@@ -2,12 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 
 export interface ServiceItem {
   id: string;
@@ -261,7 +257,7 @@ export function VerticalTabs({
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center justify-center text-foreground hover:bg-background transition-all active:scale-90"
                     aria-label="Previous service"
                   >
-                    <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     type="button"
@@ -272,7 +268,7 @@ export function VerticalTabs({
                     className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-background/80 backdrop-blur-md border border-border/50 flex items-center justify-center text-foreground hover:bg-background transition-all active:scale-90"
                     aria-label="Next service"
                   >
-                    <HugeiconsIcon icon={ArrowRight01Icon} size={20} />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>

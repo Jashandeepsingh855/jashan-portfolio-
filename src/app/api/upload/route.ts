@@ -4,6 +4,18 @@ import { MEDIA_BUCKET } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const MAX_BYTES = 50 * 1024 * 1024; // 50MB bucket limit
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/avif",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+  "video/x-m4v",
+  "video/ogg",
+]);
 
 export async function POST(req: NextRequest) {
   const isAdmin = await verifyAdminSession();
@@ -24,6 +36,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
+    const contentType = file.type.trim().toLowerCase();
+    if (!ALLOWED_MIME_TYPES.has(contentType)) {
+      return NextResponse.json(
+        {
+          error:
+            "Unsupported file type. Upload PNG, JPG, WebP, GIF, AVIF, MP4, WebM, or MOV.",
+        },
+        { status: 400 }
+      );
+    }
+
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
         { error: "File exceeds the 50MB storage limit." },
@@ -42,7 +65,7 @@ export async function POST(req: NextRequest) {
     const { error: uploadError } = await supabase.storage
       .from(MEDIA_BUCKET)
       .upload(storagePath, buffer, {
-        contentType: file.type || "application/octet-stream",
+        contentType,
         cacheControl: "31536000",
         upsert: false,
       });

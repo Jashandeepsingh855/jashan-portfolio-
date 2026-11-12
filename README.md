@@ -10,11 +10,7 @@ Generated based on the **Google Stitch** design system (`Minimalist Video Portfo
 
 The application is currently running at:
 - **Public Portfolio:** [http://localhost:3001](http://localhost:3001)
-- **Admin Portal:** [http://localhost:3001/admin](http://localhost:3001/admin)
-
-> **Admin Access Credentials:**
-> - **Default Password:** `admin123`
-> *(Can be changed anytime inside the Admin Portal under Settings & Security)*
+- **Admin Portal:** [http://localhost:3001/admin](http://localhost:3001/admin) (authenticated via Supabase Auth)
 
 ---
 
@@ -54,7 +50,7 @@ The application is currently running at:
   5. **5-Stage Workflow:** Modify stage titles, descriptions, and turnaround horizons.
   6. **Testimonials:** Add or edit director reviews and quotes.
   7. **Client Inquiries Inbox:** Read briefs submitted by clients through the portfolio contact form, with timestamp, budget, and direct reply button.
-  8. **Media & Asset Uploader:** Directly upload thumbnail images or video clips to `/uploads/`.
+  8. **Media & Asset Uploader:** Directly upload thumbnail images or video clips to Supabase Storage (`portfolio-media`).
   9. **Site Settings & Password:** Update contact channels, social profiles, change admin password, and one-click "Reset to Default Stitch Design".
 
 ---
@@ -66,7 +62,7 @@ The application is currently running at:
 - **Styling:** Tailwind CSS with custom Stitch theme tokens (`#FF3815` accent, `#0B0F17` dark, `#F8FAFC` surface)
 - **Typography:** *Plus Jakarta Sans* & *JetBrains Mono*
 - **Icons:** Lucide React & Google Material Symbols
-- **Data Persistence:** Self-contained JSON database (`data/content.json` & `data/content.default.json`) with zero external database dependencies.
+- **Data Persistence:** Supabase Postgres & Storage (`data/content.default.json` fallback presets).
 - **MCP Integration:** Google Stitch MCP server connected for design synchronization.
 
 ---

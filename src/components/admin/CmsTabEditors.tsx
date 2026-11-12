@@ -1290,177 +1290,39 @@ export function SettingsCmsTab({
         </div>
 
         <div className="pt-3 border-t border-neutral-200/80 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AdminField label="YouTube URL">
-            <input
-              type="url"
-              value={content.siteSettings.socials.youtube || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      youtube: e.target.value,
+          {(
+            [
+              ["YouTube URL", "youtube", "url"],
+              ["YouTube Handle", "youtubeHandle", "text"],
+              ["Instagram URL", "instagram", "url"],
+              ["Instagram Handle", "instagramHandle", "text"],
+              ["LinkedIn URL", "linkedin", "url"],
+              ["LinkedIn Handle", "linkedinHandle", "text"],
+              ["Behance URL", "behance", "url"],
+              ["X / Twitter URL", "x", "url"],
+              ["Vimeo URL", "vimeo", "url"],
+            ] as const
+          ).map(([label, key, type]) => (
+            <AdminField key={key} label={label}>
+              <input
+                type={type}
+                value={content.siteSettings.socials[key] || ""}
+                onChange={(e) =>
+                  onChange({
+                    ...content,
+                    siteSettings: {
+                      ...content.siteSettings,
+                      socials: {
+                        ...content.siteSettings.socials,
+                        [key]: e.target.value,
+                      },
                     },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="YouTube Handle">
-            <input
-              type="text"
-              value={content.siteSettings.socials.youtubeHandle || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      youtubeHandle: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="Instagram URL">
-            <input
-              type="url"
-              value={content.siteSettings.socials.instagram || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      instagram: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="Instagram Handle">
-            <input
-              type="text"
-              value={content.siteSettings.socials.instagramHandle || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      instagramHandle: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="LinkedIn URL">
-            <input
-              type="url"
-              value={content.siteSettings.socials.linkedin || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      linkedin: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="LinkedIn Handle">
-            <input
-              type="text"
-              value={content.siteSettings.socials.linkedinHandle || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      linkedinHandle: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="Behance URL">
-            <input
-              type="url"
-              value={content.siteSettings.socials.behance || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      behance: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="X / Twitter URL">
-            <input
-              type="url"
-              value={content.siteSettings.socials.x || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      x: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
-          <AdminField label="Vimeo URL">
-            <input
-              type="url"
-              value={content.siteSettings.socials.vimeo || ""}
-              onChange={(e) =>
-                onChange({
-                  ...content,
-                  siteSettings: {
-                    ...content.siteSettings,
-                    socials: {
-                      ...content.siteSettings.socials,
-                      vimeo: e.target.value,
-                    },
-                  },
-                })
-              }
-              className={ADMIN_INPUT_CLS}
-            />
-          </AdminField>
+                  })
+                }
+                className={ADMIN_INPUT_CLS}
+              />
+            </AdminField>
+          ))}
         </div>
       </AdminCard>
 

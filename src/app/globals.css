@@ -22,12 +22,6 @@
   }
 }
 
-.ethereal-canvas {
-  box-shadow:
-    0 25px 60px -15px rgba(0, 0, 0, 0.14),
-    0 0 1px 1px rgba(255, 255, 255, 0.85) inset;
-}
-
 .text-outline {
   -webkit-text-stroke: 2px #111111;
   color: transparent;
@@ -48,13 +42,6 @@
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.06);
   color: transparent;
   user-select: none;
-}
-
-.glass-nav {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(229, 231, 235, 0.9);
 }
 
 .glass-pill {

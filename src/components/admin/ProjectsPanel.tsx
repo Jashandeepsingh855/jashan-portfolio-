@@ -220,6 +220,7 @@ export default function ProjectsPanel({
     const target = index + direction;
     if (target < 0 || target >= projects.length) return;
 
+    const previous = projects;
     const sorted = [...projects];
     const [moved] = sorted.splice(index, 1);
     sorted.splice(target, 0, moved);
@@ -228,7 +229,7 @@ export default function ProjectsPanel({
     onProjectsChange(reordered);
 
     try {
-      await Promise.all([
+      const responses = await Promise.all([
         fetch(`/api/projects/${reordered[index].id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -240,9 +241,22 @@ export default function ProjectsPanel({
           body: JSON.stringify({ order: reordered[target].order }),
         }),
       ]);
+
+      const failed = responses.find((res) => !res.ok);
+      if (failed) {
+        const errData = await failed.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to update project order.");
+      }
+
       onNotify("success", "Updated project display order.");
-    } catch {
-      onNotify("error", "Order saved locally; click Save Site Changes to sync.");
+    } catch (err) {
+      onProjectsChange(previous);
+      onNotify(
+        "error",
+        err instanceof Error
+          ? err.message
+          : "Could not update project display order."
+      );
     }
   };
 
