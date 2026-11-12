@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Play } from "lucide-react";
 import type { Project, WorkSectionContent } from "@/lib/data";
+import { isOptimizableImageSrc } from "@/lib/utils";
 
 interface WorkSectionProps {
   id?: string;
@@ -29,6 +31,7 @@ export default function WorkSection({
   }, [categories]);
 
   const [activeCategory, setActiveCategory] = useState("All");
+  const [failedThumbs, setFailedThumbs] = useState<Record<string, boolean>>({});
 
   const filteredProjects = useMemo(() => {
     const sorted = [...projects].sort((a, b) => a.order - b.order);
@@ -113,7 +116,7 @@ export default function WorkSection({
                     <span>{cat}</span>
                     <span
                       className={`font-mono text-[11px] ${
-                        isActive ? "text-zinc-400" : "text-neutral-400"
+                        isActive ? "text-zinc-300" : "text-neutral-600"
                       }`}
                     >
                       [{count}]
@@ -129,7 +132,7 @@ export default function WorkSection({
             className="border border-neutral-200 bg-white hover:bg-neutral-50 hover:border-neutral-300 text-neutral-800 px-5 py-2.5 rounded-full text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors shadow-2xs self-start sm:self-auto"
           >
             <span>{sectionContent?.ctaLabel || "Request Private Cut"}</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
           </a>
         </div>
 
@@ -140,6 +143,10 @@ export default function WorkSection({
         >
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project, index) => {
+              const rawThumb = project.thumbnail || "/covers/commercial-pulse.jpg";
+              const thumbSrc = failedThumbs[project.id]
+                ? "/covers/commercial-pulse.jpg"
+                : rawThumb;
               return (
                 <motion.article
                   key={project.id}
@@ -156,6 +163,7 @@ export default function WorkSection({
                   onClick={() => onSelectProject(project)}
                   role="button"
                   tabIndex={0}
+                  aria-label={`Watch ${project.title}`}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
@@ -167,10 +175,21 @@ export default function WorkSection({
                   <div>
                     {/* Standardized Aspect-Video Cinema Frame (zero letterboxing) */}
                     <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-neutral-100 mb-5">
-                      <img
-                        src={project.thumbnail}
+                      <Image
+                        src={thumbSrc}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        unoptimized={!isOptimizableImageSrc(thumbSrc)}
+                        onError={() => {
+                          if (!failedThumbs[project.id]) {
+                            setFailedThumbs((prev) => ({
+                              ...prev,
+                              [project.id]: true,
+                            }));
+                          }
+                        }}
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       />
 
                       {/* Media Top Meta Pills */}
@@ -201,7 +220,7 @@ export default function WorkSection({
                     <div className="space-y-3">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1">
+                          <p className="text-[11px] font-mono uppercase tracking-wider text-neutral-600 mb-1">
                             {project.client} · {project.year}
                           </p>
                           <h3 className="text-lg sm:text-xl font-bold text-neutral-950 group-hover:text-black transition-colors">
@@ -216,16 +235,19 @@ export default function WorkSection({
                             onClick={(e) => e.stopPropagation()}
                             title="Open project link"
                             aria-label={`Open external link for ${project.title}`}
-                            className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-500 hover:text-black transition-colors shrink-0 mt-0.5"
+                            className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-black transition-colors shrink-0 mt-0.5"
                           >
-                            <ArrowUpRight className="w-4 h-4" />
+                            <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
                           </a>
                         ) : (
-                          <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
+                          <ArrowUpRight
+                            aria-hidden="true"
+                            className="w-4 h-4 text-neutral-500 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1"
+                          />
                         )}
                       </div>
 
-                      <p className="text-xs sm:text-sm text-neutral-500 line-clamp-2 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-neutral-600 line-clamp-2 leading-relaxed">
                         {project.description}
                       </p>
                     </div>

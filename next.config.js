@@ -5,7 +5,18 @@ const nextConfig = {
   ...(process.env.VERCEL ? {} : { outputFileTracingRoot: path.join(__dirname) }),
   poweredByHeader: false,
   images: {
-    unoptimized: true, // next/image is unused; disables /_next/image optimizer
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "vlkofzfbfbropigptpee.supabase.co",
+        pathname: "/storage/v1/object/public/portfolio-media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
   },
   async headers() {
     return [

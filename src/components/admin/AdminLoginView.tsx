@@ -166,8 +166,8 @@ export default function AdminLoginView() {
         </div>
       </main>
 
-      <footer className="w-full max-w-6xl mx-auto flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.2em] text-neutral-400">
-        <span>Encrypted JWT Cookie</span>
+      <footer className="w-full max-w-6xl mx-auto flex items-center justify-between text-[11px] font-mono uppercase tracking-[0.2em] text-neutral-600">
+        <span>Supabase Auth Session</span>
         <span>RLS Protected Database</span>
       </footer>
     </div>

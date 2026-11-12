@@ -30,7 +30,7 @@ export default function TestimonialsSection({
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-10 sm:mb-14"
         >
-          <p className="text-xs font-mono uppercase tracking-[0.2em] text-neutral-400 mb-2">
+          <p className="text-xs font-mono uppercase tracking-[0.2em] text-neutral-600 mb-2">
             {sectionContent?.eyebrow || "/ CLIENT VALIDATION"}
           </p>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-neutral-950 tracking-tight uppercase">
@@ -54,24 +54,31 @@ export default function TestimonialsSection({
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-neutral-900">
+                  <div
+                    className="flex items-center gap-1 text-neutral-900"
+                    aria-label={`${t.rating || 5} out of 5 stars`}
+                  >
                     {Array.from({ length: t.rating || 5 }).map((_, i) => (
                       <Star
                         key={i}
+                        aria-hidden="true"
                         className="w-3.5 h-3.5 fill-neutral-900 text-neutral-900"
                       />
                     ))}
                   </div>
-                  <Quote className="w-5 h-5 text-neutral-300" />
+                  <Quote
+                    aria-hidden="true"
+                    className="w-5 h-5 text-neutral-400"
+                  />
                 </div>
-                <p className="text-sm text-neutral-600 leading-relaxed">
+                <p className="text-sm text-neutral-700 leading-relaxed">
                   &ldquo;{t.quote}&rdquo;
                 </p>
               </div>
 
               <div className="pt-4 border-t border-neutral-200/80">
                 <p className="text-sm font-bold text-neutral-950">{t.author}</p>
-                <p className="text-xs font-mono text-neutral-500 mt-0.5">
+                <p className="text-xs font-mono text-neutral-600 mt-0.5">
                   {t.role} · {t.company}
                 </p>
               </div>

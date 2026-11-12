@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, isOptimizableImageSrc } from "@/lib/utils";
 
 export interface ServiceItem {
   id: string;
@@ -65,6 +66,7 @@ export function VerticalTabs({
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   const safeIndex = activeIndex < items.length ? activeIndex : 0;
 
@@ -113,6 +115,9 @@ export function VerticalTabs({
   };
 
   const activeService = items[safeIndex];
+  const activeImgSrc = failedImages[activeService.id]
+    ? "/covers/silicon-frontier.jpg"
+    : activeService.image || "/covers/silicon-frontier.jpg";
 
   return (
     <section
@@ -144,7 +149,7 @@ export function VerticalTabs({
                       "group relative w-full flex items-start gap-4 pl-5 sm:pl-6 py-6 md:py-7 text-left transition-all duration-500 border-t border-border/50 first:border-t-0",
                       isActive
                         ? "text-foreground"
-                        : "text-muted-foreground/60 hover:text-foreground"
+                        : "text-neutral-600 hover:text-foreground"
                     )}
                   >
                     <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-muted">
@@ -164,7 +169,7 @@ export function VerticalTabs({
                       )}
                     </div>
 
-                    <span className="text-[9px] md:text-[10px] font-medium mt-1.5 tabular-nums opacity-50 shrink-0">
+                    <span className="text-[9px] md:text-[10px] font-medium mt-1.5 tabular-nums opacity-75 shrink-0">
                       /{service.id}
                     </span>
 
@@ -230,17 +235,21 @@ export function VerticalTabs({
                     className="absolute inset-0 w-full h-full cursor-pointer"
                     onClick={handleNext}
                   >
-                    <img
-                      src={activeService.image}
+                    <Image
+                      src={activeImgSrc}
                       alt={activeService.title}
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        if (!target.dataset.fallbackApplied) {
-                          target.dataset.fallbackApplied = "true";
-                          target.src = "/covers/silicon-frontier.jpg";
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 58vw"
+                      unoptimized={!isOptimizableImageSrc(activeImgSrc)}
+                      onError={() => {
+                        if (!failedImages[activeService.id]) {
+                          setFailedImages((prev) => ({
+                            ...prev,
+                            [activeService.id]: true,
+                          }));
                         }
                       }}
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105 !m-0 !p-0 block"
+                      className="object-cover transition-transform duration-700 hover:scale-105 !m-0 !p-0 block"
                     />
 
                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-75" />

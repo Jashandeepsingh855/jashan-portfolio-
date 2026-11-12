@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
   ArrowDown,
   ArrowUp,
@@ -14,6 +15,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { isOptimizableImageSrc } from "@/lib/utils";
 import type {
   AspectRatioType,
   Project,
@@ -621,11 +623,20 @@ export default function ProjectsPanel({
             className="rounded-2xl bg-white border border-neutral-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-neutral-300 transition-colors shadow-2xs"
           >
             <div className="flex items-center gap-4 min-w-0">
-              <img
-                src={project.thumbnail}
-                alt={project.title}
-                className="w-28 aspect-video rounded-xl object-cover bg-neutral-100 border border-neutral-200 shrink-0"
-              />
+              <div className="relative w-28 aspect-video rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200 shrink-0">
+                <Image
+                  src={project.thumbnail || "/covers/commercial-pulse.jpg"}
+                  alt={project.title}
+                  fill
+                  sizes="112px"
+                  unoptimized={
+                    !isOptimizableImageSrc(
+                      project.thumbnail || "/covers/commercial-pulse.jpg"
+                    )
+                  }
+                  className="object-cover"
+                />
+              </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-800 font-semibold">
@@ -666,18 +677,20 @@ export default function ProjectsPanel({
                 disabled={idx === 0}
                 onClick={() => handleMove(idx, -1)}
                 title="Move Up"
+                aria-label={`Move ${project.title} up`}
                 className="p-2 rounded-xl bg-[#FAFAFB] border border-neutral-200 hover:border-neutral-400 text-neutral-700 disabled:opacity-30"
               >
-                <ArrowUp className="w-3.5 h-3.5" />
+                <ArrowUp className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
               <button
                 type="button"
                 disabled={idx === projects.length - 1}
                 onClick={() => handleMove(idx, 1)}
                 title="Move Down"
+                aria-label={`Move ${project.title} down`}
                 className="p-2 rounded-xl bg-[#FAFAFB] border border-neutral-200 hover:border-neutral-400 text-neutral-700 disabled:opacity-30"
               >
-                <ArrowDown className="w-3.5 h-3.5" />
+                <ArrowDown className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
               <button
                 type="button"
@@ -685,16 +698,17 @@ export default function ProjectsPanel({
                 title="Edit"
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#111111] text-white hover:bg-neutral-800 text-xs font-semibold transition-colors"
               >
-                <Edit3 className="w-3.5 h-3.5" />
+                <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Edit</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleDelete(project)}
                 title="Delete"
+                aria-label={`Delete ${project.title}`}
                 className="p-2 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200/70 transition-colors"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             </div>
           </div>

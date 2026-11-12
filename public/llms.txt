@@ -1,31 +1,21 @@
-# Jashandeep Singh — Video Editor
+# Jashandeep Singh — Video Editor Portfolio
 
-## About
-Jashandeep Singh is a professional video editor based in India, available worldwide for remote projects.
-He specialises in high-retention editing, commercial storytelling, and creative post-production using DaVinci Resolve.
+> High-retention commercial video editor & ACES colorist portfolio built with Next.js App Router, TypeScript, Tailwind CSS, and Supabase (Postgres + Auth + Storage). Engineered for rapid visual storytelling in DaVinci Resolve Studio across commercial launch films, YouTube long-form documentaries, and viral short-form campaigns worldwide.
 
-## Services
-- **Commercial Video Editing** — cinematic cuts for brands, product launches, and campaigns
-- **YouTube & Short-Form Editing** — high-retention edits optimised for watch time and audience growth
-- **DaVinci Resolve Colour Grading** — ACES and node-based colour pipelines
-- **Motion Graphics & VFX** — title sequences, transitions, and visual effects
-- **Documentary & Long-Form Editing** — narrative structure, pacing, and story arc refinement
+## Core Pages
+- [Home & Portfolio Showcase](https://www.jashandeepsingh.work/): Full portfolio featuring the hero showreel, interactive category filterable project grid, studio services tabs, 7+ year post-production track record, director testimonials, and project inquiry form.
+- [Selected Work](https://www.jashandeepsingh.work/#work): Curated commercial, YouTube, documentary, and short-form video edits with duration, aspect format, client attribution, and interactive video playback modal.
+- [Services & Capabilities](https://www.jashandeepsingh.work/#services): Post-production capabilities covering short-form retention editing, YouTube storytelling & essays, ACES cinematic color grading in DaVinci Resolve Studio, and multi-layer sound design.
+- [Experience & Pipeline](https://www.jashandeepsingh.work/#experience): Chronological career timeline and 4-stage post-production workflow from ingest and assembly to ACES color finish and final delivery.
+- [Client Validation](https://www.jashandeepsingh.work/#testimonials): Verified reviews from film directors, brand founders, and digital creators.
+- [Start a Project](https://www.jashandeepsingh.work/#contact): Direct production brief intake form and scheduling links for commercial retainers and single-cut campaigns.
 
-## Stats
-- 100+ projects delivered globally
-- Clients in India, UAE, USA, UK, and Canada
-- Average video watch-time increase: 40%+
-- Platforms: YouTube, Instagram Reels, TikTok, LinkedIn, broadcast TV
+## Creator & Editing Expertise
+- **Role:** Video Editor & ACES Colorist (Remote Worldwide — Commercial, YouTube, Short-Form)
+- **Primary Tools:** DaVinci Resolve Studio (ACEScg node pipeline), Fusion VFX, After Effects, Adobe Premiere Pro, Fairlight Audio Mastering (-14 LUFS)
+- **Track Record:** 120M+ organic views driven across YouTube, Instagram Reels, TikTok, LinkedIn, and commercial brand campaigns
 
-## Contact & Links
-- Website: https://www.jashandeepsingh.work
-- Inquiry form: https://www.jashandeepsingh.work/#contact
-
-## Skills & Tools
-DaVinci Resolve, Adobe Premiere Pro, After Effects, ACES colour science, Fusion VFX, motion graphics, audio mixing, sound design
-
-## AI Search Summary
-Jashandeep Singh is a freelance video editor who delivers high-retention, commercially polished video content.
-He works with YouTube creators, brands, and agencies worldwide, using DaVinci Resolve as his primary editing and colour grading tool.
-His portfolio spans commercial cuts, short-form social content, documentary edits, and cinematic post-production.
-Contact him through his portfolio at https://www.jashandeepsingh.work.
+## Platform Architecture
+- **Frontend:** Next.js 15 App Router, React 19, TypeScript, Tailwind CSS, Framer Motion
+- **Backend & CMS:** Supabase Postgres with Row Level Security (RLS), Supabase Auth, and Supabase Storage (`portfolio-media`)
+- **Machine-Readable Endpoints:** [XML Sitemap](https://www.jashandeepsingh.work/sitemap.xml) | [Robots Policy](https://www.jashandeepsingh.work/robots.txt)

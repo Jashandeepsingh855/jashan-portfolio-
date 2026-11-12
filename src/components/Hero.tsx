@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -13,6 +15,7 @@ import {
   Youtube,
 } from "lucide-react";
 import type { HeroContent, SiteSettings } from "@/lib/data";
+import { isOptimizableImageSrc } from "@/lib/utils";
 
 interface HeroProps {
   hero: HeroContent;
@@ -35,6 +38,20 @@ const fadeUp = {
 
 export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) {
   const wordmark = (siteSettings.wordmark || "JASHANDEEP").toUpperCase();
+  const [portraitSrc, setPortraitSrc] = useState(
+    hero.portraitImage || "/portrait-cutout.png"
+  );
+  const [showreelCoverSrc, setShowreelCoverSrc] = useState(
+    hero.showreelCoverImage || "/covers/commercial-pulse.jpg"
+  );
+
+  useEffect(() => {
+    setPortraitSrc(hero.portraitImage || "/portrait-cutout.png");
+  }, [hero.portraitImage]);
+
+  useEffect(() => {
+    setShowreelCoverSrc(hero.showreelCoverImage || "/covers/commercial-pulse.jpg");
+  }, [hero.showreelCoverImage]);
 
   const socialItems = [
     {
@@ -106,23 +123,31 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
                 className="absolute z-0 bottom-0 h-[245px] w-[245px] sm:h-[330px] sm:w-[330px] md:h-[395px] md:w-[395px] lg:h-[440px] lg:w-[440px] xl:h-[470px] xl:w-[470px] rounded-full bg-yellow-400/90"
               />
 
-              <motion.img
-                src={hero.portraitImage || "/portrait-cutout.png"}
-                alt={`${siteSettings.name} — ${siteSettings.role}`}
-                initial={{ opacity: 0, y: 50 }}
+              <motion.div
+                initial={{ opacity: 1, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  duration: 1,
+                  duration: 0.65,
                   ease: [0.22, 1, 0.36, 1],
-                  delay: 0.4,
                 }}
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  target.onerror = null;
-                  target.src = "/portrait-cutout.png";
-                }}
-                className="relative z-10 w-full h-auto max-h-[340px] sm:max-h-[405px] md:max-h-[450px] lg:max-h-[490px] xl:max-h-[520px] object-contain object-bottom drop-shadow-[0_18px_28px_rgba(0,0,0,0.08)]"
-              />
+                className="relative z-10 w-full"
+              >
+                <Image
+                  src={portraitSrc}
+                  alt={`${siteSettings.name} — ${siteSettings.role}`}
+                  width={1168}
+                  height={954}
+                  priority
+                  sizes="(max-width: 640px) 285px, (max-width: 768px) 355px, (max-width: 1024px) 410px, (max-width: 1280px) 465px, 500px"
+                  unoptimized={!isOptimizableImageSrc(portraitSrc)}
+                  onError={() => {
+                    if (portraitSrc !== "/portrait-cutout.png") {
+                      setPortraitSrc("/portrait-cutout.png");
+                    }
+                  }}
+                  className="w-full h-auto max-h-[340px] sm:max-h-[405px] md:max-h-[450px] lg:max-h-[490px] xl:max-h-[520px] object-contain object-bottom drop-shadow-[0_18px_28px_rgba(0,0,0,0.08)]"
+                />
+              </motion.div>
               {/* Subtle Baseline Feather tucked under Telemetry Pill */}
               <div className="absolute inset-x-0 bottom-0 z-10 h-3 sm:h-4 bg-gradient-to-t from-white to-transparent" />
             </div>
@@ -135,8 +160,8 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
               className="pointer-events-auto relative z-20 -mt-3 sm:-mt-4 bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full px-3.5 sm:px-4 py-1.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 shadow-sm border border-neutral-200 max-w-full"
             >
               <span className="flex items-center gap-1.5 text-center">
-                <Film className="w-3.5 h-3.5 text-neutral-700 shrink-0" />
-                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-neutral-500">
+                <Film className="w-3.5 h-3.5 text-neutral-700 shrink-0" aria-hidden="true" />
+                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-neutral-600">
                   {hero.portraitStatLabel || "TOTAL REACH"}:
                 </span>
                 <span className="text-[11px] sm:text-xs font-bold text-neutral-900">
@@ -214,16 +239,17 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
                     key={item.label}
                     href={item.href}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="rounded-full border border-neutral-200 bg-white px-4 py-2.5 flex items-center justify-between group hover:border-neutral-400 hover:bg-neutral-50 shadow-2xs transition-all duration-200"
                   >
                     <span className="flex items-center gap-2.5 text-xs font-medium text-neutral-800 group-hover:text-black">
                       <Icon
-                        className={`w-3.5 h-3.5 text-neutral-500 transition-colors ${item.accent}`}
+                        className={`w-3.5 h-3.5 text-neutral-600 transition-colors ${item.accent}`}
+                        aria-hidden="true"
                       />
                       <span>{item.label}</span>
                     </span>
-                    <span className="text-[11px] text-neutral-400 group-hover:text-neutral-700 font-mono transition-colors">
+                    <span className="text-[11px] text-neutral-600 group-hover:text-neutral-800 font-mono transition-colors">
                       {item.handle}
                     </span>
                   </a>
@@ -249,7 +275,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
               <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950">
                 {metric.value}
               </div>
-              <div className="text-[11px] sm:text-xs text-neutral-500 mt-1 uppercase tracking-wider font-medium">
+              <div className="text-[11px] sm:text-xs text-neutral-600 mt-1 uppercase tracking-wider font-medium">
                 {metric.label}
               </div>
             </div>
@@ -267,7 +293,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
         >
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />
               <span className="text-[11px] sm:text-xs font-mono tracking-widest text-zinc-300 uppercase">
                 {hero.showreelSubtitle || "OFFICIAL SHOWREEL 2025"}
               </span>
@@ -276,7 +302,7 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
               <span className="bg-zinc-900 border border-white/10 text-zinc-200 px-2.5 py-0.5 rounded-full font-semibold">
                 {hero.showreelFormat || "4K 60FPS · PRORES 4444 XQ"}
               </span>
-              <span className="hidden sm:inline text-zinc-500">
+              <span className="hidden sm:inline text-zinc-400">
                 {hero.showreelColorspace || "ACEScg"}
               </span>
             </div>
@@ -285,13 +311,22 @@ export default function Hero({ hero, siteSettings, onPlayShowreel }: HeroProps) 
           <button
             type="button"
             onClick={onPlayShowreel}
+            aria-label={`Play ${hero.showreelTitle || "Official Showreel"}`}
             className="group relative w-full rounded-2xl overflow-hidden bg-black border border-white/10 aspect-video text-left cursor-pointer"
           >
             {hero.showreelCoverImage && (
-              <img
-                src={hero.showreelCoverImage}
+              <Image
+                src={showreelCoverSrc}
                 alt={hero.showreelTitle || "Official Showreel"}
-                className="absolute inset-0 w-full h-full object-cover opacity-55 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700"
+                fill
+                sizes="(max-width: 768px) 100vw, 90vw"
+                unoptimized={!isOptimizableImageSrc(showreelCoverSrc)}
+                onError={() => {
+                  if (showreelCoverSrc !== "/covers/commercial-pulse.jpg") {
+                    setShowreelCoverSrc("/covers/commercial-pulse.jpg");
+                  }
+                }}
+                className="object-cover opacity-55 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700"
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/50" />

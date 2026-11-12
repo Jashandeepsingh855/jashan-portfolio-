@@ -133,12 +133,14 @@ export default function Header({
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label="Toggle Navigation"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
             className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300 transition-colors"
           >
             {mobileMenuOpen ? (
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4" aria-hidden="true" />
             ) : (
-              <Menu className="w-4 h-4" />
+              <Menu className="w-4 h-4" aria-hidden="true" />
             )}
           </button>
         </motion.div>
@@ -148,13 +150,17 @@ export default function Header({
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-navigation"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="md:hidden mt-3 bg-white rounded-2xl p-3 shadow-xl border border-neutral-200"
           >
-            <div className="flex flex-col gap-1">
+            <nav
+              aria-label="Mobile Navigation"
+              className="flex flex-col gap-1"
+            >
               {navItems.map((item) => {
                 const isActive = activeNavLabel === item.label;
                 return (
@@ -187,7 +193,7 @@ export default function Header({
                     {item.badge && (
                       <span
                         className={`relative z-10 text-xs font-mono ${
-                          isActive ? "text-zinc-300" : "text-neutral-400"
+                          isActive ? "text-zinc-300" : "text-neutral-600"
                         }`}
                       >
                         {item.badge}
@@ -196,7 +202,7 @@ export default function Header({
                   </a>
                 );
               })}
-            </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>

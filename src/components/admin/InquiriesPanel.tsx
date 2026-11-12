@@ -154,6 +154,7 @@ export default function InquiriesPanel({
                 <div className="flex items-center gap-2 shrink-0">
                   <select
                     value={inq.status}
+                    aria-label={`Status for inquiry from ${inq.name}`}
                     onChange={(e) =>
                       handleStatusChange(
                         inq.id,
@@ -172,9 +173,10 @@ export default function InquiriesPanel({
                     type="button"
                     onClick={() => handleDelete(inq.id)}
                     title="Delete Inquiry"
+                    aria-label={`Delete inquiry from ${inq.name}`}
                     className="p-2 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200/70 transition-colors"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
               </div>

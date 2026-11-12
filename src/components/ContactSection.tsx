@@ -242,23 +242,23 @@ export default function ContactSection({
             )}
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-neutral-500">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs text-neutral-600">
                 <a
                   href={`mailto:${siteSettings.email}`}
                   className="inline-flex items-center gap-1.5 hover:text-black transition-colors font-mono"
                 >
-                  <Mail className="w-3.5 h-3.5" />
+                  <Mail className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>{siteSettings.email}</span>
                 </a>
                 {siteSettings.calendarLink && (
                   <a
                     href={siteSettings.calendarLink}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 hover:text-black transition-colors font-mono"
                   >
                     <span>Book 15m Sync</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </a>
                 )}
               </div>

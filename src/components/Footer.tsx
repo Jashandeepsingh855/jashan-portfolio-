@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { SiteSettings } from "@/lib/data";
 
 interface FooterProps {
@@ -21,34 +22,39 @@ export default function Footer({ siteSettings }: FooterProps) {
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#111111] text-white text-xs font-semibold">
-            <img
+            <Image
               src="/portrait-cutout.png"
               alt={siteSettings.name}
+              width={20}
+              height={20}
               className="w-5 h-5 rounded-full object-cover object-top bg-white"
             />
             <span>{siteSettings.name}</span>
           </div>
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-neutral-600">
             {siteSettings.footerNote ||
               "Engineered for maximum visual retention."}
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-neutral-600">
+        <nav
+          aria-label="Footer Social Links"
+          className="flex flex-wrap items-center justify-center gap-4 text-xs text-neutral-600"
+        >
           {socialLinks.map((social) => (
             <a
               key={social.label}
               href={social.href}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="hover:text-black transition-colors"
             >
               {social.label}
             </a>
           ))}
-        </div>
+        </nav>
 
-        <div className="flex items-center gap-4 text-xs font-mono text-neutral-500">
+        <div className="flex items-center gap-4 text-xs font-mono text-neutral-600">
           <span>
             &copy; {siteSettings.year || "2025"} {siteSettings.name}
           </span>

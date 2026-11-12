@@ -143,7 +143,7 @@ export function AnimatedTabs({
                 >
                   <span>{tab.label}</span>
                   {tab.badge && (
-                    <span className="hidden lg:inline text-[10.5px] font-mono font-normal text-neutral-400">
+                    <span className="hidden lg:inline text-[10.5px] font-mono font-normal text-neutral-600">
                       {tab.badge}
                     </span>
                   )}
@@ -166,7 +166,7 @@ export function AnimatedTabs({
               >
                 <span>{tab.label}</span>
                 {tab.badge && (
-                  <span className="hidden lg:inline text-[10.5px] font-mono font-normal text-neutral-400">
+                  <span className="hidden lg:inline text-[10.5px] font-mono font-normal text-neutral-600">
                     {tab.badge}
                   </span>
                 )}
